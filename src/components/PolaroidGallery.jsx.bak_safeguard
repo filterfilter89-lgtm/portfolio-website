@@ -1,0 +1,106 @@
+import React, { useState, memo } from 'react';
+import { motion } from 'motion/react';
+
+// Organic fan-out coordinates centered across the clean paper card back
+const POLAROID_SLOTS = [
+  { left: '16%', top: '50%', rot: -6, z: 1 },
+  { left: '33%', top: '50%', rot: 3,  z: 2 },
+  { left: '50%', top: '48%', rot: -3, z: 3 },
+  { left: '67%', top: '51%', rot: 5,  z: 4 },
+  { left: '84%', top: '49%', rot: -2, z: 5 }
+];
+
+const PolaroidCardItem = memo(function PolaroidCardItem({
+  item,
+  idx,
+  slot,
+  isElevated,
+  onElevate,
+  defaultThumbnail
+}) {
+  const [aspectRatio, setAspectRatio] = useState(item.aspectRatio || null);
+  const imgSrc = item.src || defaultThumbnail || '/frames/web00.webp';
+  const caption = item.caption || item.title || `Plate #${idx + 1}`;
+
+  // Automatically adapt polaroid photo well to the exact natural aspect ratio of the image
+  const handleImageLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    if (naturalWidth && naturalHeight) {
+      setAspectRatio(`${naturalWidth} / ${naturalHeight}`);
+    }
+  };
+
+  return (
+    <motion.div
+      className={`polaroid-card-item ${isElevated ? 'is-elevated' : ''}`}
+      style={{
+        left: slot.left,
+        top: slot.top,
+        '--base-rot': `${slot.rot}deg`,
+        zIndex: isElevated ? 25 : slot.z
+      }}
+      drag
+      dragMomentum={false}
+      dragElastic={0.06}
+      onPointerDown={onElevate}
+      aria-label={`Polaroid of ${caption}`}
+    >
+      <div className="polaroid-inner-frame">
+        <div
+          className="polaroid-photo-well"
+          style={aspectRatio ? { aspectRatio } : undefined}
+        >
+          <img
+            src={imgSrc}
+            alt={caption}
+            className="polaroid-img"
+            loading="lazy"
+            draggable="false"
+            onLoad={handleImageLoad}
+          />
+          <div className="polaroid-sheen" />
+        </div>
+        <div className="polaroid-chin">
+          <span className="polaroid-handwritten-text">{caption}</span>
+          <span className="polaroid-frame-stamp">{(idx + 1).toString().padStart(2, '0')}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
+export default memo(function PolaroidGallery({
+  items = [],
+  project = {}
+}) {
+  const [elevatedIdx, setElevatedIdx] = useState(null);
+
+  // If no items provided or empty, create default photo set from thumbnail
+  const photoList = items.length > 0 ? items : [
+    { title: project.title || 'Photo 01', src: project.thumbnail, caption: 'Shot 01' }
+  ];
+
+  return (
+    <div className="polaroid-gallery-container">
+      {/* Scattered Polaroids Desk Area - Adapts to natural aspect ratio of each photo */}
+      <div className="polaroid-desk-stage">
+        {photoList.map((item, idx) => {
+          const slot = POLAROID_SLOTS[idx % POLAROID_SLOTS.length];
+          const isElevated = elevatedIdx === idx;
+
+          return (
+            <PolaroidCardItem
+              key={idx}
+              item={item}
+              idx={idx}
+              slot={slot}
+              isElevated={isElevated}
+              onElevate={() => setElevatedIdx(idx)}
+              defaultThumbnail={project.thumbnail}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+});

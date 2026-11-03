@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.vercel/
+frames/
+public/frames/*.png
+.DS_Store
+test-results/
+playwright-report/
+*.log
+scratch/

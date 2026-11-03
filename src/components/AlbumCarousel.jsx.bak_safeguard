@@ -1,0 +1,1004 @@
+import { playCardSlide, playCardFlip, playDeskThud, playClick } from '../utils/soundEffects';
+import PolaroidGallery from './PolaroidGallery';
+import InCardVideoPlayer from './InCardVideoPlayer';
+import { useState, useEffect, useRef, useCallback, memo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import TiltedCard from './TiltedCard';
+import PostcardSVG from './PostcardSVG';
+import { CATEGORIES } from '../data/categories';
+import '../../styles.css';
+
+const ALBUMS = CATEGORIES.map((cat) => ({
+  id: cat.id,
+  title: cat.title.toUpperCase(),
+  artist: 'BASIL JOSE',
+  coverIcon: cat.coverIcon,
+  imageSrc: cat.coverIcon,
+  url: `#work/${cat.id}`
+}));
+
+// Dynamic uncluttered physical desk coordinates ensuring generous breathing room
+function getScatterSlot(index, totalCount, isMobile) {
+  if (isMobile) {
+    const step = 82 / Math.max(1, totalCount);
+    const topVal = 14 + index * step;
+    const rot = (index % 2 === 0 ? -1 : 1) * (1.8 + (index % 3) * 0.8);
+    return {
+      left: '50vw',
+      top: `${topVal.toFixed(1)}vh`,
+      rot,
+      z: 10 + index
+    };
+  }
+
+  // Dynamic layouts for any number of uploaded projects:
+  if (totalCount === 1) {
+    return { left: '50vw', top: '50vh', rot: 0, z: 12 };
+  }
+  if (totalCount === 2) {
+    const slots2 = [
+      { left: '34vw', top: '50vh', rot: -3.5, z: 12 },
+      { left: '66vw', top: '50vh', rot: 3.0, z: 14 }
+    ];
+    return slots2[index % slots2.length];
+  }
+  if (totalCount === 3) {
+    const slots3 = [
+      { left: '26vw', top: '50vh', rot: -4.0, z: 12 },
+      { left: '50vw', top: '48vh', rot: 1.5, z: 14 },
+      { left: '74vw', top: '50vh', rot: 4.0, z: 13 }
+    ];
+    return slots3[index % slots3.length];
+  }
+  if (totalCount === 4) {
+    const slots4 = [
+      { left: '34vw', top: '34vh', rot: -3.5, z: 12 },
+      { left: '66vw', top: '34vh', rot: 3.0, z: 13 },
+      { left: '34vw', top: '68vh', rot: 2.5, z: 14 },
+      { left: '66vw', top: '68vh', rot: -2.0, z: 15 }
+    ];
+    return slots4[index % slots4.length];
+  }
+  if (totalCount <= 5) {
+    const slots5 = [
+      { left: '19vw', top: '32vh', rot: -5.0, z: 12 },
+      { left: '50vw', top: '27vh', rot: 2.2, z: 14 },
+      { left: '81vw', top: '32vh', rot: 5.5, z: 11 },
+      { left: '34vw', top: '68vh', rot: 3.8, z: 13 },
+      { left: '66vw', top: '68vh', rot: -3.2, z: 15 }
+    ];
+    return slots5[index % slots5.length];
+  }
+
+  // 7-card layout (Graphic Designs with Fetto Garments & Fouz Travels):
+  // Top row: 4 cards spaced generously from 15vw to 85vw
+  // Bottom row: 3 cards centered from 26vw to 74vw
+  if (totalCount === 7) {
+    const slots7 = [
+      { left: '15vw', top: '29vh', rot: -4.5, z: 12 }, // Fetto Garments
+      { left: '38vw', top: '26vh', rot: 2.5, z: 14 },  // Fouz Travels
+      { left: '62vw', top: '27vh', rot: -2.0, z: 13 }, // Synthesis Bauhaus
+      { left: '85vw', top: '30vh', rot: 4.5, z: 11 },  // Brutalist Mono
+      { left: '26vw', top: '68vh', rot: 3.5, z: 15 },  // Echoes Vinyl
+      { left: '50vw', top: '70vh', rot: -1.8, z: 16 }, // Modernity Posters
+      { left: '74vw', top: '67vh', rot: 3.2, z: 14 }   // Monolith Identity
+    ];
+    return slots7[index % slots7.length];
+  }
+
+  // Generic balanced 2-row formula for any N
+  const half = Math.ceil(totalCount / 2);
+  const isTopRow = index < half;
+  const colIdx = isTopRow ? index : (index - half);
+  const rowCount = isTopRow ? half : (totalCount - half);
+  const xPercent = 16 + (colIdx / Math.max(1, rowCount - 1)) * 68;
+  const yPercent = isTopRow ? 28 : 68;
+  const rot = (index % 2 === 0 ? -1 : 1) * (2.0 + (index % 3) * 1.5);
+  return {
+    left: `${xPercent.toFixed(1)}vw`,
+    top: `${yPercent}vh`,
+    rot,
+    z: 10 + index
+  };
+}
+
+// Draggable Physical Paper Airmail Postcard Component (Simultaneous 3D Flight & Flip)
+const DraggablePostcard = memo(function DraggablePostcard({
+  project,
+  index,
+  totalCount,
+  category,
+  isRetracting,
+  isScattered,
+  isExpanded,
+  isAnyCardExpanded,
+  onOpenProject,
+  onCloseProject,
+  scatterSlot,
+  centerAlbumTop,
+  vw,
+  vh,
+  cardWidth: cardW,
+  isMobile
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartPos = useRef({ x: 0, y: 0 });
+  const hasMovedRef = useRef(false);
+  const [hasEverBeenExpanded, setHasEverBeenExpanded] = useState(isExpanded);
+
+  useEffect(() => {
+    if (isExpanded) {
+      setHasEverBeenExpanded(true);
+    }
+  }, [isExpanded]);
+
+  const hasMultipleMedia = Boolean(project.media && project.media.length > 1);
+
+  const parseUnit = (valStr, dimension) => {
+    if (typeof valStr === 'string' && valStr.endsWith('vw')) {
+      return (parseFloat(valStr) / 100) * vw;
+    }
+    if (typeof valStr === 'string' && (valStr.endsWith('vh') || valStr.endsWith('dvh'))) {
+      return (parseFloat(valStr) / 100) * vh;
+    }
+    return parseFloat(valStr) || 0;
+  };
+
+  const targetX = parseUnit(scatterSlot.left, vw);
+  const targetY = parseUnit(scatterSlot.top, vh);
+
+  // Card dimensions on desk: balanced proportion preventing clutter
+  const restingScale = totalCount > 5 ? 0.70 : 0.78;
+  const restingW = Math.round(cardW * restingScale);
+  const restingH = Math.round(restingW * 0.5625);
+
+  // Card dimensions when expanded to 80% viewport
+  let enlargedW = isMobile ? Math.round(vw * 0.92) : Math.round(vw * 0.80);
+  let enlargedH = Math.round(enlargedW * 0.5625);
+  const maxH = Math.round(vh * 0.80);
+  if (enlargedH > maxH) {
+    enlargedH = maxH;
+    enlargedW = Math.round(enlargedH / 0.5625);
+  }
+
+  // Initial emergence delta from album mouth (centered on sleeve opening)
+  const mouthX = Math.round(vw / 2);
+  const mouthY = Math.round(centerAlbumTop ? centerAlbumTop + 24 : vh * 0.5 - cardW * 0.45);
+  const mouthDeltaX = Math.round(mouthX - targetX);
+  const mouthDeltaY = Math.round(mouthY - targetY);
+
+  // Travel delta from resting slot to center screen
+  const restingLeft = Math.round(targetX - restingW / 2);
+  const restingTop = Math.round(targetY - restingH / 2);
+  const centerLeft = Math.round(vw / 2 - enlargedW / 2);
+  const centerTop = Math.round(vh / 2 - enlargedH / 2);
+  const travelX = centerLeft - restingLeft;
+  const travelY = centerTop - restingTop;
+
+  const handlePointerDown = (e) => {
+    if (isExpanded) return;
+    dragStartPos.current = { x: e.clientX, y: e.clientY };
+    hasMovedRef.current = false;
+  };
+
+  const handleDragStart = () => {
+    if (isExpanded) return;
+    setIsDragging(true);
+    hasMovedRef.current = true;
+  };
+
+  const handleDragEnd = () => {
+    setTimeout(() => {
+      setIsDragging(false);
+    }, 80);
+  };
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    if (isDragging || hasMovedRef.current || isRetracting) return;
+    if (!isExpanded) {
+      onOpenProject(project);
+    }
+  };
+
+  let animateTarget = {
+    x: 0,
+    y: 0,
+    width: restingW,
+    height: restingH,
+    rotate: scatterSlot.rot,
+    rotateY: 0,
+    opacity: 1,
+    zIndex: isDragging ? 125 : 35 + scatterSlot.z,
+    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] }
+  };
+
+  if (isRetracting) {
+    animateTarget = {
+      x: [0, mouthDeltaX, mouthDeltaX],
+      y: [0, mouthDeltaY - 140, mouthDeltaY + 40],
+      z: 0,
+      width: restingW,
+      height: restingH,
+      scale: 1,
+      rotate: [scatterSlot.rot, 0, 0],
+      rotateY: 0,
+      opacity: [1, 1, 0],
+      zIndex: 15,
+      transition: {
+        duration: 0.55,
+        times: [0, 0.55, 1],
+        delay: (totalCount - 1 - index) * 0.04,
+        ease: [0.36, 0, 0.66, -0.56]
+      }
+    };
+  } else if (isExpanded) {
+    animateTarget = {
+      x: travelX,
+      y: travelY,
+      z: 160,
+      width: enlargedW,
+      height: enlargedH,
+      rotate: 0,
+      rotateY: 180,
+      opacity: 1,
+      zIndex: 300,
+      transition: {
+        duration: 0.65,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    };
+  } else if (isAnyCardExpanded) {
+    animateTarget = {
+      x: 0,
+      y: 0,
+      z: 0,
+      width: restingW,
+      height: restingH,
+      rotate: scatterSlot.rot,
+      rotateY: 0,
+      opacity: 0.22,
+      zIndex: 35 + scatterSlot.z,
+      transition: { duration: 0.45, ease: 'easeOut' }
+    };
+  } else if (!isScattered) {
+    animateTarget = {
+      x: [mouthDeltaX, mouthDeltaX, 0],
+      y: [mouthDeltaY + 40, mouthDeltaY - 140, 0],
+      z: 0,
+      width: restingW,
+      height: restingH,
+      scale: 1,
+      rotate: [0, (index - Math.floor(totalCount / 2)) * 3, scatterSlot.rot],
+      rotateY: 0,
+      opacity: [0, 1, 1],
+      zIndex: 15 + scatterSlot.z,
+      transition: {
+        duration: 0.88,
+        times: [0, 0.42, 1],
+        delay: 0.05 + index * 0.07,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    };
+  }
+
+  return (
+    <motion.div
+      className={"draggable-postcard-item postcard-16-9 " + (isDragging ? "is-dragging " : "") + (isExpanded ? "is-expanded" : "")}
+      style={{
+        position: 'absolute',
+        left: restingLeft,
+        top: restingTop,
+        transformStyle: 'preserve-3d',
+        pointerEvents: isAnyCardExpanded && !isExpanded ? 'none' : 'auto',
+        cursor: isExpanded ? 'default' : 'grab'
+      }}
+      drag={!isRetracting && !isExpanded}
+      dragMomentum={false}
+      dragElastic={0.08}
+      onPointerDown={handlePointerDown}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onClick={handleClick}
+      initial={{
+        x: mouthDeltaX,
+        y: mouthDeltaY + 40,
+        z: 0,
+        width: restingW,
+        height: restingH,
+        scale: 1,
+        rotate: 0,
+        rotateY: 0,
+        opacity: 0
+      }}
+      animate={animateTarget}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (!isExpanded) onOpenProject(project);
+        }
+      }}
+      aria-label={"Postcard for " + (project?.title || "")}
+    >
+      <div
+        className="postcard-3d-flipper"
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          transformStyle: 'preserve-3d',
+          borderRadius: isExpanded ? '6px' : '4px',
+          boxShadow: isExpanded
+            ? '0 40px 100px rgba(0, 8, 26, 0.7), 0 10px 30px rgba(0, 0, 0, 0.4)'
+            : isDragging
+            ? '0 30px 60px rgba(0, 10, 35, 0.45)'
+            : '0 14px 28px rgba(0, 12, 32, 0.35), 0 4px 10px rgba(0, 0, 0, 0.18)'
+        }}
+      >
+        {/* Front Face: Postcard Artwork */}
+        <div
+          className="postcard-side postcard-side-front"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(0deg)',
+            zIndex: 2,
+            borderRadius: isExpanded ? '6px' : '4px',
+            overflow: 'hidden'
+          }}
+        >
+          <div className="postcard-16-9-wrapper" style={{ width: '100%', height: '100%' }}>
+            <PostcardSVG project={project} category={category} index={index} />
+          </div>
+        </div>
+
+        {/* Back Face: Revealed on 180 deg Flip */}
+        <div
+          className="postcard-side postcard-side-back"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+            zIndex: 3,
+            background: '#fff7ed',
+            borderRadius: isExpanded ? '6px' : '4px',
+            overflow: 'hidden',
+            pointerEvents: isExpanded ? 'auto' : 'none'
+          }}
+        >
+          {isExpanded && (
+            <button
+              type="button"
+              className="enlarged-postcard-close-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCloseProject();
+              }}
+              aria-label="Close enlarged postcard"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
+
+          {(isExpanded || hasEverBeenExpanded) && (
+            hasMultipleMedia ? (
+              <PolaroidGallery items={project.media} project={project} />
+            ) : (
+              <InCardVideoPlayer project={project} media={project.media?.[0]} />
+            )
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
+export default function AlbumCarousel({
+  activeCategoryId,
+  initialProjectId = null,
+  onBack,
+  onDitherTrigger,
+  onCategoryChange,
+  isEntering = false,
+  isExiting: isExitingProp = false
+}) {
+  const containerRef = useRef(null);
+  const [viewportSize, setViewportSize] = useState(() => ({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1440,
+    height: typeof window !== 'undefined' ? window.innerHeight : 900
+  }));
+
+  const { width: vw, height: vh } = viewportSize;
+  const isMobile = vw < 640;
+  const isTablet = vw >= 640 && vw < 1024;
+
+  const cardWidth = isMobile
+    ? Math.min(260, Math.floor(vw * 0.70))
+    : isTablet
+    ? Math.min(320, Math.floor(vh * 0.38))
+    : Math.min(380, Math.max(310, Math.floor(vh * 0.40)));
+
+  // Generous, breathable spacing so adjacent albums never feel crowded or collide when tilted
+  const cardGap = isMobile ? 48 : isTablet ? 90 : 140;
+  const cardStep = cardWidth + cardGap;
+  const arcRadius = isMobile ? 1100 : isTablet ? 1500 : 1800;
+
+  const initialCategoryIdx = Math.max(0, ALBUMS.findIndex((cat) => cat.id === activeCategoryId));
+  const initialScroll = initialCategoryIdx * cardStep;
+
+  const currentScrollRef = useRef(initialScroll);
+  const targetScrollRef = useRef(initialScroll);
+  const [scrollProgress, setScrollProgress] = useState(initialScroll);
+  const touchStartRef = useRef({ x: 0, y: 0, scroll: 0 });
+
+  // Pure GPU-composited entry state (zero React per-frame setState!)
+  const [isEnteringSides, setIsEnteringSides] = useState(isEntering);
+
+  useEffect(() => {
+    if (isEntering) {
+      setIsEnteringSides(true);
+      const timer = setTimeout(() => {
+        setIsEnteringSides(false);
+      }, 700);
+      return () => clearTimeout(timer);
+    } else {
+      setIsEnteringSides(false);
+    }
+  }, [isEntering]);
+
+  // Continuous Category & Postcards Showcase State (Zero Cut!)
+  const [isExiting, setIsExiting] = useState(isExitingProp);
+
+  useEffect(() => {
+    if (isExitingProp) {
+      setIsExiting(true);
+    }
+  }, [isExitingProp]);
+
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    if (activeCategoryId) {
+      return CATEGORIES.find((c) => c.id === activeCategoryId) || null;
+    }
+    return null;
+  });
+
+  const [selectedSlot, setSelectedSlot] = useState(() => {
+    if (activeCategoryId) {
+      const idx = ALBUMS.findIndex((cat) => cat.id === activeCategoryId);
+      return idx >= 0 ? idx : null;
+    }
+    return null;
+  });
+
+  const [hasAlbumDescended, setHasAlbumDescended] = useState(() => Boolean(activeCategoryId));
+  const [showPostcards, setShowPostcards] = useState(() => Boolean(activeCategoryId));
+  const [isCardsScattered, setIsCardsScattered] = useState(() => Boolean(activeCategoryId));
+  const [isRetractingPostcards, setIsRetractingPostcards] = useState(false);
+  const [flippingProjectId, setFlippingProjectId] = useState(null);
+
+  const [activeFullscreenProject, setActiveFullscreenProject] = useState(() => {
+    if (activeCategoryId && initialProjectId) {
+      const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
+      return cat?.projects.find((p) => p.id === initialProjectId) || null;
+    }
+    return null;
+  });
+
+  // Sync activeFullscreenProject and selectedCategory if URL updates externally
+  useEffect(() => {
+    if (activeCategoryId) {
+      const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
+      if (cat) {
+        setSelectedCategory(cat);
+        const idx = ALBUMS.findIndex((a) => a.id === activeCategoryId);
+        if (idx >= 0) {
+          setSelectedSlot(idx);
+          targetScrollRef.current = idx * cardStep;
+          currentScrollRef.current = idx * cardStep;
+          setScrollProgress(idx * cardStep);
+        }
+        setShowPostcards(true);
+        setHasAlbumDescended(true);
+        setIsCardsScattered(true);
+      }
+    }
+    if (activeCategoryId && initialProjectId) {
+      const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
+      const proj = cat?.projects.find((p) => p.id === initialProjectId);
+      setActiveFullscreenProject(proj || null);
+    } else {
+      setActiveFullscreenProject(null);
+    }
+  }, [activeCategoryId, initialProjectId]);
+
+  // Postcard Click -> Open 70% Viewport 3D Flip Modal
+  const handleOpenProject = useCallback((project) => {
+    playCardFlip();
+    setActiveFullscreenProject(project);
+    if (selectedCategory) {
+      window.history.pushState(null, '', '#work/' + selectedCategory.id + '/' + project.id);
+    }
+  }, [selectedCategory]);
+
+  const handleCloseProject = useCallback(() => {
+    playCardFlip();
+    setActiveFullscreenProject(null);
+    setFlippingProjectId(null);
+    if (selectedCategory) {
+      window.history.pushState(null, '', '#work/' + selectedCategory.id);
+    }
+  }, [selectedCategory]);
+
+  // Resize listener with passive flag
+  useEffect(() => {
+    function handleResize() {
+      setViewportSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    }
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Smooth Lerp loop for carousel scrolling (only runs when diff > 0.05)
+  useEffect(() => {
+    let animId;
+    function loop() {
+      const diff = targetScrollRef.current - currentScrollRef.current;
+      if (Math.abs(diff) > 0.05) {
+        currentScrollRef.current += diff * 0.12;
+        setScrollProgress(currentScrollRef.current);
+      }
+      animId = requestAnimationFrame(loop);
+    }
+    animId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animId);
+  }, []);
+
+  // Pointer/mouse drag tracking to allow clicking & dragging the wheel without false triggers
+  const pointerStartRef = useRef({ x: 0, y: 0, scroll: 0, isDown: false, hasDragged: false });
+
+  const handlePointerDownStage = (e) => {
+    if (selectedCategory || isExiting) return;
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    pointerStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      scroll: targetScrollRef.current,
+      isDown: true,
+      hasDragged: false
+    };
+  };
+
+  const handlePointerMoveStage = (e) => {
+    if (!pointerStartRef.current.isDown || selectedCategory || isExiting) return;
+    const dx = pointerStartRef.current.x - e.clientX;
+    if (Math.abs(dx) > 5) {
+      pointerStartRef.current.hasDragged = true;
+    }
+    const maxLead = cardStep * 2.2;
+    targetScrollRef.current = Math.max(
+      currentScrollRef.current - maxLead,
+      Math.min(currentScrollRef.current + maxLead, pointerStartRef.current.scroll + dx * 0.95)
+    );
+  };
+
+  const handlePointerUpStage = () => {
+    if (!pointerStartRef.current.isDown) return;
+    pointerStartRef.current.isDown = false;
+    const nearest = Math.round(targetScrollRef.current / cardStep);
+    targetScrollRef.current = nearest * cardStep;
+    setTimeout(() => {
+      pointerStartRef.current.hasDragged = false;
+    }, 120);
+  };
+
+  // Global window wheel scroll listener with automatic center-docking on each scroll (passive: false to prevent page jumping)
+  useEffect(() => {
+    if (selectedCategory || isExiting) return;
+    let snapTimeout = null;
+    function handleWheel(e) {
+      if (selectedCategory || isExiting) return;
+      // Prevent native window/page vertical scrolling while interacting with the wheel
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      // Smooth clamped sensitivity to prevent uncontrollable spinning
+      const clampedDelta = Math.max(-cardStep * 1.1, Math.min(cardStep * 1.1, delta * 0.72));
+      const maxLead = cardStep * 2.2;
+      targetScrollRef.current = Math.max(
+        currentScrollRef.current - maxLead,
+        Math.min(currentScrollRef.current + maxLead, targetScrollRef.current + clampedDelta)
+      );
+
+      // Automatically dock the nearest album squarely into the center slot
+      clearTimeout(snapTimeout);
+      snapTimeout = setTimeout(() => {
+        const nearest = Math.round(targetScrollRef.current / cardStep);
+        targetScrollRef.current = nearest * cardStep;
+      }, 45);
+    }
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      clearTimeout(snapTimeout);
+    };
+  }, [selectedCategory, isExiting, cardStep]);
+
+  // Mobile Touch handlers with high-velocity swipe support
+  const handleTouchStart = (e) => {
+    if (selectedCategory || isExiting) return;
+    const touch = e.touches[0];
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      scroll: targetScrollRef.current,
+      time: performance.now()
+    };
+  };
+
+  const handleTouchMove = (e) => {
+    if (selectedCategory || isExiting) return;
+    if (e.cancelable) e.preventDefault();
+    const touch = e.touches[0];
+    const dx = touchStartRef.current.x - touch.clientX;
+    const maxLead = cardStep * 2.2;
+    targetScrollRef.current = Math.max(
+      currentScrollRef.current - maxLead,
+      Math.min(currentScrollRef.current + maxLead, touchStartRef.current.scroll + dx * 0.95)
+    );
+  };
+
+  const handleTouchEnd = (e) => {
+    if (selectedCategory || isExiting) return;
+    const nearest = Math.round(targetScrollRef.current / cardStep);
+    targetScrollRef.current = nearest * cardStep;
+  };
+
+  // Step 1 - 5 Unified Category Selection Choreography
+  const triggerSelectCategory = useCallback((slot, categoryId, origin) => {
+    if (selectedCategory || isExiting) return;
+    const cat = CATEGORIES.find((c) => c.id === categoryId);
+    if (!cat) return;
+
+    setSelectedSlot(slot);
+    setSelectedCategory(cat);
+    setHasAlbumDescended(false);
+    setIsRetractingPostcards(false);
+    setIsCardsScattered(false);
+
+    // Step 1: Center the selected album immediately; side albums move out left & right
+    targetScrollRef.current = slot * cardStep;
+    currentScrollRef.current = slot * cardStep;
+    setScrollProgress(slot * cardStep);
+
+    // Step 1b: Postcards emerge upwards from the sleeve opening (40ms)
+    setTimeout(() => {
+      playCardSlide();
+      setShowPostcards(true);
+    }, 40);
+
+    // Step 1c: Album holds center while cards emerge upwards, then smoothly slides down (520ms)
+    setTimeout(() => {
+      setHasAlbumDescended(true);
+    }, 520);
+
+    // Step 2: Postcards land and settle onto desk surface (920ms)
+    setTimeout(() => {
+      playDeskThud();
+    }, 920);
+
+    // Step 3: Transition background to deep desk blue after cards are resting (1150ms)
+    setTimeout(() => {
+      setIsCardsScattered(true);
+      if (onDitherTrigger) {
+        onDitherTrigger({
+          color: '#336196',
+          sourceShape: 'uniform',
+          zIndex: 10
+        });
+      }
+      if (onCategoryChange) {
+        onCategoryChange(categoryId);
+      }
+    }, 1150);
+
+    window.history.pushState(null, '', '#work/' + categoryId);
+  }, [selectedCategory, isExiting, cardStep, onDitherTrigger, onCategoryChange, vw, vh]);
+
+  // Return from Postcards Showcase back to Carousel (Exact Full Reverse Flow)
+  const handleReturnToCarousel = useCallback(() => {
+    if (!selectedCategory || isRetractingPostcards) return;
+    playCardSlide();
+    setIsRetractingPostcards(true);
+
+    // Reverse Step 1: Postcards retract and album rises back up from bottom!
+    setHasAlbumDescended(false);
+
+    // Reverse Step 2: Uniform dither dissolves back to beige BEHIND the album (320ms, ZERO RIPPLE)
+    setTimeout(() => {
+      if (onDitherTrigger) {
+        onDitherTrigger({
+          origin: { x: vw / 2, y: vh * 0.5 },
+          color: '#fff7ed',
+          sourceShape: 'uniform',
+          boxHalfSize: 0,
+          zIndex: 10
+        });
+      }
+      if (onCategoryChange) {
+        onCategoryChange(null);
+      }
+    }, 320);
+
+    // Reverse Step 3: Postcards unmount and side albums return into the arc after cards tuck in (1100ms)
+    setTimeout(() => {
+      setShowPostcards(false);
+      setIsRetractingPostcards(false);
+      setSelectedCategory(null);
+      setSelectedSlot(null);
+      setHasAlbumDescended(false);
+      window.history.pushState(null, '', '#work');
+    }, 1100);
+  }, [selectedCategory, isRetractingPostcards, onDitherTrigger, onCategoryChange, vw, vh]);
+
+  // Return to Visual Reel
+  const handleReturnToReel = useCallback(() => {
+    if (isExiting) return;
+    setIsExiting(true);
+    if (onBack) onBack();
+  }, [isExiting, onBack]);
+
+  // Keyboard navigation & ESC
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') {
+        if (activeFullscreenProject) {
+          handleCloseProject();
+        } else if (selectedCategory) {
+          handleReturnToCarousel();
+        } else if (onBack) {
+          handleReturnToReel();
+        }
+        return;
+      }
+      if (selectedCategory || isExiting) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        const currentIdx = Math.round(targetScrollRef.current / cardStep);
+        targetScrollRef.current = (currentIdx + 1) * cardStep;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        const currentIdx = Math.round(targetScrollRef.current / cardStep);
+        targetScrollRef.current = (currentIdx - 1) * cardStep;
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedCategory, isExiting, cardStep, onBack, activeFullscreenProject, handleCloseProject, handleReturnToCarousel, handleReturnToReel]);
+
+  // Compute center index and circular visible range
+  const centerIdx = Math.round(scrollProgress / cardStep);
+  const visibleRange = isMobile ? 2 : 2;
+  const visibleSlots = [];
+  for (let offset = -visibleRange; offset <= visibleRange; offset++) {
+    visibleSlots.push(centerIdx + offset);
+  }
+
+  // Top lip of centered album for postcard mouth emergence
+  const centerAlbumTop = Math.round(vh * 0.5 - cardWidth / 2);
+
+  return (
+    <div
+      ref={containerRef}
+      className={`react-album-stage ${selectedCategory ? 'is-postcard-stage' : ''}`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onPointerDown={handlePointerDownStage}
+      onPointerMove={handlePointerMoveStage}
+      onPointerUp={handlePointerUpStage}
+      onPointerLeave={handlePointerUpStage}
+    >
+      {/* Top-Left Back Button: REEL when in carousel, ALBUMS when in showcase */}
+      {!selectedCategory ? (
+        onBack && (
+          <button
+            type="button"
+            className="clean-back-btn"
+            onClick={handleReturnToReel}
+            aria-label="Return to Visual Reel"
+            title="Return to Visual Reel (ESC)"
+          >
+            <svg className="back-arrow-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            <span className="back-label">REEL</span>
+            <span className="back-key-hint">ESC</span>
+          </button>
+        )
+      ) : (
+        <button
+          type="button"
+          className="clean-back-btn is-showcase"
+          onClick={handleReturnToCarousel}
+          aria-label="Return to Album Carousel"
+          title="Return to Albums (ESC)"
+        >
+          <svg className="back-arrow-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+          <span className="back-label">ALBUMS</span>
+          <span className="back-key-hint">ESC</span>
+        </button>
+      )}
+
+      {/* Album Carousel Track: Zero Cuts, Exact Same Album! */}
+      <div
+        className="react-album-track"
+        style={{ '--arc-radius': `${arcRadius}px` }}
+      >
+        {visibleSlots.map((k) => {
+          const albumIndex = ((k % ALBUMS.length) + ALBUMS.length) % ALBUMS.length;
+          const album = ALBUMS[albumIndex];
+
+          const dx = (k * cardStep) - scrollProgress;
+
+          const isThisSelected = selectedCategory && k === selectedSlot;
+          const isSideAlbumExiting = selectedCategory && k !== selectedSlot;
+
+          // Centered gentle Ferris wheel arc: stays strictly centered vertically, never drops down or plunges off-screen
+          const safeRadius = Math.max(800, arcRadius);
+          const clampedRatio = Math.max(-0.85, Math.min(0.85, dx / safeRadius));
+          const thetaRad = Math.asin(clampedRatio);
+          const thetaDeg = isThisSelected ? 0 : thetaRad * (180 / Math.PI) * 1.05;
+          const circularDrop = safeRadius * (1 - Math.cos(thetaRad));
+          // Steep drop while strictly anchoring center album at 50% vertical center
+          const dropY = isThisSelected ? 0 : Math.min(vh * 0.42, circularDrop * 1.25);
+
+          // Elevate selected card to z-index: 25 (in front of dither canvas at z-index: 10)
+          const zIndex = isThisSelected ? 30 : Math.max(1, 18 - Math.min(15, Math.round(Math.abs(dx) / (cardStep * 0.5))));
+
+          let cardModifierClass = '';
+          if (isThisSelected) {
+            cardModifierClass = hasAlbumDescended ? 'is-selected-descending' : 'is-selected-ascending';
+          } else if (isSideAlbumExiting) {
+            cardModifierClass = k < selectedSlot ? 'is-fading-out-left' : 'is-fading-out-right';
+          } else if (isExiting) {
+            cardModifierClass = dx <= 0 ? 'is-exiting-to-reel-left' : 'is-exiting-to-reel-right';
+          } else if (isEnteringSides) {
+            cardModifierClass = dx < 0 ? 'is-entering-from-left' : 'is-entering-from-right';
+          }
+
+          return (
+            <div
+              key={k}
+              className={`react-album-card-item ${cardModifierClass}`}
+              style={{
+                '--card-dx': `${dx}px`,
+                '--card-dy': `${dropY}px`,
+                '--card-rot': `${thetaDeg}deg`,
+                transform: `translate(-50%, -50%) translate3d(${dx}px, ${dropY}px, 0) rotate(${thetaDeg}deg)`,
+                transformOrigin: '50% 60%',
+                zIndex
+              }}
+            >
+              <a
+                href={album.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="react-album-card-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (selectedCategory || pointerStartRef.current.hasDragged) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const origin = {
+                    x: Math.round(rect.left + rect.width / 2),
+                    y: Math.round(rect.top + rect.height / 2)
+                  };
+                  triggerSelectCategory(k, album.id, origin);
+                }}
+                aria-label={`${album.title} - Click to explore projects in this category`}
+              >
+                <TiltedCard
+                  coverIcon={album.coverIcon}
+                  imageSrc={album.imageSrc}
+                  altText={`${album.title} - ${album.artist}`}
+                  captionText={isThisSelected ? '' : album.title}
+                  containerHeight={`${cardWidth}px`}
+                  containerWidth={`${cardWidth}px`}
+                  imageHeight={`${cardWidth}px`}
+                  imageWidth={`${cardWidth}px`}
+                  rotateAmplitude={isThisSelected || isMobile ? 0 : 12}
+                  scaleOnHover={isThisSelected ? 1 : 1.08}
+                  showVinyl={false}
+                  showMobileWarning={false}
+                  showTooltip={false}
+                  isDescending={Boolean(selectedCategory)}
+                />
+              </a>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Dimmed & Blurred Desk Backdrop (Outside 3D space to prevent clipping during flip) */}
+      <AnimatePresence>
+        {activeFullscreenProject && (
+          <motion.div
+            className="enlarged-postcard-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.32, ease: 'easeInOut' }}
+            onClick={handleCloseProject}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Step 3 & 5: Postcards pop out of the album mouth and scatter across desk */}
+      {selectedCategory && showPostcards && (
+        <div className={"scattered-envelopes-wrapper" + (hasAlbumDescended ? " album-descended" : "") + (activeFullscreenProject ? " has-expanded-card" : "")}>
+
+          {selectedCategory.projects.map((proj, idx) => {
+            const scatter = getScatterSlot(idx, selectedCategory.projects.length, isMobile);
+            return (
+              <DraggablePostcard
+                key={proj.id}
+                project={proj}
+                index={idx}
+                totalCount={selectedCategory.projects.length}
+                category={selectedCategory}
+                isRetracting={isRetractingPostcards}
+                isScattered={isCardsScattered}
+                isExpanded={activeFullscreenProject?.id === proj.id}
+                isAnyCardExpanded={Boolean(activeFullscreenProject)}
+                onOpenProject={handleOpenProject}
+                onCloseProject={handleCloseProject}
+                scatterSlot={scatter}
+                centerAlbumTop={centerAlbumTop}
+                vw={vw}
+                vh={vh}
+                cardWidth={cardWidth}
+                isMobile={isMobile}
+              />
+            );
+          })}
+
+          {selectedCategory.projects.length === 0 && (
+            <div className="empty-category-desk-badge">
+              <div className="empty-category-stamp">
+                <span className="empty-category-tag">COLLECTION EMPTY</span>
+                <h3 className="empty-category-title">{selectedCategory.title}</h3>
+                <p className="empty-category-text">
+                  Upload your project files or folders into:
+                </p>
+                <code className="empty-category-code">
+                  projects/{selectedCategory.id}/
+                </code>
+                <p className="empty-category-hint">
+                  Then type <strong>updated</strong> in chat to display them here.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

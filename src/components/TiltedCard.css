@@ -1,0 +1,210 @@
+.tilted-card-figure {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  overflow: visible;
+}
+
+.tilted-card-mobile-alert {
+  display: none;
+}
+
+.tilted-card-inner {
+  position: relative;
+  transform-style: preserve-3d;
+  filter: none;
+  overflow: visible;
+}
+
+/* ── Layer 1: Back Sleeve Jacket ─────────────────────────────── */
+.tilted-card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: #101620;
+  transform: translateZ(-12px);
+  box-shadow: 
+    0 24px 48px -10px rgba(10, 25, 55, 0.40),
+    0 10px 20px -6px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+/* ── Layer 2: 3D Realistic Grooved Vinyl Disc ───────────────────── */
+.tilted-vinyl-disc {
+  position: absolute;
+  top: 3.5%;
+  left: 3.5%;
+  width: 93%;
+  height: 93%;
+  border-radius: 50%;
+  z-index: 2;
+  transform: translateZ(-2px);
+  background: repeating-radial-gradient(circle at center, #09111c 0 1.5px, #18283d 2px, #09111c 3px);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Light Sheen / Gloss Reflection */
+.vinyl-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 45deg,
+    transparent 0deg,
+    rgba(255, 255, 255, 0.16) 40deg,
+    transparent 80deg,
+    transparent 225deg,
+    rgba(255, 255, 255, 0.16) 265deg,
+    transparent 305deg
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Center Album Label Sticker */
+.vinyl-center-label {
+  position: relative;
+  width: 38%;
+  height: 38%;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 2px #09111c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vinyl-label-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.95);
+}
+
+.vinyl-label-ring {
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+
+/* Metallic Center Spindle Hole */
+.vinyl-spindle-hole {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--cream, #fff7ed);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: none;
+  z-index: 3;
+}
+
+/* ── Layer 3: Front Card Jacket Sleeve ── */
+.tilted-card-front-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 16px;
+  z-index: 6;
+  will-change: transform;
+  transform: translateZ(8px);
+  box-shadow: 
+    0 28px 56px -12px rgba(10, 25, 55, 0.45),
+    0 14px 28px -8px rgba(0, 0, 0, 0.32),
+    0 4px 10px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.tilted-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tilted-card-title {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 0;
+  right: 0;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--blue, #336196);
+  text-align: center;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  white-space: nowrap;
+  text-shadow: none;
+  opacity: 0.95;
+}
+
+.tilted-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  will-change: transform;
+  transform: translateZ(30px);
+}
+
+.tilted-card-caption {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 6px 12px;
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #1a3353;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+/* Front Album Cover Icon Artwork */
+.jacket-cover-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.typographic-album-jacket {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--cream, #fff7ed);
+}
