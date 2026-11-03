@@ -1,7 +1,7 @@
 node_modules/
 dist/
 .vercel/
-frames/
+/frames/
 public/frames/*.png
 .DS_Store
 test-results/

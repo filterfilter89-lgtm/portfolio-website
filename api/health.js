@@ -22,3 +22,4 @@ export default async function handler(req, res) {
   res.statusCode = 200;
   res.end(JSON.stringify(data, null, 2));
 }
+
