@@ -6,6 +6,13 @@
   font-display: swap;
 }
 @font-face {
+  font-family: 'Flapstick DEMO';
+  src: local('Flapstick DEMO'), local('FlapstickDEMO'), url('/fonts/FlapstickDEMO.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
   font-family: 'Flapstick Demo';
   src: local('Flapstick DEMO'), local('FlapstickDEMO'), url('/fonts/FlapstickDEMO.otf') format('opentype');
   font-weight: normal;
@@ -2697,45 +2704,53 @@ body.page-work.is-showcase-active {
   border: 0;
 }
 
-/* ── Sketchzone Editable Text Overlay (Exact Reference Match) ── */
-.hero-sketchzone-left {
+/* ── Flapstick DEMO Editable Text Overlay (Calibrated Exact Match) ── */
+.hero-flapstick-left {
   position: absolute;
-  left: 4.4%;
-  top: 7.45%;
+  left: 4.3%;
+  top: 10.4%;
   pointer-events: auto;
   user-select: text;
   -webkit-user-select: text;
+  background: transparent !important;
 }
 
-.hero-sketchzone-right {
+.hero-flapstick-right {
   position: absolute;
-  left: 62.5%;
-  top: 11.3%;
+  left: 64.55%;
+  top: 11.28%;
   pointer-events: auto;
   user-select: text;
   -webkit-user-select: text;
+  background: transparent !important;
 }
 
-.hero-sketchzone-name {
-  font-family: 'Sketchzone', cursive, sans-serif;
+.hero-flapstick-name {
+  font-family: 'Flapstick DEMO', 'Flapstick Demo', cursive, sans-serif;
   font-weight: normal;
   font-style: normal;
-  color: #184878;
-  line-height: 0.9;
+  color: #174276;
+  line-height: 0.85;
   margin: 0;
   white-space: nowrap;
   user-select: text;
   -webkit-user-select: text;
+  background: transparent !important;
 }
 
-.hero-sketchzone-left .hero-sketchzone-name {
-  letter-spacing: -0.5px;
-  font-size: clamp(48px, 11.45vw, 117px);
-  font-size: clamp(48px, 11.45cqw, 220px);
+.hero-flapstick-left .hero-flapstick-name {
+  letter-spacing: 0px;
+  font-size: clamp(48px, 15.82vw, 162px);
+  font-size: clamp(48px, 15.82cqw, 240px);
 }
 
-.hero-sketchzone-right .hero-sketchzone-name {
-  letter-spacing: -0.8px;
-  font-size: clamp(60px, 17.1vw, 175px);
-  font-size: clamp(60px, 17.1cqw, 320px);
+.hero-flapstick-right .hero-flapstick-name {
+  letter-spacing: -0.05cqw;
+  font-size: clamp(52px, 16.79vw, 172px);
+  font-size: clamp(52px, 16.79cqw, 260px);
+}
+
+.hero-flapstick-right .hero-letter-j {
+  display: inline-block;
+  margin-right: -0.04em;
 }
