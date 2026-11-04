@@ -1857,7 +1857,8 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
   cursor: pointer;
 }
 
-.postcard-expanded-close-btn {
+.postcard-expanded-close-btn,
+.enlarged-postcard-close-btn {
   position: absolute;
   top: 14px;
   right: 16px;
@@ -1877,7 +1878,8 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
   -webkit-backdrop-filter: blur(6px);
 }
 
-.postcard-expanded-close-btn:hover {
+.postcard-expanded-close-btn:hover,
+.enlarged-postcard-close-btn:hover {
   background: var(--blue, #336196);
   color: #fff7ed;
   transform: rotate(90deg) scale(1.08);
@@ -2529,6 +2531,95 @@ body.page-work.is-showcase-active {
   z-index: 200 !important;
 }
 
+/* ============================================================
+   SCATTERED POLAROID GALLERY INSIDE FLIPPED POSTCARDS
+   Matches the organic scattered arrangement of the postcards themselves:
+   natural offsets, subtle rotations, layering, physical paper feel,
+   strictly guaranteed 100% within postcard boundaries.
+   ============================================================ */
+
+.polaroid-scatter-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.scattered-polaroid-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  outline: none;
+  will-change: transform;
+}
+
+.scattered-polaroid-item:active {
+  cursor: grabbing;
+}
+
+.scattered-polaroid-frame {
+  background: #ffffff;
+  padding: clamp(4px, 0.8vw, 8px) clamp(4px, 0.8vw, 8px) clamp(14px, 2.2vw, 24px) clamp(4px, 0.8vw, 8px);
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 
+    0 12px 28px rgba(0, 15, 40, 0.18),
+    0 3px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  transition: box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scattered-polaroid-item:hover .scattered-polaroid-frame {
+  box-shadow: 
+    0 22px 48px rgba(0, 15, 40, 0.28),
+    0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.scattered-photo-well {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 2px;
+  overflow: hidden;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+.scattered-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.scattered-chin {
+  height: 0px;
+  flex-shrink: 0;
+}
+
+/* Fallback & Legacy Aspect Stage Classes */
 .exact-aspect-gallery-stage {
   width: 100%;
   height: 100%;
@@ -2625,7 +2716,7 @@ body.page-work.is-showcase-active {
   height: auto;
 }
 .exact-aspect-img {
-  max-height: 440px;
+  max-height: 100%;
   max-width: 100%;
   width: auto;
   height: auto;
@@ -2635,7 +2726,7 @@ body.page-work.is-showcase-active {
   pointer-events: none;
 }
 .exact-aspect-video-wrapper {
-  max-height: 440px;
+  max-height: 100%;
   max-width: 100%;
   width: auto;
   height: auto;

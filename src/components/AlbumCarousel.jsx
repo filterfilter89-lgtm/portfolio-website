@@ -124,11 +124,16 @@ const DraggablePostcard = memo(function DraggablePostcard({
   const [isDragging, setIsDragging] = useState(false);
   const dragStartPos = useRef({ x: 0, y: 0 });
   const hasMovedRef = useRef(false);
-  const [hasEverBeenExpanded, setHasEverBeenExpanded] = useState(isExpanded);
+  const [shouldRenderBack, setShouldRenderBack] = useState(isExpanded);
 
   useEffect(() => {
     if (isExpanded) {
-      setHasEverBeenExpanded(true);
+      setShouldRenderBack(true);
+    } else {
+      const timer = setTimeout(() => {
+        setShouldRenderBack(false);
+      }, 600);
+      return () => clearTimeout(timer);
     }
   }, [isExpanded]);
 
@@ -404,7 +409,7 @@ const DraggablePostcard = memo(function DraggablePostcard({
             </button>
           )}
 
-          {(isExpanded || hasEverBeenExpanded) && (
+          {shouldRenderBack && (
             <PolaroidGallery items={project.media} project={project} isExpanded={isExpanded} />
           )}
         </div>
