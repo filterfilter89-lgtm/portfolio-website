@@ -154,6 +154,8 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
       scrollToBottom();
       requestAnimationFrame(scrollToBottom);
       setTimeout(scrollToBottom, 50);
+      setTimeout(scrollToBottom, 150);
+      setTimeout(scrollToBottom, 300);
 
       currentFrameRef.current = TOTAL_FRAMES - 1;
       renderFrame(TOTAL_FRAMES - 1);
@@ -275,15 +277,14 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
             }
           }
 
-          // 3. Play Button End Overlay: Fades in smoothly from 0.76 -> 0.88
+          // 3. Play Button End Overlay: Appears only at the end of the frame (Frame 48, progress >= 0.98)
           if (endOverlayRef.current) {
-            if (progress < 0.76) {
+            if (targetFrame < TOTAL_FRAMES - 1 || progress < 0.98) {
               endOverlayRef.current.style.opacity = '0';
               endOverlayRef.current.style.pointerEvents = 'none';
               setPlayVisible(false);
             } else {
-              const enter = Math.min(1, (progress - 0.76) / 0.12);
-              endOverlayRef.current.style.opacity = enter.toFixed(2);
+              endOverlayRef.current.style.opacity = '1';
               endOverlayRef.current.style.pointerEvents = 'auto';
               setPlayVisible(true);
             }
@@ -303,8 +304,8 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
 
   const handleTriggerPlay = (e) => {
     e?.preventDefault?.();
-    // Allow triggering when at the final section (frame >= 42 or progress >= 0.76)
-    if (currentFrameRef.current < 42) return;
+    // Allow triggering only when at the end of the frame (Frame 48 / progress >= 0.98)
+    if (currentFrameRef.current < TOTAL_FRAMES - 1) return;
 
     let origin = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     if (playBtnRef.current) {

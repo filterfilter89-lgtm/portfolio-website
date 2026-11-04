@@ -226,7 +226,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(140px, 16vw, 240px);
+  width: max(calc(100vw * 382 / 2560), calc(100vh * 382 / 1440));
+  height: max(calc(100vw * 382 / 2560), calc(100vh * 382 / 1440));
   aspect-ratio: 1;
   border-radius: 50%;
   background: transparent;
@@ -239,7 +240,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
 }
 
 .canvas-play-hitbox:hover {
-  transform: translate(-50%, -50%) scale(1.06);
+  transform: translate(-50%, -50%) scale(1.04);
 }
 
 .canvas-play-hitbox:active {
@@ -248,18 +249,18 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
 
 .play-pulse-ring {
   position: absolute;
-  inset: -12px;
+  inset: -6px;
   border-radius: 50%;
-  border: 2.5px solid color-mix(in srgb, var(--cream) 55%, transparent);
+  border: 2px solid color-mix(in srgb, var(--cream) 60%, transparent);
   animation: pulse-ring 2.4s cubic-bezier(.22, 1, .36, 1) infinite;
   pointer-events: none;
   transition: border-color .2s ease, transform .25s ease;
 }
 
 @keyframes pulse-ring {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  60% { transform: scale(1.18); opacity: 0; }
-  100% { transform: scale(1.18); opacity: 0; }
+  0% { transform: scale(1); opacity: 0.85; }
+  60% { transform: scale(1.22); opacity: 0; }
+  100% { transform: scale(1.22); opacity: 0; }
 }
 
 .canvas-play-hitbox:hover .play-pulse-ring {
