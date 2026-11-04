@@ -3,7 +3,6 @@ import VisualReel from './components/VisualReel';
 import AlbumCarousel from './components/AlbumCarousel';
 import BackgroundTransition from './components/BackgroundTransition';
 import DitherTransition from './components/DitherTransition';
-import SoundToggle from './components/SoundToggle';
 import { getCategoryById, getProjectById } from './data/categories';
 import '../styles.css';
 
@@ -347,7 +346,6 @@ export default function App({ initialView }) {
 
   return (
     <>
-      <SoundToggle />
       {/* Background layer: alone changes color from #fff7ed to #336196 behind all elements */}
       <BackgroundTransition color={bgColor} />
 

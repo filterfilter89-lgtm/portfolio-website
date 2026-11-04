@@ -329,15 +329,32 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
         />
 
         <div className="scroll-overlay">
-          {/* Top Left Pinned Intro Text */}
+          {/* Top Intro Overlay with Rafaella Font - Exact Reference Match */}
           <div
-            className="scroll-text scroll-text--intro"
+            className="scroll-text scroll-text--intro scroll-overlay__stage"
             ref={introOverlayRef}
             id="scroll-text-intro"
           >
-            <p className="hero-tagline-small">VISUAL REEL / 2026</p>
-            <h1 className="hero-name-big">Basil Jose</h1>
-            <p className="hero-role-big">Video Editor &amp; Designer</p>
+            <div className="hero-rafaella-left" id="hero-title-left">
+              <h1 className="sr-only">BASIL DESIGNER</h1>
+              <img
+                src="/rafaella_basil.svg"
+                alt="BASIL DESIGNER"
+                className="hero-rafaella-img"
+                width={378}
+                height={142}
+              />
+            </div>
+            <div className="hero-rafaella-right" id="hero-title-right">
+              <h1 className="sr-only">JOSE</h1>
+              <img
+                src="/rafaella_jose.svg"
+                alt="JOSE"
+                className="hero-rafaella-img"
+                width={323}
+                height={312}
+              />
+            </div>
           </div>
 
           {/* End Play Button Overlay */}
@@ -359,13 +376,7 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
           </div>
         </div>
 
-        {/* Center-Bottom Floating Scroll Indicator */}
-        <div className="scroll-indicator" ref={scrollIndicatorRef} id="scroll-indicator">
-          <div className="scroll-mouse">
-            <div className="scroll-wheel" />
-          </div>
-          <span>SCROLL TO EXPLORE</span>
-        </div>
+
 
         {/* Scroll Progress Bar */}
         <div className="scroll-progress" aria-hidden="true">
