@@ -12,7 +12,7 @@ export default memo(function InCardVideoPlayer({ project = {}, media = null, isE
   const [hasError, setHasError] = useState(false);
 
   const videoSrc = media?.src || project.videoSrc || project.video || '';
-  const posterSrc = media?.poster || project.thumbnail || '/frames/web00.webp';
+  const posterSrc = media?.poster || project.thumbnail || '/frames/web00.webp?v=20261104';
 
   const togglePlay = (e) => {
     e.stopPropagation();

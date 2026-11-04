@@ -16,7 +16,7 @@ const PostcardSVG = memo(function PostcardSVG({
   const rawId = useId();
   const uid = 'pc-' + rawId.replace(/[^a-zA-Z0-9]/g, '') + '-' + (project?.id || index);
 
-  const thumbnail = project.thumbnail || project.media?.[0]?.src || '/frames/web10.webp';
+  const thumbnail = project.thumbnail || project.media?.[0]?.src || '/frames/web10.webp?v=20261104';
   const dateStamp = project.dateStamp || '12 OCT 2024';
   const title = project.title || 'Untitled Project';
 

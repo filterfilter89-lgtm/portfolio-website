@@ -12,7 +12,7 @@ export default memo(function PolaroidGallery({
   const photoList = items && items.length > 0 ? items : [
     {
       title: project.title || 'Project Preview',
-      src: project.thumbnail || '/frames/web00.webp',
+      src: project.thumbnail || '/frames/web00.webp?v=20261104',
       type: project.videoSrc ? 'video' : 'image'
     }
   ];
@@ -25,7 +25,7 @@ export default memo(function PolaroidGallery({
       <div className={`exact-aspect-gallery-stage is-count-${count}`}>
         {photoList.map((item, idx) => {
           const isVideo = item.type === 'video' || (item.src && item.src.endsWith('.mp4'));
-          const imgSrc = item.src || project.thumbnail || '/frames/web00.webp';
+          const imgSrc = item.src || project.thumbnail || '/frames/web00.webp?v=20261104';
 
           return (
             <div

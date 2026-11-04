@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 
 const TOTAL_FRAMES = 49;
+const FRAME_VERSION = 'v=20261104';
 
 function getFrameUrl(index) {
   const padded = String(index).padStart(2, '0');
-  return `/frames/web${padded}.webp`;
+  return `/frames/web${padded}.webp?${FRAME_VERSION}`;
 }
 
 export default function VisualReel({ onPlay, isReturning = false, isActive = true }) {
@@ -12,7 +13,9 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
   const canvasRef = useRef(null);
   const playBtnRef = useRef(null);
   const progressFillRef = useRef(null);
+  const introOverlayRef = useRef(null);
   const endOverlayRef = useRef(null);
+  const scrollIndicatorRef = useRef(null);
 
   const currentFrameRef = useRef(isReturning ? TOTAL_FRAMES - 1 : 0);
   const framesRef = useRef(new Array(TOTAL_FRAMES));
@@ -73,11 +76,11 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
     ctx.drawImage(img, drawX, drawY, drawW, drawH);
   }, []);
 
-  const loadSingleFrame = useCallback(async (index) => {
-    if (index < 0 || index >= TOTAL_FRAMES) return null;
+  const loadSingleFrame = useCallback((index) => {
+    if (index < 0 || index >= TOTAL_FRAMES) return Promise.resolve(null);
     const frames = framesRef.current;
     if (frames[index]?.complete && frames[index].naturalWidth > 0) {
-      return frames[index];
+      return Promise.resolve(frames[index]);
     }
     if (loadingPromisesRef.current[index]) {
       return loadingPromisesRef.current[index];
@@ -85,10 +88,10 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
 
     const loadPromise = new Promise((resolve) => {
       const img = new Image();
-      img.src = getFrameUrl(index);
-
       const onDone = () => {
-        frames[index] = img;
+        if (img.naturalWidth > 0) {
+          frames[index] = img;
+        }
         delete loadingPromisesRef.current[index];
         // If current frame is this index or adjacent, re-render immediately
         if (currentFrameRef.current === index || Math.abs(currentFrameRef.current - index) <= 1) {
@@ -97,12 +100,18 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
         resolve(img);
       };
 
-      if ('decode' in img) {
-        img.decode().then(onDone).catch(onDone);
-      } else {
-        img.onload = onDone;
-        img.onerror = onDone;
-      }
+      img.onload = () => {
+        if ('decode' in img) {
+          img.decode().then(onDone).catch(onDone);
+        } else {
+          onDone();
+        }
+      };
+      img.onerror = () => {
+        delete loadingPromisesRef.current[index];
+        resolve(null);
+      };
+      img.src = getFrameUrl(index);
     });
 
     loadingPromisesRef.current[index] = loadPromise;
@@ -149,6 +158,14 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
       currentFrameRef.current = TOTAL_FRAMES - 1;
       renderFrame(TOTAL_FRAMES - 1);
 
+      if (introOverlayRef.current) {
+        introOverlayRef.current.style.opacity = '0';
+        introOverlayRef.current.style.pointerEvents = 'none';
+      }
+      if (scrollIndicatorRef.current) {
+        scrollIndicatorRef.current.style.opacity = '0';
+        scrollIndicatorRef.current.style.visibility = 'hidden';
+      }
       if (endOverlayRef.current) {
         endOverlayRef.current.style.opacity = '1';
         endOverlayRef.current.style.pointerEvents = 'auto';
@@ -160,12 +177,12 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
     }
   }, [isReturning, renderFrame, isActive]);
 
-  // Preload sequence: prioritize anchor frames (0 and 48) immediately
+  // Full parallel preloader: loads all 49 frames for smooth uninterrupted scrubbing
   useEffect(() => {
     let isCancelled = false;
 
     async function preloadAll() {
-      // 1. Immediately load & decode both essential anchor frames
+      // 1. Immediately load & render anchor frames 0 and 48
       await Promise.all([
         loadSingleFrame(0),
         loadSingleFrame(TOTAL_FRAMES - 1)
@@ -173,31 +190,15 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
       if (isCancelled) return;
 
       resizeCanvas();
-      const initialFrame = currentFrameRef.current;
-      renderFrame(initialFrame);
+      renderFrame(currentFrameRef.current);
 
-      // 2. Preload surrounding frames
-      if (initialFrame >= TOTAL_FRAMES - 1) {
-        const backFrames = [47, 46, 45, 44, 43, 42, 41, 40];
-        await Promise.all(backFrames.map(f => loadSingleFrame(f)));
-      } else {
-        const forwardFrames = [1, 2, 3, 4, 5, 6, 7, 8];
-        await Promise.all(forwardFrames.map(f => loadSingleFrame(f)));
+      // 2. High-speed parallel prefetch of all remaining frames (frames 1 through 47)
+      // Leverages HTTP/2 multiplexing so the full 49-frame animation is instant & complete
+      const prefetchPromises = [];
+      for (let i = 1; i < TOTAL_FRAMES - 1; i++) {
+        prefetchPromises.push(loadSingleFrame(i));
       }
-      if (isCancelled) return;
-
-      // 3. Preload all remaining frames in non-blocking batches
-      const remaining = [];
-      const currentCache = framesRef.current;
-      for (let i = 0; i < TOTAL_FRAMES; i++) {
-        if (!currentCache[i]) remaining.push(i);
-      }
-      const batchSize = 4;
-      for (let i = 0; i < remaining.length; i += batchSize) {
-        if (isCancelled) return;
-        const batch = remaining.slice(i, i + batchSize);
-        await Promise.all(batch.map(idx => loadSingleFrame(idx)));
-      }
+      await Promise.all(prefetchPromises);
     }
 
     preloadAll();
@@ -209,7 +210,7 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
     };
   }, [loadSingleFrame, resizeCanvas, renderFrame]);
 
-  // Handle scroll animation scrub
+  // Handle scroll animation scrub & overlays
   useEffect(() => {
     if (!isActive) return;
     let ticking = false;
@@ -246,17 +247,46 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
             progressFillRef.current.style.width = `${(progress * 100).toFixed(1)}%`;
           }
 
-          // Play button visibility: ONLY at the end of the frame (frame 48)
+          // 1. Intro Text: Visible 0 -> 0.16, fades out 0.16 -> 0.25
+          if (introOverlayRef.current) {
+            if (progress <= 0.16) {
+              introOverlayRef.current.style.opacity = '1';
+              introOverlayRef.current.style.transform = `translateY(-${progress * 40}px)`;
+              introOverlayRef.current.style.pointerEvents = 'auto';
+            } else if (progress <= 0.25) {
+              const fade = 1 - (progress - 0.16) / 0.09;
+              introOverlayRef.current.style.opacity = Math.max(0, fade).toFixed(2);
+              introOverlayRef.current.style.transform = `translateY(-${progress * 40}px)`;
+              introOverlayRef.current.style.pointerEvents = 'none';
+            } else {
+              introOverlayRef.current.style.opacity = '0';
+              introOverlayRef.current.style.pointerEvents = 'none';
+            }
+          }
+
+          // 2. Scroll Indicator: Fades out immediately as user begins scrolling (< 0.05)
+          if (scrollIndicatorRef.current) {
+            if (progress < 0.05) {
+              scrollIndicatorRef.current.style.opacity = (1 - progress / 0.05).toFixed(2);
+              scrollIndicatorRef.current.style.visibility = 'visible';
+            } else {
+              scrollIndicatorRef.current.style.opacity = '0';
+              scrollIndicatorRef.current.style.visibility = 'hidden';
+            }
+          }
+
+          // 3. Play Button End Overlay: Fades in smoothly from 0.76 -> 0.88
           if (endOverlayRef.current) {
-            const isAtEnd = targetFrame >= TOTAL_FRAMES - 1 && progress >= 0.98;
-            if (!isAtEnd) {
+            if (progress < 0.76) {
               endOverlayRef.current.style.opacity = '0';
               endOverlayRef.current.style.pointerEvents = 'none';
+              setPlayVisible(false);
             } else {
-              endOverlayRef.current.style.opacity = '1';
+              const enter = Math.min(1, (progress - 0.76) / 0.12);
+              endOverlayRef.current.style.opacity = enter.toFixed(2);
               endOverlayRef.current.style.pointerEvents = 'auto';
+              setPlayVisible(true);
             }
-            setPlayVisible((prev) => (prev !== isAtEnd ? isAtEnd : prev));
           }
 
           ticking = false;
@@ -273,8 +303,8 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
 
   const handleTriggerPlay = (e) => {
     e?.preventDefault?.();
-    // Strictly require being at the final frame (frame 48) after scrolling
-    if (currentFrameRef.current < TOTAL_FRAMES - 1) return;
+    // Allow triggering when at the final section (frame >= 42 or progress >= 0.76)
+    if (currentFrameRef.current < 42) return;
 
     let origin = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     if (playBtnRef.current) {
@@ -299,6 +329,18 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
         />
 
         <div className="scroll-overlay">
+          {/* Top Left Pinned Intro Text */}
+          <div
+            className="scroll-text scroll-text--intro"
+            ref={introOverlayRef}
+            id="scroll-text-intro"
+          >
+            <p className="hero-tagline-small">VISUAL REEL / 2026</p>
+            <h1 className="hero-name-big">Basil Jose</h1>
+            <p className="hero-role-big">Video Editor &amp; Designer</p>
+          </div>
+
+          {/* End Play Button Overlay */}
           <div
             className="scroll-text scroll-text--end"
             ref={endOverlayRef}
@@ -317,6 +359,15 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
           </div>
         </div>
 
+        {/* Center-Bottom Floating Scroll Indicator */}
+        <div className="scroll-indicator" ref={scrollIndicatorRef} id="scroll-indicator">
+          <div className="scroll-mouse">
+            <div className="scroll-wheel" />
+          </div>
+          <span>SCROLL TO EXPLORE</span>
+        </div>
+
+        {/* Scroll Progress Bar */}
         <div className="scroll-progress" aria-hidden="true">
           <div className="scroll-progress-fill" ref={progressFillRef} />
         </div>

@@ -225,7 +225,7 @@ const DraggablePostcard = memo(function DraggablePostcard({
           <div className="postcard-back-inner">
             <div className="postcard-back-preview-stage">
               <img
-                src={project.thumbnail || '/frames/web00.webp'}
+                src={project.thumbnail || '/frames/web00.webp?v=20261104'}
                 alt={project.title}
                 className="postcard-back-img"
               />
@@ -296,7 +296,7 @@ const DockedAlbumSleeve = memo(function DockedAlbumSleeve({
       {/* Front Sleeve Cover Face */}
       <div className="sleeve-cover-face">
         <img
-          src={category.coverIcon || category.coverImage || '/frames/web00.webp'}
+          src={category.coverIcon || category.coverImage || '/frames/web00.webp?v=20261104'}
           alt={category.title}
           className="sleeve-cover-img"
         />
@@ -456,7 +456,7 @@ const ProjectRevealDisplay = memo(function ProjectRevealDisplay({
           ) : (
             <div className="cinematic-image-wrapper">
               <img
-                src={project.thumbnail || '/frames/web00.webp'}
+                src={project.thumbnail || '/frames/web00.webp?v=20261104'}
                 alt=""
                 className="cinematic-image-element"
               />
