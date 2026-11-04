@@ -329,18 +329,17 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
         />
 
         <div className="scroll-overlay">
-          {/* Top Intro Overlay: Real Editable Text with Flapstick Demo Font */}
+          {/* Top Intro Overlay: Real Editable Text with Sketchzone Font */}
           <div
             className="scroll-text scroll-text--intro scroll-overlay__stage"
             ref={introOverlayRef}
             id="scroll-text-intro"
           >
-            <div className="hero-flapstick-left" id="hero-title-left">
-              <h1 className="hero-flapstick-name">BASIL</h1>
-              <span className="hero-flapstick-role">DESIGNER</span>
+            <div className="hero-sketchzone-left" id="hero-title-left">
+              <h1 className="hero-sketchzone-name">Basil</h1>
             </div>
-            <div className="hero-flapstick-right" id="hero-title-right">
-              <h1 className="hero-flapstick-name">JOSE</h1>
+            <div className="hero-sketchzone-right" id="hero-title-right">
+              <h1 className="hero-sketchzone-name">Jose</h1>
             </div>
           </div>
 
