@@ -329,31 +329,18 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
         />
 
         <div className="scroll-overlay">
-          {/* Top Intro Overlay with Rafaella Font - Exact Reference Match */}
+          {/* Top Intro Overlay: Real Editable Text with Flapstick Demo Font */}
           <div
             className="scroll-text scroll-text--intro scroll-overlay__stage"
             ref={introOverlayRef}
             id="scroll-text-intro"
           >
-            <div className="hero-rafaella-left" id="hero-title-left">
-              <h1 className="sr-only">BASIL DESIGNER</h1>
-              <img
-                src="/rafaella_basil.svg"
-                alt="BASIL DESIGNER"
-                className="hero-rafaella-img"
-                width={378}
-                height={142}
-              />
+            <div className="hero-flapstick-left" id="hero-title-left">
+              <h1 className="hero-flapstick-name">BASIL</h1>
+              <span className="hero-flapstick-role">DESIGNER</span>
             </div>
-            <div className="hero-rafaella-right" id="hero-title-right">
-              <h1 className="sr-only">JOSE</h1>
-              <img
-                src="/rafaella_jose.svg"
-                alt="JOSE"
-                className="hero-rafaella-img"
-                width={323}
-                height={312}
-              />
+            <div className="hero-flapstick-right" id="hero-title-right">
+              <h1 className="hero-flapstick-name">JOSE</h1>
             </div>
           </div>
 
