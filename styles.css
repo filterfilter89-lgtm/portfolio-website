@@ -2701,7 +2701,7 @@ body.page-work.is-showcase-active {
 .hero-sketchzone-left {
   position: absolute;
   left: 4.4%;
-  top: 6.25%;
+  top: 7.45%;
   pointer-events: auto;
   user-select: text;
   -webkit-user-select: text;
@@ -2709,8 +2709,8 @@ body.page-work.is-showcase-active {
 
 .hero-sketchzone-right {
   position: absolute;
-  left: 62.3%;
-  top: 8.68%;
+  left: 62.5%;
+  top: 11.3%;
   pointer-events: auto;
   user-select: text;
   -webkit-user-select: text;
@@ -2722,18 +2722,20 @@ body.page-work.is-showcase-active {
   font-style: normal;
   color: #184878;
   line-height: 0.9;
-  letter-spacing: -0.01em;
   margin: 0;
+  white-space: nowrap;
   user-select: text;
   -webkit-user-select: text;
 }
 
 .hero-sketchzone-left .hero-sketchzone-name {
-  font-size: clamp(48px, 12.5vw, 128px);
-  font-size: clamp(48px, 12.5cqw, 240px);
+  letter-spacing: -0.5px;
+  font-size: clamp(48px, 11.45vw, 117px);
+  font-size: clamp(48px, 11.45cqw, 220px);
 }
 
 .hero-sketchzone-right .hero-sketchzone-name {
-  font-size: clamp(56px, 15vw, 153px);
-  font-size: clamp(56px, 15cqw, 290px);
+  letter-spacing: -0.8px;
+  font-size: clamp(60px, 17.1vw, 175px);
+  font-size: clamp(60px, 17.1cqw, 320px);
 }
