@@ -1,4 +1,4 @@
-﻿import os
+import os
 import json
 import re
 import shutil
@@ -80,9 +80,19 @@ def sync():
 
                     media_items = []
                     subfiles = sorted(os.listdir(entry_path))
+                    
+                    # Deduplicate: if both name.webp and name.png exist, prefer .webp
+                    base_names = {}
                     for sf in subfiles:
                         if sf.startswith('.'):
                             continue
+                        name, ext = os.path.splitext(sf)
+                        ext_lower = ext.lower()
+                        if ext_lower in IMAGE_EXTS or ext_lower in VIDEO_EXTS:
+                            if name not in base_names or ext_lower == '.webp':
+                                base_names[name] = sf
+
+                    for name, sf in sorted(base_names.items(), key=lambda x: x[1]):
                         _, ext = os.path.splitext(sf.lower())
                         src_file = os.path.join(entry_path, sf)
                         dst_file = os.path.join(pub_proj_dir, sf)

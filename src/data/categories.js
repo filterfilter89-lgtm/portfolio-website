@@ -82,6 +82,66 @@ export const CATEGORIES = [
             "src": "/projects/graphic-designs/fouz-travels/FOUZ POSTER 2.png"
           }
         ]
+      },
+      {
+        "id": "fruitly",
+        "title": "Fruitly",
+        "client": "Basil Jose",
+        "role": "GRAPHIC DESIGNS",
+        "description": "Fruitly showcase collection.",
+        "thumbnail": "/projects/graphic-designs/fruitly/1.png",
+        "videoSrc": "",
+        "dateStamp": "2026",
+        "media": [
+          {
+            "title": "1",
+            "caption": "1",
+            "type": "image",
+            "src": "/projects/graphic-designs/fruitly/1.png"
+          },
+          {
+            "title": "2",
+            "caption": "2",
+            "type": "image",
+            "src": "/projects/graphic-designs/fruitly/2.png"
+          },
+          {
+            "title": "3",
+            "caption": "3",
+            "type": "image",
+            "src": "/projects/graphic-designs/fruitly/3.png"
+          },
+          {
+            "title": "4",
+            "caption": "4",
+            "type": "image",
+            "src": "/projects/graphic-designs/fruitly/4.png"
+          },
+          {
+            "title": "5",
+            "caption": "5",
+            "type": "image",
+            "src": "/projects/graphic-designs/fruitly/5.png"
+          },
+          {
+            "title": "6",
+            "caption": "6",
+            "type": "image",
+            "src": "/projects/graphic-designs/fruitly/6.png"
+          },
+          {
+            "title": "7",
+            "caption": "7",
+            "type": "image",
+            "src": "/projects/graphic-designs/fruitly/7.png"
+          },
+          {
+            "title": "8",
+            "caption": "8",
+            "type": "image",
+            "src": "/projects/graphic-designs/fruitly/8.png"
+          }
+        ]
       }
     ]
   },
