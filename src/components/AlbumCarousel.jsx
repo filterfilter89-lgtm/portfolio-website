@@ -424,6 +424,7 @@ export default function AlbumCarousel({
   onBack,
   onDitherTrigger,
   onCategoryChange,
+  onProjectChange,
   isEntering = false,
   isExiting: isExitingProp = false
 }) {
@@ -502,15 +503,9 @@ export default function AlbumCarousel({
   const [isRetractingPostcards, setIsRetractingPostcards] = useState(false);
   const [flippingProjectId, setFlippingProjectId] = useState(null);
 
-  const [activeFullscreenProject, setActiveFullscreenProject] = useState(() => {
-    if (activeCategoryId && initialProjectId) {
-      const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
-      return cat?.projects.find((p) => p.id === initialProjectId) || null;
-    }
-    return null;
-  });
+  const [activeFullscreenProject, setActiveFullscreenProject] = useState(null);
 
-  // Sync activeFullscreenProject and selectedCategory if URL updates externally
+  // Sync selectedCategory if URL updates externally
   useEffect(() => {
     if (activeCategoryId) {
       const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
@@ -528,32 +523,33 @@ export default function AlbumCarousel({
         setIsCardsScattered(true);
       }
     }
-    if (activeCategoryId && initialProjectId) {
-      const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
-      const proj = cat?.projects.find((p) => p.id === initialProjectId);
-      setActiveFullscreenProject(proj || null);
-    } else {
-      setActiveFullscreenProject(null);
+    // Strictly do not auto-open projects on category load
+    setActiveFullscreenProject(null);
+    setFlippingProjectId(null);
+    if (onProjectChange) {
+      onProjectChange(null);
     }
-  }, [activeCategoryId, initialProjectId]);
+  }, [activeCategoryId]);
 
   // Postcard Click -> Open 70% Viewport 3D Flip Modal
   const handleOpenProject = useCallback((project) => {
     playCardFlip();
     setActiveFullscreenProject(project);
+    if (onProjectChange) onProjectChange(project.id);
     if (selectedCategory) {
       window.history.pushState(null, '', '#work/' + selectedCategory.id + '/' + project.id);
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, onProjectChange]);
 
   const handleCloseProject = useCallback(() => {
     playCardFlip();
     setActiveFullscreenProject(null);
     setFlippingProjectId(null);
+    if (onProjectChange) onProjectChange(null);
     if (selectedCategory) {
       window.history.pushState(null, '', '#work/' + selectedCategory.id);
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, onProjectChange]);
 
   // Resize listener with passive flag
   useEffect(() => {
@@ -715,6 +711,9 @@ export default function AlbumCarousel({
     setHasAlbumDescended(false);
     setIsRetractingPostcards(false);
     setIsCardsScattered(false);
+    setActiveFullscreenProject(null);
+    setFlippingProjectId(null);
+    if (onProjectChange) onProjectChange(null);
 
     // Step 1: Center the selected album immediately; side albums move out left & right
     targetScrollRef.current = slot * cardStep;
@@ -766,6 +765,9 @@ export default function AlbumCarousel({
   // 1 Rev: side albums return into carousel arc
   const handleReturnToCarousel = useCallback(() => {
     if (!selectedCategory || isRetractingPostcards) return;
+    setActiveFullscreenProject(null);
+    setFlippingProjectId(null);
+    if (onProjectChange) onProjectChange(null);
     playCardSlide();
 
     // 4 Rev: Cards gather back from desk into top stack above center

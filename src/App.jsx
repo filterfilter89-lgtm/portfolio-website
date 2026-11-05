@@ -29,16 +29,7 @@ export default function App({ initialView }) {
     return null;
   });
 
-  const [selectedProjectId, setSelectedProjectId] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const hash = window.location.hash;
-      const parts = hash.replace(/^#work\/?/, '').split('/');
-      if (hash.startsWith('#work/') && parts.length >= 2 && parts[1]) {
-        return parts[1];
-      }
-    }
-    return null;
-  });
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   const [isWheelEntering, setIsWheelEntering] = useState(false);
   const [isReturning, setIsReturning] = useState(() => {
@@ -334,9 +325,14 @@ export default function App({ initialView }) {
     setIsDithering(true);
   }, []);
 
+    const handleProjectChange = useCallback((projId) => {
+    setSelectedProjectId(projId);
+  }, []);
+
   // Category changed: keep bgColor as #fff7ed while dithering behind the album!
   const handleCategoryChange = useCallback((catId) => {
     setIsCategoryActive(Boolean(catId));
+    setSelectedProjectId(null);
     if (catId) {
       setSelectedCategoryId(catId);
     } else {
@@ -373,6 +369,7 @@ export default function App({ initialView }) {
           onBack={handleGoBack}
           onDitherTrigger={handleTriggerDither}
           onCategoryChange={handleCategoryChange}
+          onProjectChange={handleProjectChange}
           isEntering={isWheelEntering}
           isExiting={isWheelExiting}
         />
