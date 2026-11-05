@@ -1,4 +1,5 @@
 import React, { useState, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import InCardVideoPlayer from './InCardVideoPlayer';
 
@@ -152,8 +153,8 @@ export default memo(function PolaroidGallery({
         })}
       </div>
 
-      {/* Full-screen Lightbox Inspect Modal */}
-      {inspectItem && (
+      {/* Full-screen Lightbox Inspect Modal via Portal */}
+      {inspectItem && typeof document !== 'undefined' && createPortal(
         <div
           className="polaroid-inspect-modal"
           onClick={() => setInspectItem(null)}
@@ -161,10 +162,10 @@ export default memo(function PolaroidGallery({
           aria-modal="true"
           aria-label="Inspect media full size"
         >
-          <div className="polaroid-inspect-card" onClick={(e) => e.stopPropagation()}>
+          <div className="polaroid-inspect-card pure-inspect" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
-              className="polaroid-inspect-close-btn"
+              className="polaroid-inspect-close polaroid-inspect-close-btn"
               onClick={() => setInspectItem(null)}
               aria-label="Close full size preview"
             >
@@ -173,7 +174,7 @@ export default memo(function PolaroidGallery({
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
-            <div className="polaroid-inspect-media-container">
+            <div className="polaroid-inspect-img-wrap polaroid-inspect-media-container">
               <img
                 src={inspectItem.src || project.thumbnail}
                 alt={inspectItem.title || project.title}
@@ -189,7 +190,8 @@ export default memo(function PolaroidGallery({
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

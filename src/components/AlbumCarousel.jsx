@@ -20,9 +20,11 @@ const ALBUMS = CATEGORIES.map((cat) => ({
 // Dynamic uncluttered physical desk coordinates ensuring generous breathing room
 function getScatterSlot(index, totalCount, isMobile) {
   if (isMobile) {
-    const step = 82 / Math.max(1, totalCount);
-    const topVal = 14 + index * step;
-    const rot = (index % 2 === 0 ? -1 : 1) * (1.8 + (index % 3) * 0.8);
+    const startTop = 22;
+    const availableHeight = 56;
+    const step = totalCount > 1 ? availableHeight / (totalCount - 1) : 0;
+    const topVal = totalCount === 1 ? 50 : startTop + index * step;
+    const rot = (index % 2 === 0 ? -1 : 1) * (1.6 + (index % 3) * 0.8);
     return {
       left: '50vw',
       top: `${topVal.toFixed(1)}vh`,
@@ -154,7 +156,7 @@ const DraggablePostcard = memo(function DraggablePostcard({
 
   // Card dimensions on desk: enlarged proportion with generous breathing room
   const restingScale = totalCount > 5 ? 0.84 : 0.90;
-  const restingW = Math.round(cardW * restingScale);
+  const restingW = isMobile ? Math.min(320, Math.round(vw * 0.82)) : Math.round(cardW * restingScale);
   const restingH = Math.round(restingW * 0.5625);
 
   // Card dimensions when expanded to 86% viewport
@@ -245,7 +247,7 @@ const DraggablePostcard = memo(function DraggablePostcard({
     animateTarget = {
       x: moveCenterX,
       y: moveCenterY,
-      z: 160,
+      z: isMobile ? 0 : 160,
       width: enlargedW,
       height: enlargedH,
       marginLeft: -Math.round(enlargedW / 2),

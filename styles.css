@@ -1558,9 +1558,9 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
 }
 
 @media (max-width: 640px) {
-  .draggable-postcard-item {
-    width: min(300px, 84vw) !important;
-    height: calc(min(300px, 84vw) * 0.636) !important;
+  .draggable-postcard-item:not(.is-expanded) {
+    width: min(320px, 82vw) !important;
+    height: calc(min(320px, 82vw) * 0.5625) !important;
   }
   .postcard-inner-card {
     padding: 8px 10px !important;
@@ -2463,16 +2463,26 @@ body.page-work.is-showcase-active {
 }
 
 @media (max-width: 640px) {
-  .draggable-postcard-item {
-    width: min(340px, 88vw) !important;
-    height: calc(min(340px, 88vw) * 9 / 16) !important;
-    margin-left: 0 !important;
-    margin-top: 0 !important;
-  }
   .clean-back-btn {
-    top: max(20px, env(safe-area-inset-top, 20px));
-    left: max(20px, env(safe-area-inset-left, 20px));
+    top: max(16px, env(safe-area-inset-top, 16px));
+    left: max(16px, env(safe-area-inset-left, 16px));
     padding: 8px 16px;
+    font-size: 10px;
+    z-index: 100;
+  }
+  .enlarged-postcard-close-btn {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+  }
+  .polaroid-inspect-modal {
+    padding: 12px;
+  }
+  .polaroid-inspect-card.pure-inspect {
+    max-width: 96vw;
+    max-height: 90vh;
+    padding: 10px 10px 18px 10px;
   }
 }
 
