@@ -357,9 +357,7 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
               id="reel-play-btn"
               onClick={handleTriggerPlay}
               aria-label="Open vinyl album portfolio"
-            >
-              <span className="play-pulse-ring" aria-hidden="true" />
-            </button>
+            />
           </div>
         </div>
 

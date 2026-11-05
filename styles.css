@@ -247,27 +247,6 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
   transform: translate(-50%, -50%) scale(0.96);
 }
 
-.play-pulse-ring {
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  border: 2px solid color-mix(in srgb, var(--cream) 60%, transparent);
-  animation: pulse-ring 2.4s cubic-bezier(.22, 1, .36, 1) infinite;
-  pointer-events: none;
-  transition: border-color .2s ease, transform .25s ease;
-}
-
-@keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.85; }
-  60% { transform: scale(1.22); opacity: 0; }
-  100% { transform: scale(1.22); opacity: 0; }
-}
-
-.canvas-play-hitbox:hover .play-pulse-ring {
-  border-color: var(--cream);
-  animation-duration: 1.2s;
-}
-
 /* Floating Scroll Indicator */
 .scroll-indicator {
   position: absolute;
