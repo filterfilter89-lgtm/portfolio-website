@@ -2463,6 +2463,10 @@ body.page-work.is-showcase-active {
     max-height: 90vh;
     padding: 10px 10px 18px 10px;
   }
+  .scattered-polaroid-frame {
+    padding: 3px 3px 6px 3px;
+    border-radius: 3px;
+  }
 }
 
 /* Clean Album Hover (Zero Edge Highlights or Outlines) */

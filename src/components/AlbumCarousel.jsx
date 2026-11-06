@@ -412,7 +412,7 @@ const DraggablePostcard = memo(function DraggablePostcard({
           )}
 
           {shouldRenderBack && (
-            <PolaroidGallery items={project.media} project={project} isExpanded={isExpanded} />
+            <PolaroidGallery items={project.media} project={project} isExpanded={isExpanded} isMobile={isMobile} />
           )}
         </div>
       </div>

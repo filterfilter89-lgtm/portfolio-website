@@ -3,52 +3,61 @@ import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import InCardVideoPlayer from './InCardVideoPlayer';
 
-// Heatmap-calibrated physical desk coordinates: guaranteed 0% overlap and 100% containment
-function getProjectScatterSlot(index, totalCount) {
+// Heatmap-calibrated zero-rotation coordinates: maximized available space, even spacing, and guaranteed 0% overlap
+function getProjectScatterSlot(index, totalCount, isMobile = false) {
+  // Strict 0 rotation
+  const rot = 0;
+
   if (totalCount === 1) {
-    return { left: '50%', top: '50%', rot: -1.0, maxW: '46%', maxH: '76%', z: 12 };
-  }
-  if (totalCount === 2) {
-    const slots2 = [
-      { left: '29%', top: '50%', rot: -2.5, maxW: '32%', maxH: '74%', z: 12 },
-      { left: '71%', top: '50%', rot: 2.2, maxW: '32%', maxH: '74%', z: 14 }
-    ];
-    return slots2[index % slots2.length];
-  }
-  if (totalCount === 3) {
-    const slots3 = [
-      { left: '20%', top: '51%', rot: -2.8, maxW: '23%', maxH: '74%', z: 12 },
-      { left: '50%', top: '48%', rot: 1.2, maxW: '23%', maxH: '74%', z: 14 },
-      { left: '80%', top: '51%', rot: 2.5, maxW: '23%', maxH: '74%', z: 13 }
-    ];
-    return slots3[index % slots3.length];
-  }
-  if (totalCount === 4) {
-    const slots4 = [
-      { left: '15.5%', top: '51%', rot: -2.8, maxW: '18.5%', maxH: '73%', z: 12 },
-      { left: '38.5%', top: '48%', rot: 2.2, maxW: '18.5%', maxH: '73%', z: 14 },
-      { left: '61.5%', top: '52%', rot: -1.8, maxW: '18.5%', maxH: '73%', z: 13 },
-      { left: '84.5%', top: '49%', rot: 2.5, maxW: '18.5%', maxH: '73%', z: 15 }
-    ];
-    return slots4[index % slots4.length];
+    return {
+      left: '50%',
+      top: '50%',
+      rot: 0,
+      maxW: isMobile ? '76%' : '70%',
+      maxH: '86%',
+      z: 12
+    };
   }
 
-  // 5+ items: Two balanced organic rows with zero overlap
+  if (totalCount >= 2 && totalCount <= 4) {
+    const K = totalCount;
+    // Maximized slot widths for single-row presentation
+    const cardWidths = { 2: 42, 3: 28, 4: 21 };
+    const W = cardWidths[K];
+    const totalGap = 100 - (K * W);
+    const G = totalGap / (K + 1);
+    const leftCenter = G * (index + 1) + W * (index + 0.5);
+
+    return {
+      left: `${leftCenter.toFixed(1)}%`,
+      top: '50%',
+      rot: 0,
+      maxW: `${W}%`,
+      maxH: '84%',
+      z: 10 + index
+    };
+  }
+
+  // 5+ items: 2 balanced rows with unified card sizing and even gaps
   const half = Math.ceil(totalCount / 2);
   const isTop = index < half;
   const rowCount = isTop ? half : (totalCount - half);
   const colIdx = isTop ? index : (index - half);
-  const step = 72 / Math.max(1, rowCount - 1);
-  const leftVal = 14 + colIdx * step;
-  const topVal = isTop ? 29 : 71;
-  const rot = (index % 2 === 0 ? -1 : 1) * (1.6 + (index % 3) * 0.6);
-  const maxW = Math.min(20, Math.floor(70 / rowCount)) + '%';
+
+  const W = Math.floor(84 / half);
+  const totalGap = 100 - (rowCount * W);
+  const G = totalGap / (rowCount + 1);
+  const leftCenter = G * (colIdx + 1) + W * (colIdx + 0.5);
+
+  // 2 vertical rows with balanced margins
+  const topCenter = isTop ? 27 : 73;
+
   return {
-    left: `${leftVal.toFixed(1)}%`,
-    top: `${topVal}%`,
-    rot,
-    maxW,
-    maxH: '36%',
+    left: `${leftCenter.toFixed(1)}%`,
+    top: `${topCenter}%`,
+    rot: 0,
+    maxW: `${W}%`,
+    maxH: '38%',
     z: 10 + index
   };
 }
@@ -56,8 +65,13 @@ function getProjectScatterSlot(index, totalCount) {
 export default memo(function PolaroidGallery({
   items = [],
   project = {},
-  isExpanded = true
+  isExpanded = true,
+  isMobile: isMobileProp
 }) {
+  const isMobile = isMobileProp !== undefined
+    ? isMobileProp
+    : (typeof window !== 'undefined' ? window.innerWidth < 640 : false);
+
   const [inspectItem, setInspectItem] = useState(null);
 
   // If no items provided or empty, create default photo set from thumbnail
@@ -78,7 +92,7 @@ export default memo(function PolaroidGallery({
         {photoList.map((item, idx) => {
           const isVideo = item.type === 'video' || (item.src && item.src.endsWith('.mp4'));
           const imgSrc = item.src || project.thumbnail || '/frames/web00.webp?v=20261104';
-          const slot = getProjectScatterSlot(idx, count);
+          const slot = getProjectScatterSlot(idx, count, isMobile);
 
           return (
             <div
@@ -97,23 +111,23 @@ export default memo(function PolaroidGallery({
               <motion.div
                 className="scattered-polaroid-item"
                 initial={{
-                  scale: 0.88,
+                  scale: 0.92,
                   opacity: 0,
-                  rotate: slot.rot
+                  rotate: 0
                 }}
                 animate={{
                   scale: 1,
                   opacity: 1,
-                  rotate: slot.rot,
+                  rotate: 0,
                   transition: {
-                    duration: 0.45,
-                    delay: idx * 0.05,
+                    duration: 0.4,
+                    delay: idx * 0.04,
                     ease: [0.22, 1, 0.36, 1]
                   }
                 }}
                 whileHover={{
-                  scale: 1.05,
-                  rotate: slot.rot * 0.25,
+                  scale: 1.04,
+                  rotate: 0,
                   zIndex: 50,
                   transition: { duration: 0.2 }
                 }}
