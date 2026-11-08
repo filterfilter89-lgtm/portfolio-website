@@ -577,15 +577,13 @@ export default function AlbumCarousel({
     isLoopRunningRef.current = true;
     function loop() {
       const diff = targetScrollRef.current - currentScrollRef.current;
-      if (Math.abs(diff) > 0.05) {
-        currentScrollRef.current += diff * 0.14;
+      if (Math.abs(diff) > 0.8) {
+        currentScrollRef.current += diff * 0.18;
         setScrollProgress(currentScrollRef.current);
         requestAnimationFrame(loop);
       } else {
-        if (currentScrollRef.current !== targetScrollRef.current) {
-          currentScrollRef.current = targetScrollRef.current;
-          setScrollProgress(targetScrollRef.current);
-        }
+        currentScrollRef.current = targetScrollRef.current;
+        setScrollProgress(targetScrollRef.current);
         isLoopRunningRef.current = false;
       }
     }
@@ -639,40 +637,92 @@ export default function AlbumCarousel({
     }, 120);
   };
 
-  // Global window wheel scroll listener with automatic center-docking on each scroll (passive: false to prevent page jumping)
+  // Global window wheel scroll listener with responsive 1-scroll-per-album snapping
   useEffect(() => {
     if (selectedCategory || isExiting) return;
-    let snapTimeout = null;
+
+    let wheelLock = false;
+    let wheelUnlockTimer = null;
+    let accumulatedDelta = 0;
+    let lastWheelTime = 0;
+    let lastDirection = 0;
+
     function handleWheel(e) {
       if (selectedCategory || isExiting) return;
+      if (pointerStartRef.current.isDown) return;
+
       // Prevent native window/page vertical scrolling while interacting with the wheel
       if (e.cancelable) {
         e.preventDefault();
       }
-      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      // Smooth clamped sensitivity to prevent uncontrollable spinning
-      const clampedDelta = Math.max(-cardStep * 1.1, Math.min(cardStep * 1.1, delta * 0.72));
-      const maxLead = cardStep * 2.2;
-      targetScrollRef.current = Math.max(
-        currentScrollRef.current - maxLead,
-        Math.min(currentScrollRef.current + maxLead, targetScrollRef.current + clampedDelta)
-      );
-      startLerpLoop();
 
-      // Automatically dock the nearest album squarely into the center slot
-      clearTimeout(snapTimeout);
-      snapTimeout = setTimeout(() => {
-        const nearest = Math.round(targetScrollRef.current / cardStep);
-        targetScrollRef.current = nearest * cardStep;
+      const now = performance.now();
+      const rawDelta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (Math.abs(rawDelta) < 1) return;
+
+      // Normalize delta for different browsers / deltaModes (pixels vs lines vs pages)
+      let normalizedDelta = rawDelta;
+      if (e.deltaMode === 1) {
+        normalizedDelta *= 36;
+      } else if (e.deltaMode === 2) {
+        normalizedDelta *= window.innerHeight;
+      }
+
+      const currentDirection = normalizedDelta > 0 ? 1 : -1;
+
+      // If user reverses scroll direction, immediately break lock and allow instant counter-snap
+      if (lastDirection !== 0 && currentDirection !== lastDirection) {
+        wheelLock = false;
+        accumulatedDelta = 0;
+      }
+      lastDirection = currentDirection;
+
+      // Reset the settling timeout on every event
+      clearTimeout(wheelUnlockTimer);
+      wheelUnlockTimer = setTimeout(() => {
+        wheelLock = false;
+        accumulatedDelta = 0;
+        lastDirection = 0;
+      }, 160);
+
+      // If currently locked after a step:
+      // Allow the next step if the user deliberately continues scrolling after a throttle interval
+      if (wheelLock) {
+        if (now - lastWheelTime > 300 && Math.abs(normalizedDelta) > 15) {
+          wheelLock = false;
+          accumulatedDelta = 0;
+        } else {
+          return;
+        }
+      }
+
+      accumulatedDelta += normalizedDelta;
+
+      // Sensitivity threshold:
+      // A single mouse wheel notch is typically ~100px delta.
+      // Trackpads quickly sum to 35px in 1-2 frames.
+      const THRESHOLD = 35;
+
+      if (Math.abs(accumulatedDelta) >= THRESHOLD) {
+        const step = accumulatedDelta > 0 ? 1 : -1;
+        const currentIdx = Math.round(targetScrollRef.current / cardStep);
+        const targetIdx = currentIdx + step;
+
+        targetScrollRef.current = targetIdx * cardStep;
         startLerpLoop();
-      }, 45);
+
+        wheelLock = true;
+        accumulatedDelta = 0;
+        lastWheelTime = now;
+      }
     }
+
     window.addEventListener('wheel', handleWheel, { passive: false });
     return () => {
       window.removeEventListener('wheel', handleWheel);
-      clearTimeout(snapTimeout);
+      clearTimeout(wheelUnlockTimer);
     };
-  }, [selectedCategory, isExiting, cardStep]);
+  }, [selectedCategory, isExiting, cardStep, startLerpLoop]);
 
   // Mobile Touch handlers with high-velocity swipe support and momentum
   const handleTouchStart = (e) => {
