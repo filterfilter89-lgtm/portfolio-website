@@ -24,7 +24,21 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
   // Load single frame helper with memoized promise tracking
   const loadingPromisesRef = useRef({});
 
-  // Render a specific frame to canvas
+  const scrollMetricsRef = useRef({ scrollDistance: 1, containerTop: 0 });
+
+  // Update cached scroll metrics without triggering layout thrash on scroll
+  const updateScrollMetrics = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const scrollDistance = container.offsetHeight - window.innerHeight;
+    scrollMetricsRef.current = {
+      scrollDistance: Math.max(1, scrollDistance),
+      containerTop: rect.top + (window.scrollY || window.pageYOffset || 0)
+    };
+  }, []);
+
+  // Render a specific frame to canvas with zero redundant clear passes
   const renderFrame = useCallback((index) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -51,7 +65,6 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
     }
     if (!img || !img.complete || img.naturalWidth === 0) return;
 
-    ctx.clearRect(0, 0, width, height);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'medium';
 
@@ -71,6 +84,11 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
       drawH = height;
       drawX = (width - drawW) / 2;
       drawY = 0;
+    }
+
+    // Only clear if the image doesn't completely cover the canvas bounds
+    if (drawX > 0 || drawY > 0 || drawW < width || drawH < height) {
+      ctx.clearRect(0, 0, width, height);
     }
 
     ctx.drawImage(img, drawX, drawY, drawW, drawH);
@@ -118,7 +136,7 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
     return loadPromise;
   }, [renderFrame]);
 
-  // Handle canvas sizing for sharp retina display
+  // Handle canvas sizing for sharp retina display & cache layout geometry
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -132,8 +150,9 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
     canvas.height = Math.round(height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
+    updateScrollMetrics();
     renderFrame(currentFrameRef.current);
-  }, [renderFrame]);
+  }, [renderFrame, updateScrollMetrics]);
 
   // Initial & return scroll position handling
   useEffect(() => {
@@ -179,7 +198,7 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
     }
   }, [isReturning, renderFrame, isActive]);
 
-  // Full parallel preloader: loads all 49 frames for smooth uninterrupted scrubbing
+  // Prioritized smart preloader: ensures instant start & non-blocking background streaming
   useEffect(() => {
     let isCancelled = false;
 
@@ -194,13 +213,34 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
       resizeCanvas();
       renderFrame(currentFrameRef.current);
 
-      // 2. High-speed parallel prefetch of all remaining frames (frames 1 through 47)
-      // Leverages HTTP/2 multiplexing so the full 49-frame animation is instant & complete
-      const prefetchPromises = [];
-      for (let i = 1; i < TOTAL_FRAMES - 1; i++) {
-        prefetchPromises.push(loadSingleFrame(i));
+      // 2. High-priority prefetch of initial frames (1 to 8) for instant scroll response
+      for (let i = 1; i <= 8; i++) {
+        if (isCancelled) return;
+        await loadSingleFrame(i);
       }
-      await Promise.all(prefetchPromises);
+
+      // 3. Background streaming for remaining frames (9 to 47) in non-blocking batches
+      const loadNextChunk = (startIndex) => {
+        if (isCancelled || startIndex >= TOTAL_FRAMES - 1) return;
+        const chunkEnd = Math.min(TOTAL_FRAMES - 1, startIndex + 4);
+        const chunk = [];
+        for (let i = startIndex; i < chunkEnd; i++) {
+          chunk.push(loadSingleFrame(i));
+        }
+        Promise.all(chunk).then(() => {
+          if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+            window.requestIdleCallback(() => loadNextChunk(chunkEnd), { timeout: 160 });
+          } else {
+            setTimeout(() => loadNextChunk(chunkEnd), 35);
+          }
+        });
+      };
+
+      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+        window.requestIdleCallback(() => loadNextChunk(9), { timeout: 200 });
+      } else {
+        setTimeout(() => loadNextChunk(9), 60);
+      }
     }
 
     preloadAll();
@@ -212,28 +252,24 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
     };
   }, [loadSingleFrame, resizeCanvas, renderFrame]);
 
-  // Handle scroll animation scrub & overlays
+  // High-performance scroll animation scrub & overlays (Zero Layout Thrash)
   useEffect(() => {
     if (!isActive) return;
     let ticking = false;
 
+    updateScrollMetrics();
+
     function handleScroll() {
       if (!ticking) {
         requestAnimationFrame(() => {
-          const container = containerRef.current;
-          if (!container) {
-            ticking = false;
-            return;
-          }
-
-          const heroRect = container.getBoundingClientRect();
-          const scrollDistance = container.offsetHeight - window.innerHeight;
+          const { scrollDistance, containerTop } = scrollMetricsRef.current;
           if (scrollDistance <= 0) {
             ticking = false;
             return;
           }
 
-          const progress = Math.max(0, Math.min(1, -heroRect.top / scrollDistance));
+          const currentY = window.scrollY || window.pageYOffset || 0;
+          const progress = Math.max(0, Math.min(1, (currentY - containerTop) / scrollDistance));
           const targetFrame = Math.min(TOTAL_FRAMES - 1, Math.floor(progress * TOTAL_FRAMES));
 
           if (currentFrameRef.current !== targetFrame) {
@@ -300,7 +336,7 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
     handleScroll(); // Initial check
 
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [renderFrame, loadSingleFrame, isActive]);
+  }, [renderFrame, loadSingleFrame, isActive, updateScrollMetrics]);
 
   const handleTriggerPlay = (e) => {
     e?.preventDefault?.();

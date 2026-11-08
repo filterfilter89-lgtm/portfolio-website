@@ -553,12 +553,17 @@ export default function AlbumCarousel({
     }
   }, [selectedCategory, onProjectChange]);
 
-  // Resize listener with passive flag
+  // Resize listener with passive flag and mobile address bar jitter debounce
   useEffect(() => {
     function handleResize() {
-      setViewportSize({
-        width: window.innerWidth,
-        height: window.innerHeight
+      const newW = window.innerWidth;
+      const newH = window.innerHeight;
+      setViewportSize((prev) => {
+        // Prevent re-rendering carousel on minor mobile address bar hide/show (< 60px)
+        if (prev.width === newW && Math.abs(prev.height - newH) < 60) {
+          return prev;
+        }
+        return { width: newW, height: newH };
       });
     }
     window.addEventListener('resize', handleResize, { passive: true });
@@ -596,6 +601,7 @@ export default function AlbumCarousel({
 
   const handlePointerDownStage = (e) => {
     if (selectedCategory || isExiting) return;
+    if (e.pointerType === 'touch') return; // Dedicated mobile touch handler
     if (e.button !== 0 && e.pointerType === 'mouse') return;
     pointerStartRef.current = {
       x: e.clientX,
@@ -607,6 +613,7 @@ export default function AlbumCarousel({
   };
 
   const handlePointerMoveStage = (e) => {
+    if (e.pointerType === 'touch') return;
     if (!pointerStartRef.current.isDown || selectedCategory || isExiting) return;
     const dx = pointerStartRef.current.x - e.clientX;
     if (Math.abs(dx) > 5) {
@@ -620,7 +627,8 @@ export default function AlbumCarousel({
     startLerpLoop();
   };
 
-  const handlePointerUpStage = () => {
+  const handlePointerUpStage = (e) => {
+    if (e?.pointerType === 'touch') return;
     if (!pointerStartRef.current.isDown) return;
     pointerStartRef.current.isDown = false;
     const nearest = Math.round(targetScrollRef.current / cardStep);
@@ -666,15 +674,19 @@ export default function AlbumCarousel({
     };
   }, [selectedCategory, isExiting, cardStep]);
 
-  // Mobile Touch handlers with high-velocity swipe support
+  // Mobile Touch handlers with high-velocity swipe support and momentum
   const handleTouchStart = (e) => {
     if (selectedCategory || isExiting) return;
     const touch = e.touches[0];
+    const now = performance.now();
     touchStartRef.current = {
       x: touch.clientX,
       y: touch.clientY,
       scroll: targetScrollRef.current,
-      time: performance.now()
+      time: now,
+      lastX: touch.clientX,
+      lastTime: now,
+      vx: 0
     };
   };
 
@@ -682,6 +694,13 @@ export default function AlbumCarousel({
     if (selectedCategory || isExiting) return;
     if (e.cancelable) e.preventDefault();
     const touch = e.touches[0];
+    const now = performance.now();
+    const dt = now - touchStartRef.current.lastTime;
+    if (dt > 8) {
+      touchStartRef.current.vx = (touch.clientX - touchStartRef.current.lastX) / dt;
+      touchStartRef.current.lastX = touch.clientX;
+      touchStartRef.current.lastTime = now;
+    }
     const dx = touchStartRef.current.x - touch.clientX;
     const maxLead = cardStep * 2.2;
     targetScrollRef.current = Math.max(
@@ -693,8 +712,21 @@ export default function AlbumCarousel({
 
   const handleTouchEnd = (e) => {
     if (selectedCategory || isExiting) return;
-    const nearest = Math.round(targetScrollRef.current / cardStep);
-    targetScrollRef.current = nearest * cardStep;
+    const { vx, time: startTime } = touchStartRef.current;
+    const totalDt = performance.now() - startTime;
+    let target = targetScrollRef.current;
+
+    // High-velocity flick recognition (swiping left = vx < 0 = moves to next album)
+    if (Math.abs(vx) > 0.35 || (totalDt < 260 && Math.abs(vx) > 0.22)) {
+      const dir = vx < 0 ? 1 : -1;
+      const currentIdx = Math.round(currentScrollRef.current / cardStep);
+      target = (currentIdx + dir) * cardStep;
+    } else {
+      const nearest = Math.round(target / cardStep);
+      target = nearest * cardStep;
+    }
+
+    targetScrollRef.current = target;
     startLerpLoop();
   };
 

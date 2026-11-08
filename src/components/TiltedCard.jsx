@@ -92,7 +92,7 @@ function TiltedCardComponent({
   }, [showVinyl, effectiveProgress, discSlideDistance]);
 
   function handleMouse(e) {
-    if (!ref.current || isDescending) return;
+    if (!ref.current || isDescending || rotateAmplitude === 0) return;
 
     const rect = rectRef.current || (rectRef.current = ref.current.getBoundingClientRect());
     const offsetX = e.clientX - rect.left - rect.width / 2;
@@ -114,7 +114,7 @@ function TiltedCardComponent({
   }
 
   function handleMouseEnter() {
-    if (isDescending) return;
+    if (isDescending || (rotateAmplitude === 0 && scaleOnHover <= 1)) return;
     if (ref.current) {
       rectRef.current = ref.current.getBoundingClientRect();
     }
@@ -124,6 +124,7 @@ function TiltedCardComponent({
   }
 
   function handleMouseLeave() {
+    if (rotateAmplitude === 0 && scaleOnHover <= 1 && !isHovered) return;
     rectRef.current = null;
     setIsHovered(false);
     opacity.set(0);

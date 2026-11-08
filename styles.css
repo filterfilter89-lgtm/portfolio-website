@@ -140,12 +140,14 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
   position: relative;
   height: 420vh;
   background: var(--cream);
+  overscroll-behavior-y: none;
 }
 
 .scroll-hero__sticky {
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100dvh;
   width: 100%;
   overflow: hidden;
   display: flex;
@@ -782,6 +784,7 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
   inset: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -2088,6 +2091,9 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
   align-items: center;
   justify-content: center;
   padding: 32px;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .polaroid-inspect-card.pure-inspect {
