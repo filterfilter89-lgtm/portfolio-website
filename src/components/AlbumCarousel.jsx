@@ -577,8 +577,8 @@ export default function AlbumCarousel({
     isLoopRunningRef.current = true;
     function loop() {
       const diff = targetScrollRef.current - currentScrollRef.current;
-      if (Math.abs(diff) > 0.8) {
-        currentScrollRef.current += diff * 0.18;
+      if (Math.abs(diff) > 1.2) {
+        currentScrollRef.current += diff * 0.22;
         setScrollProgress(currentScrollRef.current);
         requestAnimationFrame(loop);
       } else {
@@ -931,6 +931,12 @@ export default function AlbumCarousel({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedCategory, isExiting, cardStep, onBack, activeFullscreenProject, handleCloseProject, handleReturnToCarousel, handleReturnToReel]);
 
+  // Dynamic subtle motion blur during scrolling (0px when idle/stopped, up to 2.5px at peak velocity)
+  const scrollVelocity = isLoopRunningRef.current && !selectedCategory && !isExiting
+    ? Math.abs(targetScrollRef.current - currentScrollRef.current) * 0.18
+    : 0;
+  const motionBlurPx = scrollVelocity > 0.5 ? Math.min(2.5, Math.max(0, scrollVelocity / 32)) : 0;
+
   // Compute center index and circular visible range
   const centerIdx = Math.round(scrollProgress / cardStep);
   const visibleRange = isMobile ? 2 : 2;
@@ -1040,6 +1046,7 @@ export default function AlbumCarousel({
                 '--card-rot': `${thetaDeg}deg`,
                 transform: `translate(-50%, -50%) translate3d(${dx}px, ${dropY}px, 0) rotate(${thetaDeg}deg)`,
                 transformOrigin: '50% 60%',
+                filter: motionBlurPx > 0.05 ? `blur(${motionBlurPx.toFixed(2)}px)` : 'none',
                 zIndex
               }}
             >

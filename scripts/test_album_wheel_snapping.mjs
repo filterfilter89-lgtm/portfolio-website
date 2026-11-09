@@ -16,6 +16,18 @@ async function testWheelSnapping() {
   await page.waitForSelector('.react-album-stage', { timeout: 6000 });
   await page.waitForTimeout(1000); // Allow entrance animation
 
+  const waitForSettle = async () => {
+    await page.waitForFunction(() => {
+      const cards = Array.from(document.querySelectorAll('.react-album-card-item'));
+      const windowCenter = window.innerWidth / 2;
+      return cards.some(card => {
+        const r = card.getBoundingClientRect();
+        return Math.abs(r.left + r.width / 2 - windowCenter) <= 1.5;
+      });
+    }, { timeout: 4000 });
+    await page.waitForTimeout(100);
+  };
+
   // Measure initial state
   const getCarouselState = async () => {
     return await page.evaluate(() => {
@@ -53,7 +65,7 @@ async function testWheelSnapping() {
   console.log('\n2. Simulating single mouse wheel down scroll (deltaY = 100)...');
   await page.mouse.move(960, 540);
   await page.mouse.wheel(0, 100);
-  await page.waitForTimeout(700); // Wait for smooth lerp settle
+  await waitForSettle();
 
   const afterScroll1 = await getCarouselState();
   console.log('State after 1st scroll down:', afterScroll1);
@@ -70,7 +82,7 @@ async function testWheelSnapping() {
   // TEST 2: Second scroll down notch
   console.log('\n3. Simulating 2nd mouse wheel down scroll (deltaY = 100)...');
   await page.mouse.wheel(0, 100);
-  await page.waitForTimeout(700);
+  await waitForSettle();
 
   const afterScroll2 = await getCarouselState();
   console.log('State after 2nd scroll down:', afterScroll2);
@@ -82,12 +94,12 @@ async function testWheelSnapping() {
   if (afterScroll2.centerCardDistFromScreenCenter > 2) {
     throw new Error(`FAIL: Album is not centered! Offset: ${afterScroll2.centerCardDistFromScreenCenter}px`);
   }
-  console.log(`PASS: Advanced from ${afterScroll1.centerTitle} -> ${afterScroll2.centerTitle} with perfect snap (offset: ${afterScroll2.centerCardDistFromScreenCenter}px)`);
+  console.log(`PASS: Advanced from ${afterScroll1.centerTitle} -> ${afterScroll2.centerTitle} with perfect snap`);
 
   // TEST 3: Reverse scroll (scroll UP 1 notch)
   console.log('\n4. Simulating mouse wheel UP scroll (deltaY = -100)...');
   await page.mouse.wheel(0, -100);
-  await page.waitForTimeout(700);
+  await waitForSettle();
 
   const afterScrollUp = await getCarouselState();
   console.log('State after scroll UP:', afterScrollUp);
@@ -110,7 +122,7 @@ async function testWheelSnapping() {
   await page.mouse.wheel(0, 30);
   await page.waitForTimeout(20);
   await page.mouse.wheel(0, 10);
-  await page.waitForTimeout(700);
+  await waitForSettle();
 
   const afterTrackpad = await getCarouselState();
   console.log('State after trackpad swipe:', afterTrackpad);
@@ -124,8 +136,20 @@ async function testWheelSnapping() {
   }
   console.log(`PASS: Trackpad swipe stepped cleanly to ${afterTrackpad.centerTitle} without multiple runaway spins!`);
 
-  // TEST 5: Verify Clicking an Album still works seamlessly
-  console.log('\n6. Testing clicking the centered album card to open postcard desk...');
+  // TEST 5: Verify filter is removed when stopped
+  console.log('\n6. Verifying filter is removed at rest...');
+  const cardFilters = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('.react-album-card-item')).map(c => c.style.filter);
+  });
+  console.log('Card style filters at rest:', cardFilters);
+  const allNone = cardFilters.every(f => f === 'none' || f === '');
+  if (!allNone) {
+    throw new Error(`FAIL: Blur not removed at rest! Filters: ${cardFilters.join(', ')}`);
+  }
+  console.log('PASS: Blur is completely removed (none) at rest!');
+
+  // TEST 6: Verify Clicking an Album still works seamlessly
+  console.log('\n7. Testing clicking the centered album card to open postcard desk...');
   await page.evaluate(() => {
     const link = document.querySelector('a[aria-label*="GRAPHIC DESIGNS"]');
     if (link) link.click();
@@ -138,7 +162,7 @@ async function testWheelSnapping() {
   await page.screenshot({ path: path.join(ARTIFACT_DIR, 'wheel_snap_06_postcards_open.png') });
 
   console.log('\n======================================================');
-  console.log(' ALL ALBUM WHEEL SCROLL & SNAPPING TESTS PASSED 100%!');
+  console.log(' ALL ALBUM WHEEL SCROLL, BLUR & SNAPPING TESTS PASSED 100%!');
   console.log('======================================================');
 
   await browser.close();
