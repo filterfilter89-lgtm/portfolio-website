@@ -1,8 +1,8 @@
 node_modules/
 dist/
 .git/
-projects/
-frames/
+/projects/
+/frames/
 *.zip
 *.pdf
 test-results/

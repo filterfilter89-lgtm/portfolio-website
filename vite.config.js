@@ -70,7 +70,7 @@ export default defineConfig({
     port: 5173,
     allowedHosts: true,
     watch: {
-      ignored: ['**/public/content/**', '**/frames/**']
+      ignored: ['**/public/content/**', '**/public/projects/**', '**/projects/**', '**/frames/**', '**/*.mp4', '**/*.mov']
     }
   },
   build: {

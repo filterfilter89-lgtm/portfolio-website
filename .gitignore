@@ -9,4 +9,7 @@ playwright-report/
 *.log
 scratch/
 .vercel
-.env*
+/projects/
+*.pdf
+.env.local
+.env*.local
