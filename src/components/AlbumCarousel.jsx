@@ -570,21 +570,61 @@ export default function AlbumCarousel({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // On-demand Lerp loop: only runs when scrolling or settling, stops completely on idle (0% CPU)
+  // --- CircularGallery Physics & Scrolling Engine ---
+  // Implements the exact scrolling mechanism, follow easing, momentum, and snapping from React Bits CircularGallery
   const isLoopRunningRef = useRef(false);
+  const lastFrameTimeRef = useRef(0);
+  const velocityRef = useRef(0);
+  const [motionVelocity, setMotionVelocity] = useState(0);
+
+  // Easing constant from CircularGallery (scrollEase: 0.05 - 0.08)
+  const SCROLL_EASE = 0.14;
+
   const startLerpLoop = useCallback(() => {
     if (isLoopRunningRef.current) return;
     isLoopRunningRef.current = true;
-    function loop() {
+    lastFrameTimeRef.current = performance.now();
+
+    function loop(now) {
+      // Delta time between frames capped safely between 0.5ms and 50ms
+      const dt = lastFrameTimeRef.current
+        ? Math.min(0.05, Math.max(0.0005, (now - lastFrameTimeRef.current) / 1000))
+        : 1 / 60;
+      lastFrameTimeRef.current = now;
+
+      // CircularGallery display-refresh-rate independent follow easing:
+      // follow = 1 - Math.pow(1 - scrollEase, dt * 60)
+      const follow = 1 - Math.pow(1 - SCROLL_EASE, dt * 60);
+      const before = currentScrollRef.current;
       const diff = targetScrollRef.current - currentScrollRef.current;
-      if (Math.abs(diff) > 1.2) {
-        currentScrollRef.current += diff * 0.22;
-        setScrollProgress(currentScrollRef.current);
+
+      currentScrollRef.current += diff * follow;
+
+      // Exact snap threshold: within 0.15px locks cleanly to exact integer target
+      if (Math.abs(targetScrollRef.current - currentScrollRef.current) < 0.15) {
+        currentScrollRef.current = targetScrollRef.current;
+      }
+
+      // CircularGallery smoothed physical velocity formula:
+      // velocity += (instVelocity - velocity) * (1 - Math.exp(-dt / 0.08))
+      const instVelocity = (currentScrollRef.current - before) / dt;
+      velocityRef.current += (instVelocity - velocityRef.current) * (1 - Math.exp(-dt / 0.08));
+      if (Math.abs(velocityRef.current) < 0.5) {
+        velocityRef.current = 0;
+      }
+
+      setScrollProgress(currentScrollRef.current);
+      setMotionVelocity(velocityRef.current);
+
+      if (currentScrollRef.current !== targetScrollRef.current || Math.abs(velocityRef.current) > 0.5) {
         requestAnimationFrame(loop);
       } else {
         currentScrollRef.current = targetScrollRef.current;
         setScrollProgress(targetScrollRef.current);
+        velocityRef.current = 0;
+        setMotionVelocity(0);
         isLoopRunningRef.current = false;
+        lastFrameTimeRef.current = 0;
       }
     }
     requestAnimationFrame(loop);
@@ -594,50 +634,103 @@ export default function AlbumCarousel({
     startLerpLoop();
   }, [startLerpLoop]);
 
-  // Pointer/mouse drag tracking to allow clicking & dragging the wheel without false triggers
-  const pointerStartRef = useRef({ x: 0, y: 0, scroll: 0, isDown: false, hasDragged: false });
+  // Center snap helper: sets target to exact nearest slot
+  const nearestSlot = useCallback(() => Math.round(targetScrollRef.current / cardStep), [cardStep]);
+  const snapNow = useCallback(() => {
+    targetScrollRef.current = nearestSlot() * cardStep;
+    startLerpLoop();
+  }, [nearestSlot, cardStep, startLerpLoop]);
+
+  // Unified Pointer & Drag state (matching CircularGallery drag tracking)
+  const pointerStartRef = useRef({
+    id: null,
+    x: 0,
+    y: 0,
+    scroll: 0,
+    moved: false,
+    hasDragged: false,
+    samples: [],
+    isDown: false
+  });
+  const [isPointerDragging, setIsPointerDragging] = useState(false);
 
   const handlePointerDownStage = (e) => {
     if (selectedCategory || isExiting) return;
-    if (e.pointerType === 'touch') return; // Dedicated mobile touch handler
+    if (e.pointerType === 'touch') return; // Handled smoothly by touch handlers
     if (e.button !== 0 && e.pointerType === 'mouse') return;
+
     pointerStartRef.current = {
+      id: e.pointerId,
       x: e.clientX,
       y: e.clientY,
       scroll: targetScrollRef.current,
-      isDown: true,
-      hasDragged: false
+      moved: false,
+      hasDragged: false,
+      samples: [{ x: e.clientX, t: performance.now() }],
+      isDown: true
     };
   };
 
   const handlePointerMoveStage = (e) => {
     if (e.pointerType === 'touch') return;
-    if (!pointerStartRef.current.isDown || selectedCategory || isExiting) return;
-    const dx = pointerStartRef.current.x - e.clientX;
-    if (Math.abs(dx) > 5) {
-      pointerStartRef.current.hasDragged = true;
+    const drag = pointerStartRef.current;
+    if (!drag.isDown || selectedCategory || isExiting) return;
+
+    const dx = drag.x - e.clientX;
+    const dy = drag.y - e.clientY;
+
+    if (!drag.moved && Math.hypot(dx, dy) > 6) {
+      drag.moved = true;
+      drag.hasDragged = true;
+      setIsPointerDragging(true);
+      try {
+        containerRef.current?.setPointerCapture?.(e.pointerId);
+      } catch {}
     }
-    const maxLead = cardStep * 2.2;
-    targetScrollRef.current = Math.max(
-      currentScrollRef.current - maxLead,
-      Math.min(currentScrollRef.current + maxLead, pointerStartRef.current.scroll + dx * 0.95)
-    );
-    startLerpLoop();
+
+    if (drag.moved) {
+      const maxLead = cardStep * 2.5;
+      targetScrollRef.current = Math.max(
+        currentScrollRef.current - maxLead,
+        Math.min(currentScrollRef.current + maxLead, drag.scroll + dx * 0.98)
+      );
+      drag.samples.push({ x: e.clientX, t: performance.now() });
+      if (drag.samples.length > 6) drag.samples.shift();
+      startLerpLoop();
+    }
   };
 
   const handlePointerUpStage = (e) => {
     if (e?.pointerType === 'touch') return;
-    if (!pointerStartRef.current.isDown) return;
-    pointerStartRef.current.isDown = false;
-    const nearest = Math.round(targetScrollRef.current / cardStep);
-    targetScrollRef.current = nearest * cardStep;
-    startLerpLoop();
-    setTimeout(() => {
-      pointerStartRef.current.hasDragged = false;
-    }, 120);
+    const drag = pointerStartRef.current;
+    if (!drag.isDown) return;
+    drag.isDown = false;
+    setIsPointerDragging(false);
+
+    try {
+      if (e?.pointerId && containerRef.current?.hasPointerCapture?.(e.pointerId)) {
+        containerRef.current.releasePointerCapture(e.pointerId);
+      }
+    } catch {}
+
+    if (drag.moved) {
+      // CircularGallery release flick momentum calculation
+      const samples = drag.samples;
+      if (samples.length > 1) {
+        const a = samples[0];
+        const b = samples[samples.length - 1];
+        const span = Math.max(b.t - a.t, 16);
+        const speed = ((b.x - a.x) / span) * 1000;
+        targetScrollRef.current -= speed * 0.18;
+      }
+      snapNow();
+      setTimeout(() => {
+        drag.hasDragged = false;
+      }, 140);
+    }
   };
 
-  // Global window wheel scroll listener with responsive 1-scroll-per-album snapping
+  // CircularGallery Wheel & Trackpad Listener with responsive stepping & silky follow easing
   useEffect(() => {
     if (selectedCategory || isExiting) return;
 
@@ -651,33 +744,25 @@ export default function AlbumCarousel({
       if (selectedCategory || isExiting) return;
       if (pointerStartRef.current.isDown) return;
 
-      // Prevent native window/page vertical scrolling while interacting with the wheel
       if (e.cancelable) {
         e.preventDefault();
       }
 
       const now = performance.now();
       const rawDelta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      if (Math.abs(rawDelta) < 1) return;
+      if (Math.abs(rawDelta) < 0.5) return;
 
-      // Normalize delta for different browsers / deltaModes (pixels vs lines vs pages)
-      let normalizedDelta = rawDelta;
-      if (e.deltaMode === 1) {
-        normalizedDelta *= 36;
-      } else if (e.deltaMode === 2) {
-        normalizedDelta *= window.innerHeight;
-      }
-
+      const unit = e.deltaMode === 1 ? 24 : e.deltaMode === 2 ? window.innerHeight : 1;
+      const normalizedDelta = rawDelta * unit;
       const currentDirection = normalizedDelta > 0 ? 1 : -1;
 
-      // If user reverses scroll direction, immediately break lock and allow instant counter-snap
+      // If user reverses scroll direction, immediately break lock and allow instant counter-step
       if (lastDirection !== 0 && currentDirection !== lastDirection) {
         wheelLock = false;
         accumulatedDelta = 0;
       }
       lastDirection = currentDirection;
 
-      // Reset the settling timeout on every event
       clearTimeout(wheelUnlockTimer);
       wheelUnlockTimer = setTimeout(() => {
         wheelLock = false;
@@ -685,10 +770,9 @@ export default function AlbumCarousel({
         lastDirection = 0;
       }, 160);
 
-      // If currently locked after a step:
-      // Allow the next step if the user deliberately continues scrolling after a throttle interval
+      // Throttled step pacing: allows next step after 220ms if user continues scrolling
       if (wheelLock) {
-        if (now - lastWheelTime > 300 && Math.abs(normalizedDelta) > 15) {
+        if (now - lastWheelTime > 220 && Math.abs(normalizedDelta) > 12) {
           wheelLock = false;
           accumulatedDelta = 0;
         } else {
@@ -698,9 +782,7 @@ export default function AlbumCarousel({
 
       accumulatedDelta += normalizedDelta;
 
-      // Sensitivity threshold:
-      // A single mouse wheel notch is typically ~100px delta.
-      // Trackpads quickly sum to 35px in 1-2 frames.
+      // Threshold: 35px triggers 1 album transition smoothly
       const THRESHOLD = 35;
 
       if (Math.abs(accumulatedDelta) >= THRESHOLD) {
@@ -724,60 +806,67 @@ export default function AlbumCarousel({
     };
   }, [selectedCategory, isExiting, cardStep, startLerpLoop]);
 
-  // Mobile Touch handlers with high-velocity swipe support and momentum
+  // Mobile Touch Handlers with CircularGallery 6-sample velocity window & flick momentum
   const handleTouchStart = (e) => {
     if (selectedCategory || isExiting) return;
     const touch = e.touches[0];
     const now = performance.now();
-    touchStartRef.current = {
+    pointerStartRef.current = {
+      id: null,
       x: touch.clientX,
       y: touch.clientY,
       scroll: targetScrollRef.current,
-      time: now,
-      lastX: touch.clientX,
-      lastTime: now,
-      vx: 0
+      moved: false,
+      hasDragged: false,
+      samples: [{ x: touch.clientX, t: now }],
+      isDown: true
     };
   };
 
   const handleTouchMove = (e) => {
-    if (selectedCategory || isExiting) return;
+    const drag = pointerStartRef.current;
+    if (!drag.isDown || selectedCategory || isExiting) return;
     if (e.cancelable) e.preventDefault();
     const touch = e.touches[0];
-    const now = performance.now();
-    const dt = now - touchStartRef.current.lastTime;
-    if (dt > 8) {
-      touchStartRef.current.vx = (touch.clientX - touchStartRef.current.lastX) / dt;
-      touchStartRef.current.lastX = touch.clientX;
-      touchStartRef.current.lastTime = now;
+    const dx = drag.x - touch.clientX;
+    const dy = drag.y - touch.clientY;
+
+    if (!drag.moved && Math.hypot(dx, dy) > 6) {
+      drag.moved = true;
+      drag.hasDragged = true;
     }
-    const dx = touchStartRef.current.x - touch.clientX;
-    const maxLead = cardStep * 2.2;
-    targetScrollRef.current = Math.max(
-      currentScrollRef.current - maxLead,
-      Math.min(currentScrollRef.current + maxLead, touchStartRef.current.scroll + dx * 0.95)
-    );
-    startLerpLoop();
+
+    if (drag.moved) {
+      const maxLead = cardStep * 2.5;
+      targetScrollRef.current = Math.max(
+        currentScrollRef.current - maxLead,
+        Math.min(currentScrollRef.current + maxLead, drag.scroll + dx * 0.98)
+      );
+      drag.samples.push({ x: touch.clientX, t: performance.now() });
+      if (drag.samples.length > 6) drag.samples.shift();
+      startLerpLoop();
+    }
   };
 
   const handleTouchEnd = (e) => {
-    if (selectedCategory || isExiting) return;
-    const { vx, time: startTime } = touchStartRef.current;
-    const totalDt = performance.now() - startTime;
-    let target = targetScrollRef.current;
+    const drag = pointerStartRef.current;
+    if (!drag.isDown) return;
+    drag.isDown = false;
 
-    // High-velocity flick recognition (swiping left = vx < 0 = moves to next album)
-    if (Math.abs(vx) > 0.35 || (totalDt < 260 && Math.abs(vx) > 0.22)) {
-      const dir = vx < 0 ? 1 : -1;
-      const currentIdx = Math.round(currentScrollRef.current / cardStep);
-      target = (currentIdx + dir) * cardStep;
-    } else {
-      const nearest = Math.round(target / cardStep);
-      target = nearest * cardStep;
+    if (drag.moved) {
+      const samples = drag.samples;
+      if (samples.length > 1) {
+        const a = samples[0];
+        const b = samples[samples.length - 1];
+        const span = Math.max(b.t - a.t, 16);
+        const speed = ((b.x - a.x) / span) * 1000;
+        targetScrollRef.current -= speed * 0.18;
+      }
+      snapNow();
+      setTimeout(() => {
+        drag.hasDragged = false;
+      }, 140);
     }
-
-    targetScrollRef.current = target;
-    startLerpLoop();
   };
 
   // Step 1 - 4 Unified Category Selection Choreography:
@@ -932,10 +1021,11 @@ export default function AlbumCarousel({
   }, [selectedCategory, isExiting, cardStep, onBack, activeFullscreenProject, handleCloseProject, handleReturnToCarousel, handleReturnToReel]);
 
   // Dynamic subtle motion blur during scrolling (0px when idle/stopped, up to 2.5px at peak velocity)
-  const scrollVelocity = isLoopRunningRef.current && !selectedCategory && !isExiting
-    ? Math.abs(targetScrollRef.current - currentScrollRef.current) * 0.18
+  // Derived directly from CircularGallery's exponentially smoothed physical velocity
+  const speedRatio = isLoopRunningRef.current && !selectedCategory && !isExiting
+    ? Math.min(Math.abs(motionVelocity) / 1200, 1)
     : 0;
-  const motionBlurPx = scrollVelocity > 0.5 ? Math.min(2.5, Math.max(0, scrollVelocity / 32)) : 0;
+  const motionBlurPx = speedRatio > 0.03 ? Math.min(2.5, speedRatio * 2.5) : 0;
 
   // Compute center index and circular visible range
   const centerIdx = Math.round(scrollProgress / cardStep);
@@ -952,6 +1042,8 @@ export default function AlbumCarousel({
     <div
       ref={containerRef}
       className={`react-album-stage ${selectedCategory ? 'is-postcard-stage' : ''}`}
+      onDragStart={(e) => e.preventDefault()}
+      data-dragging={isPointerDragging ? '' : undefined}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

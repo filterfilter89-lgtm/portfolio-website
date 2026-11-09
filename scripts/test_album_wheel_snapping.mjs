@@ -17,6 +17,7 @@ async function testWheelSnapping() {
   await page.waitForTimeout(1000); // Allow entrance animation
 
   const waitForSettle = async () => {
+    await page.waitForTimeout(120);
     await page.waitForFunction(() => {
       const cards = Array.from(document.querySelectorAll('.react-album-card-item'));
       const windowCenter = window.innerWidth / 2;

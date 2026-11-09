@@ -779,6 +779,10 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
   user-select: none;
 }
 
+.react-album-stage[data-dragging] {
+  cursor: grabbing !important;
+}
+
 .react-album-stage {
   position: fixed;
   inset: 0;
@@ -923,6 +927,10 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
 
 .react-album-card-link {
   display: block;
+  -webkit-user-drag: none;
+  user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
   text-decoration: none;
   color: inherit;
   outline: none;
@@ -2490,6 +2498,9 @@ body.page-work.is-showcase-active {
 .typographic-album-jacket,
 .typographic-album-jacket.has-icon,
 .jacket-cover-icon {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
   outline: none !important;
   border: none !important;
   box-shadow: none !important;
