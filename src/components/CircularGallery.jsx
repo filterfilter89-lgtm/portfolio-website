@@ -1113,3 +1113,4 @@ const CircularGallery = ({
 };
 
 export default CircularGallery;
+

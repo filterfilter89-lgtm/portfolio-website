@@ -1025,7 +1025,7 @@ export default function AlbumCarousel({
   const speedRatio = isLoopRunningRef.current && !selectedCategory && !isExiting
     ? Math.min(Math.abs(motionVelocity) / 1200, 1)
     : 0;
-  const motionBlurPx = speedRatio > 0.03 ? Math.min(2.5, speedRatio * 2.5) : 0;
+  const motionBlurPx = speedRatio > 0.03 ? Math.min(2.0, speedRatio * 2.0) : 0;
 
   // Compute center index and circular visible range
   const centerIdx = Math.round(scrollProgress / cardStep);
@@ -1128,6 +1128,14 @@ export default function AlbumCarousel({
             cardModifierClass = dx < 0 ? 'is-entering-from-left' : 'is-entering-from-right';
           }
 
+          // Motion blur is applied ONLY to moving peripheral elements during the transition, NEVER the entire album!
+          // 1. Center focused album (|dx| < cardStep * 0.38) stays 100% sharp and clear throughout.
+          // 2. Peripheral/side elements transitioning across the arc ramp up subtly based on distance and velocity.
+          // 3. Album titles/captions (.tilted-card-title) are outside tilted-card-inner and never blurred.
+          const distanceFromCenter = Math.abs(dx) / Math.max(1, cardStep);
+          const transitionFactor = Math.min(1, Math.max(0, (distanceFromCenter - 0.38) / 0.62));
+          const cardBlurPx = motionBlurPx > 0.05 ? motionBlurPx * transitionFactor : 0;
+
           return (
             <div
               key={k}
@@ -1138,7 +1146,6 @@ export default function AlbumCarousel({
                 '--card-rot': `${thetaDeg}deg`,
                 transform: `translate(-50%, -50%) translate3d(${dx}px, ${dropY}px, 0) rotate(${thetaDeg}deg)`,
                 transformOrigin: '50% 60%',
-                filter: motionBlurPx > 0.05 ? `blur(${motionBlurPx.toFixed(2)}px)` : 'none',
                 zIndex
               }}
             >
@@ -1174,6 +1181,7 @@ export default function AlbumCarousel({
                   showMobileWarning={false}
                   showTooltip={false}
                   isDescending={Boolean(selectedCategory)}
+                  motionBlurPx={cardBlurPx}
                 />
               </a>
             </div>

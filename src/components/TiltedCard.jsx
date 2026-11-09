@@ -32,7 +32,8 @@ function TiltedCardComponent({
   showTooltip = false,
   overlayContent = null,
   displayOverlayContent = false,
-  isDescending = false
+  isDescending = false,
+  motionBlurPx = 0
 }) {
   const ref = useRef(null);
   const rectRef = useRef(null);
@@ -157,7 +158,8 @@ function TiltedCardComponent({
           height: imageHeight,
           rotateX,
           rotateY,
-          scale
+          scale,
+          filter: motionBlurPx > 0.05 ? "blur(" + motionBlurPx.toFixed(2) + "px)" : "none"
         }}
       >
         {/* Layer 1: Back Sleeve Jacket (only if vinyl is enabled) */}
