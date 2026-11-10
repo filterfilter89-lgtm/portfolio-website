@@ -3617,74 +3617,74 @@ body.page-work.is-showcase-active {
   cursor: not-allowed;
 }
 
-/* 6. Flipped Postcards: Strict Natural Aspect Ratio Preservation (Zero Distort, Zero Squash) */
+/* 6. Flipped Postcards: Polaroid Proportions Matching Media Aspect Ratio + Realistic Bottom Chin */
+.scattered-polaroid-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 .scattered-polaroid-frame {
-  max-width: 100% !important;
-  max-height: 100% !important;
-  width: auto !important;
-  height: auto !important;
+  box-sizing: border-box !important;
+  background: #ffffff !important;
+  border-radius: 4px !important;
+  box-shadow: 
+    0 12px 28px rgba(0, 15, 40, 0.20),
+    0 2px 8px rgba(0, 0, 0, 0.10) !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
+  padding: 8px 8px 28px 8px !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+.scattered-polaroid-frame.is-portrait {
+  height: 100% !important;
+  width: auto !important;
+  aspect-ratio: var(--polaroid-ar, 9 / 16) !important;
+}
+
+.scattered-polaroid-frame.is-landscape {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: var(--polaroid-ar, 16 / 9) !important;
+}
+
+@media (max-width: 640px) {
+  .scattered-polaroid-frame {
+    padding: 5px 5px 18px 5px !important;
+    border-radius: 3px !important;
+  }
 }
 
 .scattered-photo-well {
-  max-width: 100% !important;
-  max-height: 100% !important;
-  width: auto !important;
-  height: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  background: transparent !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
 }
 
-.scattered-img {
-  max-width: 100% !important;
-  max-height: 100% !important;
-  width: auto !important;
-  height: auto !important;
-  object-fit: contain !important;
-}
-
+.scattered-polaroid-frame img,
+.scattered-polaroid-frame video,
+.in-card-video-element,
 .exact-aspect-video-wrapper {
-  max-height: 100% !important;
-  max-width: 100% !important;
-  width: auto !important;
-  height: auto !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.in-card-video-container {
-  max-width: 100% !important;
-  max-height: 100% !important;
-  width: auto !important;
-  height: auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  margin: auto !important;
-}
-
-.in-card-video-stage {
-  max-width: 100% !important;
-  max-height: 100% !important;
   width: 100% !important;
   height: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  object-fit: cover !important;
 }
 
-.in-card-video-element {
-  max-width: 100% !important;
-  max-height: 100% !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
+.scattered-chin {
+  display: none !important;
 }
 
 /* ============================================================
@@ -3698,9 +3698,6 @@ body.page-work.is-showcase-active {
 .postcard-back-preview-stage video,
 .flipped-bento-grid img,
 .flipped-bento-grid video,
-.in-card-video-element,
-.scattered-polaroid-frame img,
-.scattered-polaroid-frame video,
 .cinematic-16-9-card img,
 .cinematic-16-9-card video {
   object-fit: contain !important;

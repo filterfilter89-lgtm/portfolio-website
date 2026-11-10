@@ -233,66 +233,42 @@ export default memo(function PolaroidGallery({
                 }}
                 aria-label={`Photo ${idx + 1}`}
               >
-                {/* Physical Polaroid Frame strictly preserving exact media aspect ratio */}
-                <div
-                  className="scattered-polaroid-frame"
-                  style={{
-                    maxWidth: '100%',
-                    maxHeight: '100%',
-                    width: 'auto',
-                    height: 'auto',
-                    boxSizing: 'border-box'
-                  }}
-                >
-                  <div
-                    className="scattered-photo-well"
-                    style={{
-                      aspectRatio: naturalAR ? `${naturalAR}` : undefined,
-                      maxWidth: '100%',
-                      maxHeight: '100%',
-                      width: 'auto',
-                      height: 'auto'
-                    }}
-                  >
-                    {isVideo ? (
-                      <div
-                        className="exact-aspect-video-wrapper"
-                        style={{
-                          aspectRatio: naturalAR ? `${naturalAR}` : '9 / 16',
-                          maxWidth: '100%',
-                          maxHeight: '100%',
-                          width: 'auto',
-                          height: 'auto'
-                        }}
-                      >
-                        <InCardVideoPlayer
-                          project={project}
-                          media={item}
-                          isExpanded={isExpanded}
-                          aspectRatio={naturalAR}
-                        />
+                {/* Physical Polaroid Frame matching exact media aspect ratio with realistic bottom chin */}
+                {(() => {
+                  const isPortrait = isVideo || (naturalAR && naturalAR < 1);
+                  const frameAR = naturalAR ? `${naturalAR}` : (isVideo ? '9 / 16' : '16 / 9');
+                  return (
+                    <div
+                      className={`scattered-polaroid-frame ${isPortrait ? 'is-portrait' : 'is-landscape'}`}
+                      style={{
+                        '--polaroid-ar': frameAR,
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <div className="scattered-photo-well">
+                        {isVideo ? (
+                          <div className="exact-aspect-video-wrapper">
+                            <InCardVideoPlayer
+                              project={project}
+                              media={item}
+                              isExpanded={isExpanded}
+                              aspectRatio={naturalAR || 9 / 16}
+                            />
+                          </div>
+                        ) : (
+                          <img
+                            src={imgSrc}
+                            alt={item.title || ''}
+                            className="scattered-img"
+                            loading="lazy"
+                            draggable="false"
+                          />
+                        )}
                       </div>
-                    ) : (
-                      <img
-                        src={imgSrc}
-                        alt={item.title || ''}
-                        className="scattered-img"
-                        loading="lazy"
-                        draggable="false"
-                        style={{
-                          aspectRatio: naturalAR ? `${naturalAR}` : undefined,
-                          objectFit: 'contain',
-                          maxWidth: '100%',
-                          maxHeight: '100%',
-                          width: 'auto',
-                          height: 'auto',
-                          display: 'block'
-                        }}
-                      />
-                    )}
-                  </div>
-                  <div className="scattered-chin" />
-                </div>
+                      <div className="scattered-chin" />
+                    </div>
+                  );
+                })()}
               </motion.div>
             </div>
           );
