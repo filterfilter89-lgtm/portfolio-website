@@ -372,11 +372,25 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
             ref={introOverlayRef}
             id="scroll-text-intro"
           >
-            <div className="hero-flapstick-left" id="hero-title-left">
-              <h1 className="hero-flapstick-name">Basil</h1>
+            {/* Desktop arrangement */}
+            <div className="hero-flapstick-desktop">
+              <div className="hero-flapstick-left" id="hero-title-left">
+                <h1 className="hero-flapstick-name">Basil</h1>
+              </div>
+              <div className="hero-flapstick-right" id="hero-title-right">
+                <h1 className="hero-flapstick-name"><span className="hero-letter-j">J</span>ose</h1>
+              </div>
             </div>
-            <div className="hero-flapstick-right" id="hero-title-right">
-              <h1 className="hero-flapstick-name"><span className="hero-letter-j">J</span>ose</h1>
+
+            {/* Mobile bottom arrangement: BASIL \n JOSE in two separate lines */}
+            <div className="hero-flapstick-mobile-bottom" id="hero-title-mobile-bottom">
+              <div className="hero-flapstick-mobile-line">BASIL</div>
+              <div className="hero-flapstick-mobile-line">JOSE</div>
+            </div>
+
+            {/* Small minimal instruction indicating users can scroll */}
+            <div className="hero-scroll-instruction" ref={scrollIndicatorRef}>
+              <span className="scroll-instruction-text">SCROLL &#8595;</span>
             </div>
           </div>
 

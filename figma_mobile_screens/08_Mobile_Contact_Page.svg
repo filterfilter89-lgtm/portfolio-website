@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="393" height="852" viewBox="0 0 393 852" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    
+    <clipPath id="viewport-clip"><rect width="393" height="852" /></clipPath>
+    <clipPath id="sleeve-clip"><rect width="280" height="280" rx="16" /></clipPath>
+    <clipPath id="pc-card-clip"><rect width="320" height="180" rx="6" /></clipPath>
+    <clipPath id="expanded-card-clip"><rect width="369" height="208" rx="6" /></clipPath>
+    <clipPath id="polaroid-img-clip"><rect width="94.75" height="64.27" rx="2" /></clipPath>
+    <clipPath id="lightbox-img-clip"><rect width="349" height="436.09" rx="4" /></clipPath>
+    <clipPath id="video-reel-clip"><rect width="146.13" height="259.77" rx="6" /></clipPath>
+    <clipPath id="pc-ganesh-4ed48b26a4"><path d="M 57.082031 57.039062 L 1382.902344 57.039062 L 1382.902344 752.949219 L 57.082031 752.949219 Z M 57.082031 57.039062 " clip-rule="nonzero"/></clipPath><clipPath id="pc-ganesh-c613d983de"><path d="M 0.0820312 0.0390625 L 1325.902344 0.0390625 L 1325.902344 695.949219 L 0.0820312 695.949219 Z M 0.0820312 0.0390625 " clip-rule="nonzero"/></clipPath><clipPath id="pc-ganesh-e8b6b32175"><rect x="0" width="1326" y="0" height="696"/></clipPath><clipPath id="pc-ganesh-2592f6d9b6"><path d="M 892.4375 143 L 1293.6875 143 L 1293.6875 666.9375 L 892.4375 666.9375 Z M 892.4375 143 " clip-rule="nonzero"/></clipPath><clipPath id="pc-ganesh-9e43ab97e0"><path d="M 936.0625 188.710938 L 1250.152344 188.710938 L 1250.152344 621.289062 L 936.0625 621.289062 Z M 936.0625 188.710938 " clip-rule="nonzero"/></clipPath><clipPath id="pc-ganesh-b2646edf84"><path d="M 0.0625 0.710938 L 314.152344 0.710938 L 314.152344 433.289062 L 0.0625 433.289062 Z M 0.0625 0.710938 " clip-rule="nonzero"/></clipPath><clipPath id="pc-ganesh-f2be97166e"><rect x="0" width="315" y="0" height="434"/></clipPath><clipPath id="pc-ganesh-edc748f86d"><rect x="0" width="408" y="0" height="400"/></clipPath>
+<clipPath id="pc-fetto-4ed48b26a4"><path d="M 57.082031 57.039062 L 1382.902344 57.039062 L 1382.902344 752.949219 L 57.082031 752.949219 Z M 57.082031 57.039062 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fetto-c613d983de"><path d="M 0.0820312 0.0390625 L 1325.902344 0.0390625 L 1325.902344 695.949219 L 0.0820312 695.949219 Z M 0.0820312 0.0390625 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fetto-e8b6b32175"><rect x="0" width="1326" y="0" height="696"/></clipPath><clipPath id="pc-fetto-2592f6d9b6"><path d="M 892.4375 143 L 1293.6875 143 L 1293.6875 666.9375 L 892.4375 666.9375 Z M 892.4375 143 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fetto-9e43ab97e0"><path d="M 936.0625 188.710938 L 1250.152344 188.710938 L 1250.152344 621.289062 L 936.0625 621.289062 Z M 936.0625 188.710938 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fetto-b2646edf84"><path d="M 0.0625 0.710938 L 314.152344 0.710938 L 314.152344 433.289062 L 0.0625 433.289062 Z M 0.0625 0.710938 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fetto-f2be97166e"><rect x="0" width="315" y="0" height="434"/></clipPath><clipPath id="pc-fetto-edc748f86d"><rect x="0" width="408" y="0" height="400"/></clipPath>
+<clipPath id="pc-fouz-4ed48b26a4"><path d="M 57.082031 57.039062 L 1382.902344 57.039062 L 1382.902344 752.949219 L 57.082031 752.949219 Z M 57.082031 57.039062 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fouz-c613d983de"><path d="M 0.0820312 0.0390625 L 1325.902344 0.0390625 L 1325.902344 695.949219 L 0.0820312 695.949219 Z M 0.0820312 0.0390625 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fouz-e8b6b32175"><rect x="0" width="1326" y="0" height="696"/></clipPath><clipPath id="pc-fouz-2592f6d9b6"><path d="M 892.4375 143 L 1293.6875 143 L 1293.6875 666.9375 L 892.4375 666.9375 Z M 892.4375 143 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fouz-9e43ab97e0"><path d="M 936.0625 188.710938 L 1250.152344 188.710938 L 1250.152344 621.289062 L 936.0625 621.289062 Z M 936.0625 188.710938 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fouz-b2646edf84"><path d="M 0.0625 0.710938 L 314.152344 0.710938 L 314.152344 433.289062 L 0.0625 433.289062 Z M 0.0625 0.710938 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fouz-f2be97166e"><rect x="0" width="315" y="0" height="434"/></clipPath><clipPath id="pc-fouz-edc748f86d"><rect x="0" width="408" y="0" height="400"/></clipPath>
+<clipPath id="pc-fruitly-4ed48b26a4"><path d="M 57.082031 57.039062 L 1382.902344 57.039062 L 1382.902344 752.949219 L 57.082031 752.949219 Z M 57.082031 57.039062 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fruitly-c613d983de"><path d="M 0.0820312 0.0390625 L 1325.902344 0.0390625 L 1325.902344 695.949219 L 0.0820312 695.949219 Z M 0.0820312 0.0390625 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fruitly-e8b6b32175"><rect x="0" width="1326" y="0" height="696"/></clipPath><clipPath id="pc-fruitly-2592f6d9b6"><path d="M 892.4375 143 L 1293.6875 143 L 1293.6875 666.9375 L 892.4375 666.9375 Z M 892.4375 143 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fruitly-9e43ab97e0"><path d="M 936.0625 188.710938 L 1250.152344 188.710938 L 1250.152344 621.289062 L 936.0625 621.289062 Z M 936.0625 188.710938 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fruitly-b2646edf84"><path d="M 0.0625 0.710938 L 314.152344 0.710938 L 314.152344 433.289062 L 0.0625 433.289062 Z M 0.0625 0.710938 " clip-rule="nonzero"/></clipPath><clipPath id="pc-fruitly-f2be97166e"><rect x="0" width="315" y="0" height="434"/></clipPath><clipPath id="pc-fruitly-edc748f86d"><rect x="0" width="408" y="0" height="400"/></clipPath>
+
+  </defs>
+  <g id="08 - Dedicated Contact Page">
+    
+    <rect width="393" height="852" fill="#fff7ed" />
+    <g clip-path="url(#viewport-clip)">
+      
+    <g id="Back Arrow" transform="translate(18, 18)" cursor="pointer">
+      <circle cx="18" cy="18" r="18" fill="rgba(23,66,118,0.08)" />
+      <path d="M22 18 L14 18 M18 14 L14 18 L18 22" stroke="#174276" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </g>
+    
+      
+    <g id="Hamburger Menu" transform="translate(339, 18)" cursor="pointer">
+      <circle cx="18" cy="18" r="18" fill="rgba(23,66,118,0.08)" />
+      <path d="M11 13 L25 13 M11 18 L25 18 M11 23 L25 23" stroke="#174276" stroke-width="1.8" stroke-linecap="round" fill="none" />
+    </g>
+    
+
+      <!-- Contact Title & Header -->
+      <g transform="translate(24, 96)">
+        <text x="0" y="0" font-family="Space Mono, monospace" font-size="12" font-weight="700" fill="#336196" letter-spacing="2">GET IN TOUCH</text>
+        <text x="0" y="32" font-family="Flapstick DEMO, cursive, sans-serif" font-size="44" font-weight="400" fill="#174276">Let's Connect</text>
+        <text x="0" y="58" font-family="DM Sans, sans-serif" font-size="13" fill="#64748b">Open for freelance projects, collaborations &amp; design inquiries.</text>
+      </g>
+
+      <!-- Contact Info Card (Email & Direct Action) -->
+      <g transform="translate(24, 185)">
+        <rect width="345" height="74" rx="12" fill="#ffffff" stroke="#e2d8cd" stroke-width="1" />
+        <circle cx="36" cy="37" r="18" fill="#336196" opacity="0.1" />
+        <path d="M26 31 L46 31 C47 31 48 32 48 33 L48 43 C48 44 47 45 46 45 L26 45 C25 45 24 44 24 43 L24 33 C24 32 25 31 26 31 Z M26 33 L36 39 L46 33" stroke="#336196" stroke-width="1.6" fill="none" stroke-linejoin="round" />
+        <text x="68" y="30" font-family="Space Mono, monospace" font-size="9" font-weight="700" fill="#64748b" letter-spacing="1">EMAIL DIRECT</text>
+        <text x="68" y="48" font-family="DM Sans, sans-serif" font-size="13" font-weight="700" fill="#174276">basiljose8989@gmail.com</text>
+      </g>
+
+      <!-- Message Form Container Card -->
+      <g transform="translate(24, 275)">
+        <rect width="345" height="520" rx="14" fill="#ffffff" stroke="#e2d8cd" stroke-width="1" />
+        
+        <!-- Field 1: Name -->
+        <g transform="translate(20, 24)">
+          <text x="0" y="0" font-family="Space Mono, monospace" font-size="9" font-weight="700" fill="#64748b" letter-spacing="1">YOUR NAME</text>
+          <rect y="8" width="305" height="42" rx="6" fill="#fff7ed" stroke="#d5c8b8" stroke-width="1" />
+          <text x="14" y="34" font-family="DM Sans, sans-serif" font-size="12" fill="#94a3b8">e.g. Sarah Jenkins</text>
+        </g>
+
+        <!-- Field 2: Email -->
+        <g transform="translate(20, 96)">
+          <text x="0" y="0" font-family="Space Mono, monospace" font-size="9" font-weight="700" fill="#64748b" letter-spacing="1">EMAIL ADDRESS</text>
+          <rect y="8" width="305" height="42" rx="6" fill="#fff7ed" stroke="#d5c8b8" stroke-width="1" />
+          <text x="14" y="34" font-family="DM Sans, sans-serif" font-size="12" fill="#94a3b8">e.g. sarah@company.com</text>
+        </g>
+
+        <!-- Field 3: Subject -->
+        <g transform="translate(20, 168)">
+          <text x="0" y="0" font-family="Space Mono, monospace" font-size="9" font-weight="700" fill="#64748b" letter-spacing="1">PROJECT / INQUIRY TYPE</text>
+          <rect y="8" width="305" height="42" rx="6" fill="#fff7ed" stroke="#d5c8b8" stroke-width="1" />
+          <text x="14" y="34" font-family="DM Sans, sans-serif" font-size="12" fill="#94a3b8">Creative Direction / Design Inquiry</text>
+        </g>
+
+        <!-- Field 4: Message -->
+        <g transform="translate(20, 240)">
+          <text x="0" y="0" font-family="Space Mono, monospace" font-size="9" font-weight="700" fill="#64748b" letter-spacing="1">MESSAGE</text>
+          <rect y="8" width="305" height="140" rx="6" fill="#fff7ed" stroke="#d5c8b8" stroke-width="1" />
+          <text x="14" y="34" font-family="DM Sans, sans-serif" font-size="12" fill="#94a3b8">Tell me about your project, timeline &amp; goals...</text>
+        </g>
+
+        <!-- Submit Button -->
+        <g transform="translate(20, 440)">
+          <rect width="305" height="46" rx="8" fill="#174276" />
+          <text x="152.5" y="28" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" font-weight="700" fill="#fff7ed" letter-spacing="2">SEND MESSAGE &#8594;</text>
+        </g>
+      </g>
+    </g>
+    <rect width="393" height="852" stroke="#d5c8b8" stroke-width="1" fill="none" pointer-events="none" />
+    <text x="196.5" y="888" text-anchor="middle" font-family="Space Mono, monospace" font-size="11" font-weight="700" fill="#94a3b8" letter-spacing="1">08 &#8226; DEDICATED CONTACT PAGE</text>
+    <text x="196.5" y="904" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" fill="#64748b">Clean Mobile Form &#8226; Direct Contact Card &#8226; Back Navigation</text>
+
+  </g>
+</svg>

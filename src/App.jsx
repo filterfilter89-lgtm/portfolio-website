@@ -3,6 +3,8 @@ import VisualReel from './components/VisualReel';
 import AlbumCarousel from './components/AlbumCarousel';
 import BackgroundTransition from './components/BackgroundTransition';
 import DitherTransition from './components/DitherTransition';
+import HamburgerMenu from './components/HamburgerMenu';
+import ContactView from './components/ContactView';
 import { getCategoryById, getProjectById } from './data/categories';
 import '../styles.css';
 
@@ -11,12 +13,15 @@ export default function App({ initialView }) {
   const [view, setView] = useState(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash;
+      if (hash === '#contact' || window.location.pathname.includes('contact.html')) return 'contact';
       if (hash.startsWith('#work/')) return 'wheel';
       if (hash === '#work') return 'wheel';
     }
     if (initialView) return initialView;
     return 'reel';
   });
+
+  const previousViewRef = useRef(initialView === 'contact' ? 'reel' : 'reel');
 
   const [selectedCategoryId, setSelectedCategoryId] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -71,6 +76,15 @@ export default function App({ initialView }) {
 
   // Sync body class & title with current view
   useEffect(() => {
+    if (view === 'contact') {
+      document.body.classList.remove('page-reel', 'is-showcase-active');
+      document.body.classList.add('page-work', 'page-contact');
+      document.documentElement.style.overflow = 'auto';
+      document.body.style.overflow = 'auto';
+      document.title = 'Contact | Basil Jose';
+      return;
+    }
+
     const isShowcaseMode = view === 'showcase' || isCategoryActive || Boolean(selectedCategoryId);
     if (isShowcaseMode) {
       document.body.classList.remove('page-reel');
@@ -100,7 +114,13 @@ export default function App({ initialView }) {
     function handleHashChange() {
       if (isDithering) return;
       const hash = window.location.hash;
-      if (hash.startsWith('#work/')) {
+      if (hash === '#contact') {
+        setSelectedCategoryId(null);
+        setSelectedProjectId(null);
+        setIsCategoryActive(false);
+        setBgColor('#fff7ed');
+        setView('contact');
+      } else if (hash.startsWith('#work/')) {
         const parts = hash.replace(/^#work\/?/, '').split('/');
         const catId = parts[0] || 'advertisement';
         const projId = parts[1] || null;
@@ -329,6 +349,45 @@ export default function App({ initialView }) {
     setSelectedProjectId(projId);
   }, []);
 
+  const handleMobileNavigate = useCallback((target) => {
+    if (target === 'reel') {
+      if (view === 'wheel' && handleGoBackRef.current) {
+        handleGoBackRef.current();
+      } else {
+        setView('reel');
+        setBgColor('#fff7ed');
+        if (window.location.hash !== '#reel' && window.location.hash !== '') {
+          window.history.pushState(null, '', '#reel');
+        }
+      }
+    } else if (target === 'work') {
+      previousViewRef.current = view;
+      setView('wheel');
+      setIsCategoryActive(false);
+      setSelectedCategoryId(null);
+      setBgColor('#fff7ed');
+      window.history.pushState(null, '', '#work');
+    } else if (target === 'contact') {
+      previousViewRef.current = view;
+      setView('contact');
+      setBgColor('#fff7ed');
+      window.history.pushState(null, '', '#contact');
+    }
+  }, [view]);
+
+  const handleBackFromContact = useCallback(() => {
+    const prev = previousViewRef.current;
+    if (prev === 'wheel' || prev === 'showcase') {
+      setView('wheel');
+      setBgColor('#fff7ed');
+      window.history.pushState(null, '', '#work');
+    } else {
+      setView('reel');
+      setBgColor('#fff7ed');
+      window.history.pushState(null, '', '#reel');
+    }
+  }, []);
+
   // Category changed: keep bgColor as #fff7ed while dithering behind the album!
   const handleCategoryChange = useCallback((catId) => {
     setIsCategoryActive(Boolean(catId));
@@ -344,6 +403,9 @@ export default function App({ initialView }) {
     <>
       {/* Background layer: alone changes color from #fff7ed to #336196 behind all elements */}
       <BackgroundTransition color={bgColor} />
+
+      {/* Top-Right Hamburger Menu (Mobile Interface) */}
+      <HamburgerMenu currentView={view} onNavigate={handleMobileNavigate} />
 
       {/* Keep VisualReel persistently mounted in DOM */}
       <div
@@ -373,6 +435,11 @@ export default function App({ initialView }) {
           isEntering={isWheelEntering}
           isExiting={isWheelExiting}
         />
+      )}
+
+      {/* Dedicated Contact Page View */}
+      {view === 'contact' && (
+        <ContactView onBack={handleBackFromContact} />
       )}
 
       {/* Signature 16px Round-Pixel Radial Dither Canvas (Dynamic Stacking: 10 when behind album, 1000 when between pages) */}

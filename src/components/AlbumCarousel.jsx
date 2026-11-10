@@ -1052,7 +1052,7 @@ export default function AlbumCarousel({
       onPointerUp={handlePointerUpStage}
       onPointerLeave={handlePointerUpStage}
     >
-      {/* Top-Left Back Button: REEL when in carousel, ALBUMS when in showcase */}
+      {/* Top-Left Back Button: Back Arrow Only */}
       {!selectedCategory ? (
         onBack && (
           <button
@@ -1060,14 +1060,12 @@ export default function AlbumCarousel({
             className="clean-back-btn"
             onClick={handleReturnToReel}
             aria-label="Return to Visual Reel"
-            title="Return to Visual Reel (ESC)"
+            title="Back (ESC)"
           >
-            <svg className="back-arrow-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg className="back-arrow-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
-            <span className="back-label">REEL</span>
-            <span className="back-key-hint">ESC</span>
           </button>
         )
       ) : (
@@ -1076,14 +1074,12 @@ export default function AlbumCarousel({
           className="clean-back-btn is-showcase"
           onClick={handleReturnToCarousel}
           aria-label="Return to Album Carousel"
-          title="Return to Albums (ESC)"
+          title="Back (ESC)"
         >
-          <svg className="back-arrow-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg className="back-arrow-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <line x1="19" y1="12" x2="5" y2="12" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
-          <span className="back-label">ALBUMS</span>
-          <span className="back-key-hint">ESC</span>
         </button>
       )}
 

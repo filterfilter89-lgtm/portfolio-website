@@ -80,6 +80,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         work: resolve(__dirname, 'work.html'),
+        contact: resolve(__dirname, 'contact.html'),
       },
       output: {
         manualChunks(id) {

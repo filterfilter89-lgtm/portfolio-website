@@ -1,7 +1,7 @@
 // =========================================================================
 // FIGMA NATIVE MOBILE BUILDER SCRIPT (iPhone 15 Viewport: 393 × 852 px)
 // Run this inside Figma via: Plugins -> Development -> Open Console / Scripter
-// Exact 1:1 mathematical match to the live mobile website DOM
+// Exact 1:1 match to the live mobile website DOM
 // =========================================================================
 
 (async () => {
@@ -90,301 +90,290 @@
     return bar;
   };
 
-  const createBackButton = (parent, label, isLight = false) => {
+  // Back Navigation: Arrow ONLY (No text label)
+  const createBackButton = (parent, isLight = false) => {
     const btn = figma.createFrame();
-    btn.name = `Back Button (${label})`;
-    btn.resize(122, 35);
-    btn.x = 16;
-    btn.y = 16;
-    btn.fills = [];
+    btn.name = "Back Arrow Button";
+    btn.resize(36, 36);
+    btn.x = 18;
+    btn.y = 54;
+    btn.cornerRadius = 18;
+    btn.fills = [{
+      type: "SOLID",
+      color: isLight ? COLORS.white : COLORS.flapstickBlue,
+      opacity: isLight ? 0.12 : 0.08
+    }];
 
-    const text = figma.createText();
-    text.fontName = getFont("Space Mono", "Bold");
-    text.characters = `← ${label} ESC`;
-    text.fontSize = 10;
-    text.letterSpacing = { value: 1, unit: "PIXELS" };
-    text.fills = [{ type: "SOLID", color: isLight ? COLORS.cream : COLORS.blue }];
-    text.x = 0;
-    text.y = 16;
-    btn.appendChild(text);
+    const arrow = figma.createVector();
+    arrow.name = "Arrow Icon";
+    arrow.vectorPaths = [{
+      windingRule: "NONZERO",
+      data: "M 18 10 L 10 18 L 18 26 M 10 18 L 26 18"
+    }];
+    arrow.strokes = [{ type: "SOLID", color: isLight ? COLORS.cream : COLORS.flapstickBlue }];
+    arrow.strokeWeight = 2;
+    arrow.strokeCap = "ROUND";
+    arrow.strokeJoin = "ROUND";
+    arrow.resize(16, 16);
+    arrow.x = 10;
+    arrow.y = 10;
+    btn.appendChild(arrow);
 
     parent.appendChild(btn);
     return btn;
   };
 
-  // -------------------------------------------------------------
-  // Artboard 1: Hero Start (393 x 852)
-  // -------------------------------------------------------------
-  const artboard1 = createMobileFrame("01 • Mobile Visual Reel Hero (Start)", 80, 80, COLORS.cream);
-  createStatusBar(artboard1, false);
+  // Hamburger Menu in Top Right Corner
+  const createHamburgerMenu = (parent, isLight = false) => {
+    const btn = figma.createFrame();
+    btn.name = "Hamburger Menu";
+    btn.resize(36, 36);
+    btn.x = 339;
+    btn.y = 54;
+    btn.cornerRadius = 18;
+    btn.fills = [{
+      type: "SOLID",
+      color: isLight ? COLORS.white : COLORS.flapstickBlue,
+      opacity: isLight ? 0.12 : 0.08
+    }];
 
-  // Left Title "Basil" (x: 16.89, y: 385, fontSize: 62.17px)
+    const icon = figma.createVector();
+    icon.name = "3 Bars";
+    icon.vectorPaths = [{
+      windingRule: "NONZERO",
+      data: "M 10 13 L 26 13 M 10 18 L 26 18 M 10 23 L 26 23"
+    }];
+    icon.strokes = [{ type: "SOLID", color: isLight ? COLORS.cream : COLORS.flapstickBlue }];
+    icon.strokeWeight = 1.8;
+    icon.strokeCap = "ROUND";
+    icon.resize(16, 12);
+    icon.x = 10;
+    icon.y = 12;
+    btn.appendChild(icon);
+
+    parent.appendChild(btn);
+    return btn;
+  };
+
+  // =========================================================================
+  // 1. MOBILE VISUAL REEL HERO (START STATE)
+  // =========================================================================
+  const artboard1 = createMobileFrame("01 • Mobile Visual Reel Hero (Start)", 60, 80, COLORS.cream);
+  createStatusBar(artboard1, false);
+  createHamburgerMenu(artboard1, false);
+
+  // Minimal Scroll Instruction
+  const scrollText = figma.createText();
+  scrollText.fontName = getFont("Space Mono", "Bold");
+  scrollText.characters = "SCROLL TO EXPLORE";
+  scrollText.fontSize = 9;
+  scrollText.letterSpacing = { value: 1.5, unit: "PIXELS" };
+  scrollText.fills = [{ type: "SOLID", color: COLORS.flapstickBlue, opacity: 0.65 }];
+  scrollText.x = 196.5 - 60;
+  scrollText.y = 620;
+  artboard1.appendChild(scrollText);
+
+  // Bottom 2-Line Name: BASIL / JOSE
   const basilText = figma.createText();
-  basilText.name = "Hero Title Left (Basil)";
-  basilText.fontName = getFont("DM Sans", "Bold");
-  basilText.characters = "Basil";
-  basilText.fontSize = 62;
+  basilText.name = "Hero Title Top (BASIL)";
+  basilText.fontName = getFont("Inter", "Bold");
+  basilText.characters = "BASIL";
+  basilText.fontSize = 52;
   basilText.fills = [{ type: "SOLID", color: COLORS.flapstickBlue }];
-  basilText.x = 17;
-  basilText.y = 338;
+  basilText.x = 24;
+  basilText.y = 690;
   artboard1.appendChild(basilText);
 
-  // Right Title "Jose" (x: 253.67, y: 388, fontSize: 65.98px)
   const joseText = figma.createText();
-  joseText.name = "Hero Title Right (Jose)";
-  joseText.fontName = getFont("DM Sans", "Bold");
-  joseText.characters = "Jose";
-  joseText.fontSize = 66;
+  joseText.name = "Hero Title Bottom (JOSE)";
+  joseText.fontName = getFont("Inter", "Bold");
+  joseText.characters = "JOSE";
+  joseText.fontSize = 52;
   joseText.fills = [{ type: "SOLID", color: COLORS.flapstickBlue }];
-  joseText.x = 254;
-  joseText.y = 340;
+  joseText.x = 24;
+  joseText.y = 744;
   artboard1.appendChild(joseText);
 
-  // Timeline Scrubber at y=849, h=3
-  const scrubBg1 = figma.createRectangle();
-  scrubBg1.name = "Timeline Scrubber Track";
-  scrubBg1.resize(393, 3);
-  scrubBg1.x = 0;
-  scrubBg1.y = 849;
-  scrubBg1.fills = [{ type: "SOLID", color: COLORS.blue, opacity: 0.2 }];
-  artboard1.appendChild(scrubBg1);
+  // Scrubber at bottom
+  const scrub1 = figma.createRectangle();
+  scrub1.resize(393, 3);
+  scrub1.x = 0;
+  scrub1.y = 849;
+  scrub1.fills = [{ type: "SOLID", color: COLORS.blue, opacity: 0.2 }];
+  artboard1.appendChild(scrub1);
 
-  // -------------------------------------------------------------
-  // Artboard 2: Hero Play Trigger (393 x 852)
-  // -------------------------------------------------------------
-  const artboard2 = createMobileFrame("02 • Mobile Visual Reel Hero (Play Trigger)", 560, 80, COLORS.blue);
+  // =========================================================================
+  // 2. MOBILE VISUAL REEL HERO (PLAY END STATE)
+  // =========================================================================
+  const artboard2 = createMobileFrame("02 • Mobile Visual Reel Hero (Play Trigger)", 540, 80, COLORS.blue);
   createStatusBar(artboard2, true);
+  createHamburgerMenu(artboard2, true);
 
-  // Reel Play Hitbox: 226 x 226 circle centered at x=196.5, y=426
   const playHitbox = figma.createEllipse();
   playHitbox.name = "Reel Play Hitbox (226px Circle)";
   playHitbox.resize(226, 226);
   playHitbox.x = 83.5;
   playHitbox.y = 313;
-  playHitbox.fills = [{ type: "SOLID", color: COLORS.cream, opacity: 0.05 }];
+  playHitbox.fills = [];
   playHitbox.strokes = [{ type: "SOLID", color: COLORS.cream, opacity: 0.3 }];
   playHitbox.strokeWeight = 1.5;
   playHitbox.dashPattern = [4, 4];
   artboard2.appendChild(playHitbox);
 
-  const scrubBg2 = figma.createRectangle();
-  scrubBg2.name = "Timeline Scrubber Completed (100%)";
-  scrubBg2.resize(393, 3);
-  scrubBg2.x = 0;
-  scrubBg2.y = 849;
-  scrubBg2.fills = [{ type: "SOLID", color: COLORS.blue }];
-  artboard2.appendChild(scrubBg2);
-
-  // -------------------------------------------------------------
-  // Artboard 3: Mobile Album Carousel (#work)
-  // -------------------------------------------------------------
-  const artboard3 = createMobileFrame("03 • Mobile Album Carousel (#work)", 1040, 80, COLORS.cream);
+  // =========================================================================
+  // 3. MOBILE ALBUM CAROUSEL (#work)
+  // =========================================================================
+  const artboard3 = createMobileFrame("03 • Mobile Album Carousel (#work)", 1020, 80, COLORS.cream);
   createStatusBar(artboard3, false);
-  createBackButton(artboard3, "REEL", false);
+  createBackButton(artboard3, false);
+  createHamburgerMenu(artboard3, false);
 
-  // Center Sleeve (280 x 280 at x=56.5, y=274)
-  const centerSleeve = figma.createFrame();
+  const centerSleeve = figma.createRectangle();
   centerSleeve.name = "Active Vinyl Album Sleeve (ADVERTISEMENT)";
   centerSleeve.resize(280, 280);
   centerSleeve.x = 56.5;
   centerSleeve.y = 274;
   centerSleeve.cornerRadius = 16;
-  centerSleeve.fills = [{ type: "SOLID", color: COLORS.cream }];
+  centerSleeve.fills = [{ type: "SOLID", color: COLORS.blue }];
   artboard3.appendChild(centerSleeve);
 
   const albumTitle = figma.createText();
-  albumTitle.name = "Album Category Title";
   albumTitle.fontName = getFont("Space Mono", "Bold");
   albumTitle.characters = "ADVERTISEMENT";
   albumTitle.fontSize = 14;
   albumTitle.letterSpacing = { value: 2, unit: "PIXELS" };
   albumTitle.fills = [{ type: "SOLID", color: COLORS.blue }];
-  albumTitle.x = (393 - 160) / 2;
+  albumTitle.x = 135;
   albumTitle.y = 594;
   artboard3.appendChild(albumTitle);
 
-  // -------------------------------------------------------------
-  // Artboard 4: Mobile Postcard Showcase Desk
-  // -------------------------------------------------------------
-  const artboard4 = createMobileFrame("04 • Mobile Postcard Showcase Desk", 1520, 80, COLORS.blue);
+  // =========================================================================
+  // 4. MOBILE POSTCARD SHOWCASE DESK
+  // =========================================================================
+  const artboard4 = createMobileFrame("04 • Mobile Postcard Showcase Desk", 60, 1050, COLORS.blue);
   createStatusBar(artboard4, true);
-  createBackButton(artboard4, "ALBUMS", true);
+  createBackButton(artboard4, true);
 
-  const categoryTitle = figma.createText();
-  categoryTitle.name = "Showcase Category Title";
-  categoryTitle.fontName = getFont("Space Mono", "Bold");
-  categoryTitle.characters = "GRAPHIC DESIGNS";
-  categoryTitle.fontSize = 10;
-  categoryTitle.fills = [{ type: "SOLID", color: COLORS.cream, opacity: 0.6 }];
-  categoryTitle.x = 260;
-  categoryTitle.y = 28;
-  artboard4.appendChild(categoryTitle);
+  const deskTitle = figma.createText();
+  deskTitle.fontName = getFont("Space Mono", "Bold");
+  deskTitle.characters = "GRAPHIC DESIGNS";
+  deskTitle.fontSize = 10;
+  deskTitle.letterSpacing = { value: 1, unit: "PIXELS" };
+  deskTitle.fills = [{ type: "SOLID", color: COLORS.cream, opacity: 0.6 }];
+  deskTitle.x = 245;
+  deskTitle.y = 62;
+  artboard4.appendChild(deskTitle);
 
-  // 4 Airmail Postcards (320 x 180, centered at x=196.5)
-  const deskCards = [
-    { name: "Eazyarts Ganesh", top: 187.44, rot: -1.6 },
-    { name: "Fetto Garments", top: 346.76, rot: 2.4 },
-    { name: "Fouz Travels", top: 505.24, rot: -3.2 },
-    { name: "Fruitly", top: 664.56, rot: 1.6 }
-  ];
-
-  deskCards.forEach(c => {
-    const card = figma.createFrame();
-    card.name = `Postcard (16:9): ${c.name}`;
-    card.resize(320, 180);
-    card.x = 196.5 - 160;
-    card.y = c.top - 90;
-    card.rotation = c.rot;
-    card.cornerRadius = 6;
-    card.fills = [{ type: "SOLID", color: COLORS.cream }];
-    card.strokes = [{ type: "SOLID", color: COLORS.blue, opacity: 0.3 }];
-    card.strokeWeight = 1.5;
-
-    const titleText = figma.createText();
-    titleText.fontName = getFont("Caveat", "Bold");
-    titleText.characters = c.name;
-    titleText.fontSize = 24;
-    titleText.fills = [{ type: "SOLID", color: { r: 30 / 255, g: 58 / 255, b: 95 / 255 } }];
-    titleText.x = 24;
-    titleText.y = 75;
-    card.appendChild(titleText);
-
-    const stamp = figma.createFrame();
-    stamp.name = "Postage Stamp Frame";
-    stamp.resize(68, 96);
-    stamp.x = 230;
-    stamp.y = 20;
-    stamp.cornerRadius = 4;
-    stamp.fills = [{ type: "SOLID", color: COLORS.blue }];
-    card.appendChild(stamp);
-
-    artboard4.appendChild(card);
-  });
-
-  // -------------------------------------------------------------
-  // Artboard 5: Flipped Postcard Bento Grid (393 x 852)
-  // -------------------------------------------------------------
-  const artboard5 = createMobileFrame("05 • Mobile Flipped Bento Grid", 80, 1050, COLORS.blue);
+  // =========================================================================
+  // 5. MOBILE FLIPPED POSTCARD BENTO GRID
+  // =========================================================================
+  const artboard5 = createMobileFrame("05 • Mobile Flipped Bento Grid", 540, 1050, COLORS.blue);
   createStatusBar(artboard5, true);
 
-  const bentoCard = figma.createFrame();
+  const bentoCard = figma.createRectangle();
   bentoCard.name = "Flipped Postcard (369 × 208 px)";
   bentoCard.resize(369, 208);
-  bentoCard.x = 11.5;
-  bentoCard.y = 322.44;
+  bentoCard.x = 12;
+  bentoCard.y = 322;
   bentoCard.cornerRadius = 6;
   bentoCard.fills = [{ type: "SOLID", color: COLORS.cream }];
   artboard5.appendChild(bentoCard);
 
-  // 5 Polaroids (102.75 × 78.27, 0 deg rotation)
-  const polaroids = [
-    { x: 15.67, y: 17.47, label: "Slide 01" },
-    { x: 133.13, y: 17.47, label: "Slide 02" },
-    { x: 250.56, y: 17.47, label: "Slide 03" },
-    { x: 54.95, y: 112.24, label: "Slide 04" },
-    { x: 211.28, y: 112.24, label: "Slide 05" }
-  ];
-
-  polaroids.forEach((p, idx) => {
-    const pol = figma.createFrame();
-    pol.name = `Polaroid ${p.label}`;
-    pol.resize(102.75, 78.27);
-    pol.x = p.x;
-    pol.y = p.y;
-    pol.cornerRadius = 4;
-    pol.fills = [{ type: "SOLID", color: COLORS.white }];
-    pol.strokes = [{ type: "SOLID", color: { r: 226/255, g: 232/255, b: 240/255 } }];
-    pol.strokeWeight = 1;
-    bentoCard.appendChild(pol);
-  });
-
-  // Close button
-  const closeBtn = figma.createEllipse();
-  closeBtn.name = "Close Button (32px)";
-  closeBtn.resize(32, 32);
-  closeBtn.x = 327;
-  closeBtn.y = 10;
-  closeBtn.fills = [{ type: "SOLID", color: COLORS.cream }];
-  closeBtn.strokes = [{ type: "SOLID", color: COLORS.blue, opacity: 0.2 }];
-  bentoCard.appendChild(closeBtn);
-
-  // -------------------------------------------------------------
-  // Artboard 6: Cinematic Lightbox Modal (393 x 852)
-  // -------------------------------------------------------------
-  const artboard6 = createMobileFrame("06 • Mobile Lightbox Modal", 560, 1050, COLORS.darkBackdrop);
+  // =========================================================================
+  // 6. MOBILE LIGHTBOX MODAL
+  // =========================================================================
+  const artboard6 = createMobileFrame("06 • Mobile Lightbox Modal", 1020, 1050, COLORS.darkBackdrop);
   createStatusBar(artboard6, true);
 
-  const lightbox = figma.createFrame();
+  const lightbox = figma.createRectangle();
   lightbox.name = "Inspect Modal Card (369 × 485 px)";
-  lightbox.resize(369, 485.09);
+  lightbox.resize(369, 485);
   lightbox.x = 12;
-  lightbox.y = 183.45;
+  lightbox.y = 183;
   lightbox.cornerRadius = 8;
   lightbox.fills = [{ type: "SOLID", color: COLORS.white }];
-  lightbox.paddingLeft = 10;
-  lightbox.paddingRight = 10;
-  lightbox.paddingTop = 10;
-  lightbox.paddingBottom = 18;
   artboard6.appendChild(lightbox);
 
-  const inspectImg = figma.createRectangle();
-  inspectImg.name = "High-Res Slide Poster (349 × 436 px)";
-  inspectImg.resize(349, 436.09);
-  inspectImg.x = 10;
-  inspectImg.y = 10;
-  inspectImg.cornerRadius = 4;
-  inspectImg.fills = [{ type: "SOLID", color: COLORS.blue }];
-  lightbox.appendChild(inspectImg);
-
-  // -------------------------------------------------------------
-  // Artboard 7: Videography In-Card Player (393 x 852)
-  // -------------------------------------------------------------
-  const artboard7 = createMobileFrame("07 • Mobile Videography Player", 1040, 1050, COLORS.blue);
+  // =========================================================================
+  // 7. MOBILE VIDEOGRAPHY PLAYER
+  // =========================================================================
+  const artboard7 = createMobileFrame("07 • Mobile Videography Player", 60, 2020, COLORS.blue);
   createStatusBar(artboard7, true);
-  createBackButton(artboard7, "ALBUMS", true);
+  createBackButton(artboard7, true);
 
-  const videoCard = figma.createFrame();
-  videoCard.name = "Flipped Video Postcard (369 × 208 px)";
+  const videoCard = figma.createRectangle();
+  videoCard.name = "Flipped Video Postcard";
   videoCard.resize(369, 208);
-  videoCard.x = 11.5;
-  videoCard.y = 322.44;
+  videoCard.x = 12;
+  videoCard.y = 322;
   videoCard.cornerRadius = 6;
   videoCard.fills = [{ type: "SOLID", color: COLORS.cream }];
   artboard7.appendChild(videoCard);
 
-  // Dual Video Reels (146.13 × 259.77)
-  const reel1 = figma.createFrame();
-  reel1.name = "Video Reel 01";
-  reel1.resize(146.13, 259.77);
-  reel1.x = 35.95;
-  reel1.y = 293.06;
-  reel1.cornerRadius = 6;
-  reel1.fills = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 } }];
-  artboard7.appendChild(reel1);
+  // =========================================================================
+  // 8. MOBILE CONTACT PAGE
+  // =========================================================================
+  const artboard8 = createMobileFrame("08 • Mobile Dedicated Contact Page", 540, 2020, COLORS.cream);
+  createStatusBar(artboard8, false);
+  createBackButton(artboard8, false);
+  createHamburgerMenu(artboard8, false);
 
-  const reel2 = figma.createFrame();
-  reel2.name = "Video Reel 02";
-  reel2.resize(146.13, 259.77);
-  reel2.x = 209.91;
-  reel2.y = 293.06;
-  reel2.cornerRadius = 6;
-  reel2.fills = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 } }];
-  artboard7.appendChild(reel2);
+  const contactHeading = figma.createText();
+  contactHeading.fontName = getFont("Space Mono", "Bold");
+  contactHeading.characters = "GET IN TOUCH";
+  contactHeading.fontSize = 12;
+  contactHeading.letterSpacing = { value: 2, unit: "PIXELS" };
+  contactHeading.fills = [{ type: "SOLID", color: COLORS.blue }];
+  contactHeading.x = 24;
+  contactHeading.y = 110;
+  artboard8.appendChild(contactHeading);
 
-  // -------------------------------------------------------------
-  // Artboard 8: Design Tokens & Components (393 x 852)
-  // -------------------------------------------------------------
-  const artboard8 = createMobileFrame("08 • Design System & Tokens", 1520, 1050, { r: 15/255, g: 23/255, b: 42/255 });
+  const contactSub = figma.createText();
+  contactSub.fontName = getFont("Inter", "Bold");
+  contactSub.characters = "Let's Connect";
+  contactSub.fontSize = 38;
+  contactSub.fills = [{ type: "SOLID", color: COLORS.flapstickBlue }];
+  contactSub.x = 24;
+  contactSub.y = 136;
+  artboard8.appendChild(contactSub);
 
-  const tokensTitle = figma.createText();
-  tokensTitle.name = "Tokens Title";
-  tokensTitle.fontName = getFont("Space Mono", "Bold");
-  tokensTitle.characters = "DESIGN TOKENS";
-  tokensTitle.fontSize = 12;
-  tokensTitle.fills = [{ type: "SOLID", color: { r: 56/255, g: 189/255, b: 248/255 } }];
-  tokensTitle.x = 24;
-  tokensTitle.y = 48;
-  artboard8.appendChild(tokensTitle);
+  const formCard = figma.createRectangle();
+  formCard.name = "Contact Message Form";
+  formCard.resize(345, 520);
+  formCard.x = 24;
+  formCard.y = 260;
+  formCard.cornerRadius = 14;
+  formCard.fills = [{ type: "SOLID", color: COLORS.white }];
+  formCard.strokes = [{ type: "SOLID", color: { r: 226/255, g: 216/255, b: 205/255 } }];
+  artboard8.appendChild(formCard);
 
-  console.log("Figma Mobile Portfolio construction complete! All 8 artboards created.");
+  // =========================================================================
+  // 9. MOBILE HAMBURGER MENU DRAWER
+  // =========================================================================
+  const artboard9 = createMobileFrame("09 • Mobile Hamburger Menu Drawer", 1020, 2020, COLORS.navy);
+  createStatusBar(artboard9, true);
+
+  const navTitle = figma.createText();
+  navTitle.fontName = getFont("Space Mono", "Bold");
+  navTitle.characters = "NAVIGATION";
+  navTitle.fontSize = 11;
+  navTitle.letterSpacing = { value: 2, unit: "PIXELS" };
+  navTitle.fills = [{ type: "SOLID", color: { r: 56/255, g: 189/255, b: 248/255 } }];
+  navTitle.x = 36;
+  navTitle.y = 120;
+  artboard9.appendChild(navTitle);
+
+  const links = ["01 Reel", "02 Work", "03 Contact", "04 CV / Resume"];
+  links.forEach((link, idx) => {
+    const linkText = figma.createText();
+    linkText.fontName = getFont("Inter", "Bold");
+    linkText.characters = link;
+    linkText.fontSize = 24;
+    linkText.fills = [{ type: "SOLID", color: idx === 2 ? { r: 56/255, g: 189/255, b: 248/255 } : COLORS.cream }];
+    linkText.x = 36;
+    linkText.y = 170 + (idx * 60);
+    artboard9.appendChild(linkText);
+  });
+
+  console.log("Figma Native Mobile Portfolio Construction Complete! 9 frames created.");
 })();
