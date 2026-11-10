@@ -3,13 +3,24 @@ import React, { useRef, useState, useEffect, memo } from 'react';
 /**
  * InCardVideoPlayer
  * Pure, clean video player inside the flipped postcard without text headers or footers.
+ * Preserves the exact original aspect ratio of the video (9:16 vertical reels, 16:9, etc.)
+ * with zero cropping, distortion, or squashing.
  */
-export default memo(function InCardVideoPlayer({ project = {}, media = null, isExpanded = true }) {
+export default memo(function InCardVideoPlayer({
+  project = {},
+  media = null,
+  isExpanded = true,
+  aspectRatio = null
+}) {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
   const [hasError, setHasError] = useState(false);
+
+  // Exact natural aspect ratio
+  const naturalAR = aspectRatio || media?.aspectRatio || project.videoAspectRatio || 0.5625; // 9/16 default for reels
+  const arStyle = { aspectRatio: `${naturalAR}` };
 
   const videoSrc = media?.src || project.videoSrc || project.video || '';
   const posterSrc = media?.poster || project.thumbnail || '/frames/web00.webp?v=20261104';
@@ -62,9 +73,29 @@ export default memo(function InCardVideoPlayer({ project = {}, media = null, isE
   }, [videoSrc, isExpanded]);
 
   return (
-    <div className="in-card-video-container">
+    <div
+      className="in-card-video-container"
+      style={{
+        ...arStyle,
+        maxWidth: '100%',
+        maxHeight: '100%',
+        width: 'auto',
+        height: 'auto',
+        margin: 'auto'
+      }}
+    >
       {/* Video Screen Framed Cleanly Inside Postcard (No text headers or footers) */}
-      <div className="in-card-video-stage" onClick={togglePlay}>
+      <div
+        className="in-card-video-stage"
+        onClick={togglePlay}
+        style={{
+          ...arStyle,
+          maxWidth: '100%',
+          maxHeight: '100%',
+          width: '100%',
+          height: '100%'
+        }}
+      >
         {!hasError && videoSrc ? (
           <video
             ref={videoRef}
@@ -77,10 +108,19 @@ export default memo(function InCardVideoPlayer({ project = {}, media = null, isE
             onTimeUpdate={handleTimeUpdate}
             onError={() => setHasError(true)}
             className="in-card-video-element"
+            style={{
+              ...arStyle,
+              maxWidth: '100%',
+              maxHeight: '100%',
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              display: 'block'
+            }}
           />
         ) : (
-          <div className="in-card-video-fallback">
-            <img src={posterSrc} alt={project.title} className="in-card-fallback-img" />
+          <div className="in-card-video-fallback" style={arStyle}>
+            <img src={posterSrc} alt={project.title} className="in-card-fallback-img" style={arStyle} />
             <div className="in-card-fallback-badge">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="5 3 19 12 5 21 5 3" />

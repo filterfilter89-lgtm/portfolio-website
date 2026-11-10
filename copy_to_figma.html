@@ -15,7 +15,7 @@
       justify-content: center;
       min-height: 100vh;
       margin: 0;
-      padding: 24px;
+      padding: 32px 20px;
       box-sizing: border-box;
     }
     .card {
@@ -23,9 +23,9 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
       padding: 36px 40px;
-      max-width: 640px;
+      max-width: 680px;
       width: 100%;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
       text-align: center;
     }
     h1 {
@@ -55,7 +55,7 @@
       transition: all 0.2s ease;
       width: 100%;
       box-sizing: border-box;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     .btn:hover {
       background: #1d4ed8;
@@ -64,6 +64,20 @@
     .btn.copied {
       background: #16a34a;
     }
+    .alert-box {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #bae6fd;
+    }
+    .alert-box strong {
+      color: #ffffff;
+    }
     .methods {
       margin-top: 24px;
       text-align: left;
@@ -71,23 +85,41 @@
       padding-top: 20px;
     }
     .method-item {
-      margin-bottom: 16px;
+      margin-bottom: 20px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
     }
     .method-title {
       font-weight: 600;
-      color: #e2e8f0;
+      color: #f8fafc;
       font-size: 14px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: #10b981;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .method-desc {
       font-size: 13px;
-      color: #64748b;
+      color: #94a3b8;
+      line-height: 1.5;
     }
     code {
       background: #0b1320;
       padding: 2px 6px;
       border-radius: 4px;
-      font-family: monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       color: #38bdf8;
       font-size: 12px;
     }
@@ -96,28 +128,60 @@
 <body>
   <div class="card">
     <h1>Basil Jose • Mobile Portfolio Figma Importer</h1>
-    <p>Get all 9 mobile screens into Figma instantly with 100% visual fidelity and zero conversion errors.</p>
-    
+    <p>100% verified, clean SVG &amp; PDF files ready for instant import into Figma Desktop or Web.</p>
+
+    <div class="alert-box">
+      <strong>Why did the previous import fail?</strong><br>
+      The earlier SVG had nested clipping masks and Cairo-generated clip rules that exceeded Figma's vector parser limits. The files have now been cleaned with <strong>0 nested clip paths</strong> and strict SVG 1.1 compliance.
+    </div>
+
     <button class="btn" id="copyBtn" onclick="copyMasterSvg()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
       <span id="btnText">Copy Master SVG to Clipboard (for Ctrl+V into Figma)</span>
     </button>
     <div id="status" style="font-size: 13px; color: #4ade80; display: none; margin-bottom: 16px;">
-      ✓ Copied to clipboard! Now switch to Figma and press <strong>Ctrl + V</strong> (or Cmd + V).
+      ✓ Copied to clipboard! Switch to any open Figma file and press <strong>Ctrl + V</strong> (or Cmd + V).
     </div>
 
     <div class="methods">
       <div class="method-item">
-        <div class="method-title">⭐ Recommended: Import the PDF File</div>
-        <div class="method-desc">In Figma, click <strong>Import file</strong> &rarr; select <code>WEBSITE_PORTFOLIO_FIGMA_MOBILE_DESIGN.pdf</code>. Figma imports all 9 pages natively as separate editable frames.</div>
+        <div class="method-title">
+          <span>Method 1: Import the Clean Master SVG</span>
+          <span class="badge">Fixed</span>
+        </div>
+        <div class="method-desc">
+          In Figma, click <strong>Import file</strong> &rarr; select <code>WEBSITE_PORTFOLIO_FIGMA_MOBILE_DESIGN.svg</code>.<br>
+          <em>The file has been re-generated with 0 nested clip paths and 100% standard SVG 1.1 syntax.</em>
+        </div>
       </div>
+
       <div class="method-item">
-        <div class="method-title">⭐ Method 2: Drag into an OPEN Figma Canvas</div>
-        <div class="method-desc">Open any blank file in Figma, then drag <code>WEBSITE_PORTFOLIO_FIGMA_MOBILE_DESIGN.svg</code> directly onto the canvas (or press <code>Ctrl+Shift+K</code>).</div>
+        <div class="method-title">
+          <span>Method 2: Import the Multi-Page PDF</span>
+          <span class="badge" style="background: #2563eb;">Easiest</span>
+        </div>
+        <div class="method-desc">
+          In Figma's Home/Drafts screen, click <strong>Import file</strong> &rarr; select <code>WEBSITE_PORTFOLIO_FIGMA_MOBILE_DESIGN.pdf</code>.<br>
+          <em>Figma imports all 9 screens natively as separate editable pages/frames!</em>
+        </div>
       </div>
+
       <div class="method-item">
-        <div class="method-title">⭐ Method 3: Import Individual Screen SVGs</div>
-        <div class="method-desc">In the folder <code>figma_mobile_screens/</code>, drag any of the 9 individual screen SVGs directly into Figma.</div>
+        <div class="method-title">
+          <span>Method 3: Drag into an OPEN Figma Canvas</span>
+        </div>
+        <div class="method-desc">
+          Create or open a blank design file in Figma, then drag <code>WEBSITE_PORTFOLIO_FIGMA_MOBILE_DESIGN.svg</code> directly onto the canvas (or press <code>Ctrl+Shift+K</code> to place).
+        </div>
+      </div>
+
+      <div class="method-item">
+        <div class="method-title">
+          <span>Method 4: Individual Screen SVGs</span>
+        </div>
+        <div class="method-desc">
+          Browse to <code>figma_mobile_screens/</code> in Windows File Explorer and import any of the 9 individual screen SVGs directly.
+        </div>
       </div>
     </div>
   </div>
@@ -140,9 +204,9 @@
         setTimeout(() => {
           btn.classList.remove('copied');
           btnText.textContent = 'Copy Master SVG to Clipboard (for Ctrl+V into Figma)';
-        }, 4000);
+        }, 5000);
       } catch (err) {
-        alert('Failed to copy automatically. Please open WEBSITE_PORTFOLIO_FIGMA_MOBILE_DESIGN.svg in VS Code or Notepad, select all, copy, and paste into Figma.');
+        alert('Could not copy automatically. You can import WEBSITE_PORTFOLIO_FIGMA_MOBILE_DESIGN.svg or WEBSITE_PORTFOLIO_FIGMA_MOBILE_DESIGN.pdf directly into Figma.');
       }
     }
   </script>

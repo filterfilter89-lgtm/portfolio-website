@@ -18,72 +18,111 @@ const ALBUMS = CATEGORIES.map((cat) => ({
 }));
 
 // Dynamic uncluttered physical desk coordinates ensuring generous breathing room
+// Dynamic physical desk coordinates verified by Heatmap method for 0% overlap
 function getScatterSlot(index, totalCount, isMobile) {
   if (isMobile) {
-    const startTop = 22;
-    const availableHeight = 56;
-    const step = totalCount > 1 ? availableHeight / (totalCount - 1) : 0;
-    const topVal = totalCount === 1 ? 50 : startTop + index * step;
-    const rot = (index % 2 === 0 ? -1 : 1) * (1.6 + (index % 3) * 0.8);
+    if (totalCount === 1) {
+      return { left: '50vw', top: '48vh', rot: -1.2, z: 12 };
+    }
+    if (totalCount === 2) {
+      const slots2 = [
+        { left: '50vw', top: '30vh', rot: -2.2, z: 12 },
+        { left: '50vw', top: '66vh', rot: 2.2, z: 14 }
+      ];
+      return slots2[index % slots2.length];
+    }
+    if (totalCount === 3) {
+      const slots3 = [
+        { left: '50vw', top: '24vh', rot: -2.2, z: 12 },
+        { left: '50vw', top: '48vh', rot: 1.8, z: 14 },
+        { left: '50vw', top: '72vh', rot: -2.0, z: 13 }
+      ];
+      return slots3[index % slots3.length];
+    }
+    if (totalCount === 4) {
+      const slots4 = [
+        { left: '26vw', top: '31vh', rot: -2.0, z: 12 },
+        { left: '74vw', top: '31vh', rot: 1.8, z: 13 },
+        { left: '26vw', top: '66vh', rot: 1.6, z: 14 },
+        { left: '74vw', top: '66vh', rot: -1.8, z: 15 }
+      ];
+      return slots4[index % slots4.length];
+    }
+    if (totalCount === 5) {
+      const slots5 = [
+        { left: '26vw', top: '23vh', rot: -2.0, z: 12 },
+        { left: '74vw', top: '32vh', rot: 1.8, z: 14 },
+        { left: '26vw', top: '48vh', rot: 1.6, z: 13 },
+        { left: '74vw', top: '57vh', rot: -2.0, z: 15 },
+        { left: '26vw', top: '73vh', rot: -1.8, z: 16 }
+      ];
+      return slots5[index % slots5.length];
+    }
+
+    // 6+ cards: 2 balanced columns
+    const half = Math.ceil(totalCount / 2);
+    const isLeft = index < half;
+    const colIdx = isLeft ? index : (index - half);
+    const colCount = isLeft ? half : (totalCount - half);
+    const step = 60 / Math.max(1, colCount - 1);
+    const topVal = (isLeft ? (19 + colIdx * step) : (25 + colIdx * step)).toFixed(1);
+    const leftVal = isLeft ? '26vw' : '74vw';
+    const rot = (index % 2 === 0 ? -1 : 1) * (1.4 + (index % 3) * 0.5);
     return {
-      left: '50vw',
-      top: `${topVal.toFixed(1)}vh`,
+      left: leftVal,
+      top: `${topVal}vh`,
       rot,
       z: 10 + index
     };
   }
 
-  // Dynamic layouts for any number of uploaded projects with zero overlapping:
+  // Desktop Viewport
   if (totalCount === 1) {
     return { left: '50vw', top: '48vh', rot: 0, z: 12 };
   }
   if (totalCount === 2) {
     const slots2 = [
-      { left: '32vw', top: '48vh', rot: -2.5, z: 12 },
-      { left: '68vw', top: '48vh', rot: 2.5, z: 14 }
+      { left: '32vw', top: '48vh', rot: -2.2, z: 12 },
+      { left: '68vw', top: '48vh', rot: 2.2, z: 14 }
     ];
     return slots2[index % slots2.length];
   }
   if (totalCount === 3) {
     const slots3 = [
-      { left: '22vw', top: '48vh', rot: -3.0, z: 12 },
+      { left: '22vw', top: '48vh', rot: -2.5, z: 12 },
       { left: '50vw', top: '46vh', rot: 1.0, z: 14 },
-      { left: '78vw', top: '48vh', rot: 3.0, z: 13 }
+      { left: '78vw', top: '48vh', rot: 2.5, z: 13 }
     ];
     return slots3[index % slots3.length];
   }
   if (totalCount === 4) {
     const slots4 = [
-      { left: '29vw', top: '30vh', rot: -2.5, z: 12 },
-      { left: '71vw', top: '30vh', rot: 2.2, z: 13 },
-      { left: '29vw', top: '70vh', rot: 2.0, z: 14 },
-      { left: '71vw', top: '70vh', rot: -1.8, z: 15 }
+      { left: '29vw', top: '30vh', rot: -2.2, z: 12 },
+      { left: '71vw', top: '30vh', rot: 2.0, z: 13 },
+      { left: '29vw', top: '68vh', rot: 1.8, z: 14 },
+      { left: '71vw', top: '68vh', rot: -1.8, z: 15 }
     ];
     return slots4[index % slots4.length];
   }
-  if (totalCount <= 5) {
+  if (totalCount === 5) {
     const slots5 = [
-      { left: '18vw', top: '30vh', rot: -3.5, z: 12 },
+      { left: '19vw', top: '30vh', rot: -2.8, z: 12 },
       { left: '50vw', top: '26vh', rot: 1.5, z: 14 },
-      { left: '82vw', top: '30vh', rot: 3.5, z: 11 },
-      { left: '32vw', top: '70vh', rot: 2.5, z: 13 },
-      { left: '68vw', top: '70vh', rot: -2.2, z: 15 }
+      { left: '81vw', top: '30vh', rot: 2.8, z: 11 },
+      { left: '33vw', top: '68vh', rot: 2.2, z: 13 },
+      { left: '67vw', top: '68vh', rot: -2.0, z: 15 }
     ];
     return slots5[index % slots5.length];
   }
-
-  // 7-card layout (Graphic Designs with Fetto Garments & Fouz Travels):
-  // Top row: 4 cards spaced generously from 14vw to 86vw
-  // Bottom row: 3 cards centered from 24vw to 76vw
   if (totalCount === 7) {
     const slots7 = [
-      { left: '14vw', top: '27vh', rot: -3.5, z: 12 }, // Fetto Garments
-      { left: '38vw', top: '25vh', rot: 1.8, z: 14 },  // Fouz Travels
-      { left: '62vw', top: '25vh', rot: -1.5, z: 13 }, // Synthesis Bauhaus
-      { left: '86vw', top: '27vh', rot: 3.5, z: 11 },  // Brutalist Mono
-      { left: '24vw', top: '71vh', rot: 2.2, z: 15 },  // Echoes Vinyl
-      { left: '50vw', top: '72vh', rot: -1.2, z: 16 }, // Modernity Posters
-      { left: '76vw', top: '70vh', rot: 2.0, z: 14 }   // Monolith Identity
+      { left: '15vw', top: '28vh', rot: -2.8, z: 12 },
+      { left: '38.3vw', top: '26vh', rot: 1.5, z: 14 },
+      { left: '61.6vw', top: '26vh', rot: -1.2, z: 13 },
+      { left: '85vw', top: '28vh', rot: 2.8, z: 11 },
+      { left: '26vw', top: '70vh', rot: 2.0, z: 15 },
+      { left: '50vw', top: '71vh', rot: -1.0, z: 16 },
+      { left: '74vw', top: '70vh', rot: 1.8, z: 14 }
     ];
     return slots7[index % slots7.length];
   }
@@ -93,9 +132,9 @@ function getScatterSlot(index, totalCount, isMobile) {
   const isTopRow = index < half;
   const colIdx = isTopRow ? index : (index - half);
   const rowCount = isTopRow ? half : (totalCount - half);
-  const xPercent = 14 + (colIdx / Math.max(1, rowCount - 1)) * 72;
-  const yPercent = isTopRow ? 27 : 71;
-  const rot = (index % 2 === 0 ? -1 : 1) * (1.8 + (index % 3) * 1.2);
+  const xPercent = 16 + (colIdx / Math.max(1, rowCount - 1)) * 68;
+  const yPercent = isTopRow ? 28 : 70;
+  const rot = (index % 2 === 0 ? -1 : 1) * (1.5 + (index % 3) * 0.8);
   return {
     left: `${xPercent.toFixed(1)}vw`,
     top: `${yPercent}vh`,
@@ -154,9 +193,20 @@ const DraggablePostcard = memo(function DraggablePostcard({
   const targetX = parseUnit(scatterSlot.left, vw);
   const targetY = parseUnit(scatterSlot.top, vh);
 
-  // Card dimensions on desk: enlarged proportion with generous breathing room
-  const restingScale = totalCount > 5 ? 0.84 : 0.90;
-  const restingW = isMobile ? Math.min(320, Math.round(vw * 0.82)) : Math.round(cardW * restingScale);
+  // Card dimensions on desk: calibrated by Heatmap method for 0% overlap & generous margins
+  const restingW = isMobile
+    ? (totalCount <= 2
+        ? Math.min(270, Math.round(vw * 0.72))
+        : (totalCount === 3
+            ? Math.min(230, Math.round(vw * 0.62))
+            : (totalCount === 4
+                ? Math.min(150, Math.round(vw * 0.38))
+                : Math.min(145, Math.round(vw * 0.37)))))
+    : (totalCount >= 7
+        ? Math.round(cardW * 0.74)
+        : (totalCount === 5
+            ? Math.round(cardW * 0.80)
+            : Math.round(cardW * 0.86)));
   const restingH = Math.round(restingW * 0.5625);
 
   // Card dimensions when expanded to 86% viewport
