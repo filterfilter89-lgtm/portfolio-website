@@ -23,3 +23,4 @@ for pid, live_fn, figma_fn in pairs:
     diff_p = os.path.join(compare_dir, f"diff_{pid}.png")
     diff_amp.save(diff_p)
     print(f"Saved diff map: {diff_p}")
+

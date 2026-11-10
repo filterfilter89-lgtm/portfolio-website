@@ -34,18 +34,18 @@
   // Color Palette Definitions (Exact Match)
   const COLORS = {
     cream: { r: 255 / 255, g: 247 / 255, b: 237 / 255 },       // #fff7ed Paper Cream
-    blue: { r: 40 / 255, g: 89 / 255, b: 145 / 255 },          // #285991 Ocean Blue
+    blue: { r: 51 / 255, g: 97 / 255, b: 150 / 255 },          // #336196 Desk Ocean Blue (--blue)
     navy: { r: 14 / 255, g: 25 / 255, b: 40 / 255 },           // #0e1928 Deep Navy
     flapstickBlue: { r: 23 / 255, g: 66 / 255, b: 118 / 255 }, // #174276 Flapstick Text
     slate: { r: 100 / 255, g: 116 / 255, b: 139 / 255 },       // #64748b Muted Slate
     white: { r: 1, g: 1, b: 1 },                               // #ffffff Pure White
     darkBackdrop: { r: 4 / 255, g: 9 / 255, b: 20 / 255 },      // #040914 Cinematic Dark
     airmailRed: { r: 220 / 255, g: 38 / 255, b: 38 / 255 },    // #dc2626 Airmail Red
-    airmailBlue: { r: 37 / 255, g: 99 / 255, b: 235 / 255 }    // #2563eb Airmail Blue
+    airmailBlue: { r: 49 / 255, g: 92 / 255, b: 143 / 255 }    // #315c8f Airmail Blue
   };
 
   const page = figma.currentPage;
-  page.name = "Basil Jose · Mobile Portfolio (iPhone 15 - 1:1 Live)";
+  page.name = "Basil Jose • Mobile Portfolio (iPhone 15 - 1:1 Live)";
 
   const createMobileFrame = (name, x, y, bg) => {
     const frame = figma.createFrame();
@@ -115,10 +115,10 @@
   // -------------------------------------------------------------
   // Artboard 1: Hero Start (393 x 852)
   // -------------------------------------------------------------
-  const artboard1 = createMobileFrame("01 · Mobile Visual Reel Hero (Start)", 80, 80, COLORS.cream);
+  const artboard1 = createMobileFrame("01 • Mobile Visual Reel Hero (Start)", 80, 80, COLORS.cream);
   createStatusBar(artboard1, false);
 
-  // Left Title "Basil" (x: 16.89, y: 338.45, fontSize: 62.17px)
+  // Left Title "Basil" (x: 16.89, y: 385, fontSize: 62.17px)
   const basilText = figma.createText();
   basilText.name = "Hero Title Left (Basil)";
   basilText.fontName = getFont("DM Sans", "Bold");
@@ -129,7 +129,7 @@
   basilText.y = 338;
   artboard1.appendChild(basilText);
 
-  // Right Title "Jose" (x: 253.67, y: 340.39, fontSize: 65.98px)
+  // Right Title "Jose" (x: 253.67, y: 388, fontSize: 65.98px)
   const joseText = figma.createText();
   joseText.name = "Hero Title Right (Jose)";
   joseText.fontName = getFont("DM Sans", "Bold");
@@ -152,10 +152,10 @@
   // -------------------------------------------------------------
   // Artboard 2: Hero Play Trigger (393 x 852)
   // -------------------------------------------------------------
-  const artboard2 = createMobileFrame("02 · Mobile Visual Reel Hero (Play Trigger)", 560, 80, COLORS.blue);
+  const artboard2 = createMobileFrame("02 • Mobile Visual Reel Hero (Play Trigger)", 560, 80, COLORS.blue);
   createStatusBar(artboard2, true);
 
-  // Reel Play Hitbox: 226 x 226 at x=83.49, y=312.99
+  // Reel Play Hitbox: 226 x 226 circle centered at x=196.5, y=426
   const playHitbox = figma.createEllipse();
   playHitbox.name = "Reel Play Hitbox (226px Circle)";
   playHitbox.resize(226, 226);
@@ -178,20 +178,18 @@
   // -------------------------------------------------------------
   // Artboard 3: Mobile Album Carousel (#work)
   // -------------------------------------------------------------
-  const artboard3 = createMobileFrame("03 · Mobile Album Carousel (#work)", 1040, 80, COLORS.cream);
+  const artboard3 = createMobileFrame("03 • Mobile Album Carousel (#work)", 1040, 80, COLORS.cream);
   createStatusBar(artboard3, false);
   createBackButton(artboard3, "REEL", false);
 
-  // Center Sleeve (280 x 280 at x=56.5, y=276)
+  // Center Sleeve (280 x 280 at x=56.5, y=274)
   const centerSleeve = figma.createFrame();
   centerSleeve.name = "Active Vinyl Album Sleeve (ADVERTISEMENT)";
   centerSleeve.resize(280, 280);
   centerSleeve.x = 56.5;
-  centerSleeve.y = 276;
-  centerSleeve.cornerRadius = 18;
+  centerSleeve.y = 274;
+  centerSleeve.cornerRadius = 16;
   centerSleeve.fills = [{ type: "SOLID", color: COLORS.cream }];
-  centerSleeve.strokes = [{ type: "SOLID", color: COLORS.blue }];
-  centerSleeve.strokeWeight = 8;
   artboard3.appendChild(centerSleeve);
 
   const albumTitle = figma.createText();
@@ -202,13 +200,13 @@
   albumTitle.letterSpacing = { value: 2, unit: "PIXELS" };
   albumTitle.fills = [{ type: "SOLID", color: COLORS.blue }];
   albumTitle.x = (393 - 160) / 2;
-  albumTitle.y = 584;
+  albumTitle.y = 594;
   artboard3.appendChild(albumTitle);
 
   // -------------------------------------------------------------
   // Artboard 4: Mobile Postcard Showcase Desk
   // -------------------------------------------------------------
-  const artboard4 = createMobileFrame("04 · Mobile Postcard Showcase Desk", 1520, 80, COLORS.blue);
+  const artboard4 = createMobileFrame("04 • Mobile Postcard Showcase Desk", 1520, 80, COLORS.blue);
   createStatusBar(artboard4, true);
   createBackButton(artboard4, "ALBUMS", true);
 
@@ -266,7 +264,7 @@
   // -------------------------------------------------------------
   // Artboard 5: Flipped Postcard Bento Grid (393 x 852)
   // -------------------------------------------------------------
-  const artboard5 = createMobileFrame("05 · Mobile Flipped Bento Grid", 80, 1050, COLORS.blue);
+  const artboard5 = createMobileFrame("05 • Mobile Flipped Bento Grid", 80, 1050, COLORS.blue);
   createStatusBar(artboard5, true);
 
   const bentoCard = figma.createFrame();
@@ -313,7 +311,7 @@
   // -------------------------------------------------------------
   // Artboard 6: Cinematic Lightbox Modal (393 x 852)
   // -------------------------------------------------------------
-  const artboard6 = createMobileFrame("06 · Mobile Lightbox Modal", 560, 1050, COLORS.darkBackdrop);
+  const artboard6 = createMobileFrame("06 • Mobile Lightbox Modal", 560, 1050, COLORS.darkBackdrop);
   createStatusBar(artboard6, true);
 
   const lightbox = figma.createFrame();
@@ -341,7 +339,7 @@
   // -------------------------------------------------------------
   // Artboard 7: Videography In-Card Player (393 x 852)
   // -------------------------------------------------------------
-  const artboard7 = createMobileFrame("07 · Mobile Videography Player", 1040, 1050, COLORS.blue);
+  const artboard7 = createMobileFrame("07 • Mobile Videography Player", 1040, 1050, COLORS.blue);
   createStatusBar(artboard7, true);
   createBackButton(artboard7, "ALBUMS", true);
 
@@ -376,7 +374,7 @@
   // -------------------------------------------------------------
   // Artboard 8: Design Tokens & Components (393 x 852)
   // -------------------------------------------------------------
-  const artboard8 = createMobileFrame("08 · Design System & Tokens", 1520, 1050, { r: 15/255, g: 23/255, b: 42/255 });
+  const artboard8 = createMobileFrame("08 • Design System & Tokens", 1520, 1050, { r: 15/255, g: 23/255, b: 42/255 });
 
   const tokensTitle = figma.createText();
   tokensTitle.name = "Tokens Title";

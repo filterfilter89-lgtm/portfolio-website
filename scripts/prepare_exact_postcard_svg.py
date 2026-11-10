@@ -38,3 +38,4 @@ with open(r"C:\Users\basil\.gemini\antigravity\brain\19b7de88-e1a2-4cdd-9e35-677
     out.write(clean_template)
 
 print("Saved clean template! Length:", len(clean_template))
+

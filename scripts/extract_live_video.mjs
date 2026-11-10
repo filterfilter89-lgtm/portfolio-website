@@ -61,3 +61,4 @@ import path from 'path';
   await browser.close();
   console.log('Videography extraction complete!');
 })();
+

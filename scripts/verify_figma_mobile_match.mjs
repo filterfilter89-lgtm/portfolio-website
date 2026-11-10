@@ -63,3 +63,4 @@ import path from 'path';
   await browser.close();
   console.log('Figma rendering verification complete!');
 })();
+

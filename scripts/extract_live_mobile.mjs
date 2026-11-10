@@ -230,3 +230,4 @@ import path from 'path';
   await browser.close();
   console.log('Mobile extraction complete!');
 })();
+

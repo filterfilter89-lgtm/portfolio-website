@@ -51,3 +51,4 @@ for pid, live_fn, figma_fn, title in pairs:
     print(f"Generated side-by-side comparison: {out_p}")
 
 print("All side-by-side comparisons generated successfully!")
+
