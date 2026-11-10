@@ -1395,14 +1395,20 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
   height: 100%;
   border-radius: 2px;
   overflow: hidden;
-  background: #000;
+  background: #0e1928;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .postcard-back-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   display: block;
+  margin: auto;
 }
 
 /* ============================================================
@@ -1489,10 +1495,13 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
 
 .cinematic-video-element,
 .cinematic-image-element {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   display: block;
+  margin: auto;
 }
 
 .cinematic-controls-overlay {
@@ -1743,10 +1752,13 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
 
 .cinematic-video-element,
 .cinematic-image-element {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   display: block;
+  margin: auto;
 }
 
 /* Hover-Only Video Controls Overlay */
@@ -2066,10 +2078,13 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
 }
 
 .proper-polaroid-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   display: block;
+  margin: auto;
   pointer-events: none;
 }
 
@@ -2254,10 +2269,14 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
 }
 
 .in-card-fallback-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   filter: brightness(0.65);
+  display: block;
+  margin: auto;
 }
 
 .in-card-fallback-badge {
@@ -3627,4 +3646,28 @@ body.page-work.is-showcase-active {
   height: auto !important;
   object-fit: contain !important;
   aspect-ratio: auto !important;
+}
+
+/* ============================================================
+   FLIPPED POSTCARDS: PRESERVE ORIGINAL NATURAL ASPECT RATIO
+   Ensures zero stretching, squashing, cropping, or distortion
+   across desktop and mobile layouts for every project asset
+   ============================================================ */
+.postcard-side-back img,
+.postcard-side-back video,
+.postcard-back-preview-stage img,
+.postcard-back-preview-stage video,
+.flipped-bento-grid img,
+.flipped-bento-grid video,
+.in-card-video-element,
+.scattered-polaroid-frame img,
+.scattered-polaroid-frame video,
+.cinematic-16-9-card img,
+.cinematic-16-9-card video {
+  object-fit: contain !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  margin: auto !important;
 }

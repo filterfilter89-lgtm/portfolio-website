@@ -697,3 +697,4 @@ with open(output_svg_path, "w", encoding="utf-8") as f:
     f.write(master_canvas_svg)
 
 print(f"SUCCESS: Master Figma Mobile SVG generated at {output_svg_path} ({len(master_canvas_svg)} bytes)")
+
