@@ -1,63 +1,78 @@
-import React, { useState, memo } from 'react';
+import React, { useState, useRef, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import InCardVideoPlayer from './InCardVideoPlayer';
 
-// Heatmap-calibrated zero-rotation coordinates: maximized available space, even spacing, and guaranteed 0% overlap
+// Restored organic scattered arrangement matching the physical postcard desk
 function getProjectScatterSlot(index, totalCount, isMobile = false) {
-  // Strict 0 rotation
-  const rot = 0;
-
   if (totalCount === 1) {
     return {
       left: '50%',
       top: '50%',
-      rot: 0,
-      maxW: isMobile ? '76%' : '70%',
-      maxH: '86%',
-      z: 12
+      rot: -1.2,
+      maxW: isMobile ? '78%' : '56%',
+      maxH: '78%',
+      z: 10
     };
   }
 
-  if (totalCount >= 2 && totalCount <= 4) {
-    const K = totalCount;
-    // Maximized slot widths for single-row presentation
-    const cardWidths = { 2: 42, 3: 28, 4: 21 };
-    const W = cardWidths[K];
-    const totalGap = 100 - (K * W);
-    const G = totalGap / (K + 1);
-    const leftCenter = G * (index + 1) + W * (index + 0.5);
-
-    return {
-      left: `${leftCenter.toFixed(1)}%`,
-      top: '50%',
-      rot: 0,
-      maxW: `${W}%`,
-      maxH: '84%',
-      z: 10 + index
-    };
+  if (totalCount === 2) {
+    const slots2 = [
+      { left: isMobile ? '30%' : '31%', top: '50%', rot: -3.0, maxW: isMobile ? '44%' : '36%', maxH: '76%', z: 11 },
+      { left: isMobile ? '70%' : '69%', top: '50%', rot: 2.8, maxW: isMobile ? '44%' : '36%', maxH: '76%', z: 12 }
+    ];
+    return slots2[index % slots2.length];
   }
 
-  // 5+ items: 2 balanced rows with unified card sizing and even gaps
+  if (totalCount === 3) {
+    const slots3 = [
+      { left: '23%', top: '51%', rot: -3.5, maxW: isMobile ? '30%' : '28%', maxH: '75%', z: 11 },
+      { left: '50%', top: '48%', rot: 1.2, maxW: isMobile ? '30%' : '28%', maxH: '75%', z: 13 },
+      { left: '77%', top: '51%', rot: 3.2, maxW: isMobile ? '30%' : '28%', maxH: '75%', z: 12 }
+    ];
+    return slots3[index % slots3.length];
+  }
+
+  if (totalCount === 4) {
+    const slots4 = [
+      { left: '17%', top: '50%', rot: -3.2, maxW: isMobile ? '23%' : '21.5%', maxH: '75%', z: 11 },
+      { left: '39%', top: '47%', rot: 2.4, maxW: isMobile ? '23%' : '21.5%', maxH: '75%', z: 13 },
+      { left: '61%', top: '52%', rot: -2.0, maxW: isMobile ? '23%' : '21.5%', maxH: '75%', z: 12 },
+      { left: '83%', top: '48%', rot: 3.0, maxW: isMobile ? '23%' : '21.5%', maxH: '75%', z: 14 }
+    ];
+    return slots4[index % slots4.length];
+  }
+
+  // 5 items (like Eazyarts Ganesh): 2 organically staggered rows
+  if (totalCount === 5) {
+    const slots5 = [
+      { left: '21%', top: '32%', rot: -2.6, maxW: isMobile ? '30%' : '27%', maxH: '48%', z: 11 },
+      { left: '50%', top: '28%', rot: 1.8, maxW: isMobile ? '30%' : '27%', maxH: '48%', z: 13 },
+      { left: '79%', top: '33%', rot: -2.8, maxW: isMobile ? '30%' : '27%', maxH: '48%', z: 12 },
+      { left: '35%', top: '71%', rot: 3.0, maxW: isMobile ? '31%' : '28%', maxH: '48%', z: 14 },
+      { left: '65%', top: '67%', rot: -1.8, maxW: isMobile ? '31%' : '28%', maxH: '48%', z: 15 }
+    ];
+    return slots5[index % slots5.length];
+  }
+
+  // 6+ items: Dynamic organic spread across width and height
   const half = Math.ceil(totalCount / 2);
   const isTop = index < half;
   const rowCount = isTop ? half : (totalCount - half);
   const colIdx = isTop ? index : (index - half);
 
-  const W = Math.floor(84 / half);
-  const totalGap = 100 - (rowCount * W);
-  const G = totalGap / (rowCount + 1);
-  const leftCenter = G * (colIdx + 1) + W * (colIdx + 0.5);
-
-  // 2 vertical rows with balanced margins
-  const topCenter = isTop ? 27 : 73;
+  const step = 76 / Math.max(1, rowCount - 1);
+  const leftVal = 12 + colIdx * step;
+  const topVal = isTop ? (30 + (colIdx % 2 === 0 ? -2.5 : 2.5)) : (70 + (colIdx % 2 === 0 ? 2.5 : -2.5));
+  const rot = (index % 2 === 0 ? -1 : 1) * (1.8 + (index % 3) * 0.7);
+  const maxW = isMobile ? `${Math.floor(82 / rowCount)}%` : `${Math.floor(78 / rowCount)}%`;
 
   return {
-    left: `${leftCenter.toFixed(1)}%`,
-    top: `${topCenter}%`,
-    rot: 0,
-    maxW: `${W}%`,
-    maxH: '38%',
+    left: `${leftVal.toFixed(1)}%`,
+    top: `${topVal.toFixed(1)}%`,
+    rot,
+    maxW,
+    maxH: '48%',
     z: 10 + index
   };
 }
@@ -70,9 +85,11 @@ export default memo(function PolaroidGallery({
 }) {
   const isMobile = isMobileProp !== undefined
     ? isMobileProp
-    : (typeof window !== 'undefined' ? window.innerWidth < 640 : false);
+    : (typeof window !== 'undefined' ? window.innerWidth < 768 : false);
 
   const [inspectItem, setInspectItem] = useState(null);
+  const stageRef = useRef(null);
+  const hasMovedRef = useRef(false);
 
   // If no items provided or empty, create default photo set from thumbnail
   const photoList = items && items.length > 0 ? items : [
@@ -86,8 +103,8 @@ export default memo(function PolaroidGallery({
   const count = photoList.length;
 
   return (
-    <div className="polaroid-gallery-container pure-bento-postcard">
-      {/* Scattered Polaroid Stage - Matching the scattered arrangement of the postcards themselves */}
+    <div className="polaroid-gallery-container pure-bento-postcard" ref={stageRef}>
+      {/* Scattered Polaroid Stage - Organic physical scattered arrangement */}
       <div className={`polaroid-scatter-stage is-count-${count}`}>
         {photoList.map((item, idx) => {
           const isVideo = item.type === 'video' || (item.src && item.src.endsWith('.mp4'));
@@ -111,27 +128,42 @@ export default memo(function PolaroidGallery({
               <motion.div
                 className="scattered-polaroid-item"
                 initial={{
-                  scale: 0.92,
+                  scale: 0.88,
                   opacity: 0,
-                  rotate: 0
+                  rotate: slot.rot
                 }}
                 animate={{
                   scale: 1,
                   opacity: 1,
-                  rotate: 0,
+                  rotate: slot.rot,
                   transition: {
-                    duration: 0.4,
+                    duration: 0.45,
                     delay: idx * 0.04,
                     ease: [0.22, 1, 0.36, 1]
                   }
                 }}
                 whileHover={{
-                  scale: 1.04,
-                  rotate: 0,
+                  scale: 1.05,
+                  rotate: slot.rot * 0.3,
                   zIndex: 50,
                   transition: { duration: 0.2 }
                 }}
-                onClick={() => !isVideo && setInspectItem(item)}
+                drag={isExpanded}
+                dragConstraints={stageRef}
+                dragElastic={0.06}
+                onDragStart={() => {
+                  hasMovedRef.current = true;
+                }}
+                onDragEnd={() => {
+                  setTimeout(() => {
+                    hasMovedRef.current = false;
+                  }, 80);
+                }}
+                onClick={() => {
+                  if (!hasMovedRef.current && !isVideo) {
+                    setInspectItem(item);
+                  }
+                }}
                 role={!isVideo ? 'button' : undefined}
                 tabIndex={!isVideo ? 0 : undefined}
                 onKeyDown={(e) => {
@@ -142,7 +174,7 @@ export default memo(function PolaroidGallery({
                 }}
                 aria-label={`Photo ${idx + 1}`}
               >
-                {/* Physical Polaroid Frame conforming to exact media aspect ratio */}
+                {/* Physical Polaroid Frame strictly preserving exact media aspect ratio */}
                 <div className="scattered-polaroid-frame">
                   <div className="scattered-photo-well">
                     {isVideo ? (
@@ -167,42 +199,36 @@ export default memo(function PolaroidGallery({
         })}
       </div>
 
-      {/* Full-screen Lightbox Inspect Modal via Portal */}
+      {/* High-Resolution Inspect Lightbox (Mounted to body via createPortal) */}
       {inspectItem && typeof document !== 'undefined' && createPortal(
         <div
           className="polaroid-inspect-modal"
           onClick={() => setInspectItem(null)}
           role="dialog"
           aria-modal="true"
-          aria-label="Inspect media full size"
         >
-          <div className="polaroid-inspect-card pure-inspect" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="polaroid-inspect-card pure-inspect"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
-              className="polaroid-inspect-close polaroid-inspect-close-btn"
+              className="polaroid-inspect-close"
               onClick={() => setInspectItem(null)}
-              aria-label="Close full size preview"
+              aria-label="Close image inspection"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
-            <div className="polaroid-inspect-img-wrap polaroid-inspect-media-container">
+            <div className="polaroid-inspect-img-wrap">
               <img
-                src={inspectItem.src || project.thumbnail}
-                alt={inspectItem.title || project.title}
+                src={inspectItem.src}
+                alt=""
                 className="polaroid-inspect-img"
               />
             </div>
-            {inspectItem.title && (
-              <div className="polaroid-inspect-caption">
-                <span className="polaroid-inspect-title">{inspectItem.title}</span>
-                {project.title && (
-                  <span className="polaroid-inspect-project">{project.title}</span>
-                )}
-              </div>
-            )}
           </div>
         </div>,
         document.body

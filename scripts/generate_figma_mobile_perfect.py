@@ -123,7 +123,7 @@ master_clip_defs = f'''
 # Common reusable components
 def back_arrow_svg(color="#174276", bg="rgba(23,66,118,0.08)"):
     return f'''
-    <g id="Back Arrow" transform="translate(18, 18)" cursor="pointer">
+    <g id="back-arrow" data-name="Back Arrow" transform="translate(18, 18)" cursor="pointer">
       <circle cx="18" cy="18" r="18" fill="{bg}" />
       <path d="M22 18 L14 18 M18 14 L14 18 L18 22" stroke="{color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
     </g>
@@ -131,7 +131,7 @@ def back_arrow_svg(color="#174276", bg="rgba(23,66,118,0.08)"):
 
 def hamburger_menu_svg(color="#174276", bg="rgba(23,66,118,0.08)"):
     return f'''
-    <g id="Hamburger Menu" transform="translate(339, 18)" cursor="pointer">
+    <g id="hamburger-menu" data-name="Hamburger Menu" transform="translate(339, 18)" cursor="pointer">
       <circle cx="18" cy="18" r="18" fill="{bg}" />
       <path d="M11 13 L25 13 M11 18 L25 18 M11 23 L25 23" stroke="{color}" stroke-width="1.8" stroke-linecap="round" fill="none" />
     </g>
@@ -143,25 +143,25 @@ def hamburger_menu_svg(color="#174276", bg="rgba(23,66,118,0.08)"):
 artboard_1_body = f'''
     <rect width="393" height="852" fill="#fff7ed" />
     <g clip-path="url(#viewport-clip)">
-      <g id="Hero Canvas Start">
-        <image href="{hero_00_b64}" x="-560.83" y="0" width="1514.67" height="852" preserveAspectRatio="xMidYMid slice" />
+      <g id="hero-canvas-start" data-name="Hero Canvas Start">
+        <image href="{hero_00_b64}" xlink:href="{hero_00_b64}" x="-560.83" y="0" width="1514.67" height="852" preserveAspectRatio="xMidYMid slice" />
       </g>
       {hamburger_menu_svg(color="#174276", bg="rgba(23,66,118,0.08)")}
       
       <!-- Minimal Subtle Scroll Instruction -->
-      <g id="Scroll Instruction" transform="translate(196.5, 620)">
+      <g id="scroll-instruction" data-name="Scroll Instruction" transform="translate(196.5, 620)">
         <text x="0" y="0" text-anchor="middle" font-family="Space Mono, monospace" font-size="8.5" font-weight="700" fill="#174276" opacity="0.65" letter-spacing="1.5">SCROLL TO EXPLORE</text>
         <path d="M196.5 628 L196.5 638 M192.5 634 L196.5 638 L200.5 634" stroke="#174276" stroke-width="1.2" opacity="0.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
       </g>
 
       <!-- Mobile Landing Name Placement: Bottom, 2 Lines, Flapstick DEMO, NO OTHER TEXT -->
-      <g id="Hero Name Bottom" transform="translate(24, 712)">
+      <g id="hero-name-bottom" data-name="Hero Name Bottom" transform="translate(24, 712)">
         <text x="0" y="0" font-family="Flapstick DEMO, cursive, sans-serif" font-size="52" font-weight="400" fill="#174276">BASIL</text>
         <text x="0" y="52" font-family="Flapstick DEMO, cursive, sans-serif" font-size="52" font-weight="400" fill="#174276">JOSE</text>
       </g>
 
       <!-- Bottom Timeline Progress Bar: x=0, y=849, h=3, 0% filled -->
-      <g id="Timeline Progress Scrubber" transform="translate(0, 849)">
+      <g id="timeline-progress-scrubber" data-name="Timeline Progress Scrubber" transform="translate(0, 849)">
         <rect width="393" height="3" fill="#285991" opacity="0.2" />
         <rect width="0" height="3" fill="#285991" />
       </g>
@@ -177,18 +177,18 @@ artboard_1_body = f'''
 artboard_2_body = f'''
     <rect width="393" height="852" fill="#285991" />
     <g clip-path="url(#viewport-clip)">
-      <g id="Hero Canvas End">
-        <image href="{hero_48_b64}" x="-560.83" y="0" width="1514.67" height="852" preserveAspectRatio="xMidYMid slice" />
+      <g id="hero-canvas-end" data-name="Hero Canvas End">
+        <image href="{hero_48_b64}" xlink:href="{hero_48_b64}" x="-560.83" y="0" width="1514.67" height="852" preserveAspectRatio="xMidYMid slice" />
       </g>
       {hamburger_menu_svg(color="#fff7ed", bg="rgba(255,247,237,0.12)")}
       
       <!-- Interactive Play Hitbox -->
-      <g id="Reel Play Hitbox">
+      <g id="reel-play-hitbox" data-name="Reel Play Hitbox">
         <circle cx="196.5" cy="426" r="113" fill="none" stroke="#fff7ed" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.3" />
       </g>
       
       <!-- Timeline Scrub Bar Completed -->
-      <g id="Timeline Scrubber Completed" transform="translate(0, 849)">
+      <g id="timeline-scrubber-completed" data-name="Timeline Scrubber Completed" transform="translate(0, 849)">
         <rect width="393" height="3" fill="#285991" />
       </g>
     </g>
@@ -208,32 +208,32 @@ artboard_3_body = f'''
       {hamburger_menu_svg(color="#285991", bg="rgba(40,89,145,0.08)")}
 
       <!-- Curved Circular Gallery Stage -->
-      <g id="Circular Gallery Carousel Stage">
+      <g id="circular-gallery-carousel-stage" data-name="Circular Gallery Carousel Stage">
         <!-- Left Neighbor Sleeve -->
-        <g id="Left Neighbor Sleeve" transform="translate(-145.7, 476.5) rotate(-17) translate(-140, -140)" opacity="0.6">
+        <g id="left-neighbor-sleeve" data-name="Left Neighbor Sleeve" transform="translate(-145.7, 476.5) rotate(-17) translate(-140, -140)" opacity="0.6">
           <g clip-path="url(#sleeve-clip)">
-            <image href="{video_icon_b64}" x="0" y="0" width="280" height="280" preserveAspectRatio="xMidYMid slice" />
+            <image href="{video_icon_b64}" xlink:href="{video_icon_b64}" x="0" y="0" width="280" height="280" preserveAspectRatio="xMidYMid slice" />
           </g>
         </g>
         <!-- Right Neighbor Sleeve -->
-        <g id="Right Neighbor Sleeve" transform="translate(538.7, 476.5) rotate(17) translate(-140, -140)" opacity="0.6">
+        <g id="right-neighbor-sleeve" data-name="Right Neighbor Sleeve" transform="translate(538.7, 476.5) rotate(17) translate(-140, -140)" opacity="0.6">
           <g clip-path="url(#sleeve-clip)">
-            <image href="{genai_icon_b64}" x="0" y="0" width="280" height="280" preserveAspectRatio="xMidYMid slice" />
+            <image href="{genai_icon_b64}" xlink:href="{genai_icon_b64}" x="0" y="0" width="280" height="280" preserveAspectRatio="xMidYMid slice" />
           </g>
         </g>
         <!-- Active Center Vinyl Album Sleeve -->
-        <g id="Active Vinyl Album Sleeve" transform="translate(56.5, 274)">
+        <g id="active-vinyl-album-sleeve" data-name="Active Vinyl Album Sleeve" transform="translate(56.5, 274)">
           <!-- Soft Drop Shadow Underlay (Standard vector rect, 0 filter crashes) -->
           <rect x="-4" y="8" width="288" height="288" rx="20" fill="#0a1937" opacity="0.18" />
           <rect width="280" height="280" rx="16" fill="#fff7ed" stroke="#e2d8cd" stroke-width="1" />
           <g clip-path="url(#sleeve-clip)">
-            <image href="{ad_icon_b64}" x="0" y="0" width="280" height="280" preserveAspectRatio="xMidYMid slice" />
+            <image href="{ad_icon_b64}" xlink:href="{ad_icon_b64}" x="0" y="0" width="280" height="280" preserveAspectRatio="xMidYMid slice" />
           </g>
         </g>
       </g>
 
       <!-- Album Title Directly Below Card -->
-      <g id="Album Metadata Typography" transform="translate(196.5, 594)">
+      <g id="album-metadata-typography" data-name="Album Metadata Typography" transform="translate(196.5, 594)">
         <text x="0" y="0" text-anchor="middle" font-family="Space Mono, monospace" font-size="14" font-weight="700" fill="#285991" letter-spacing="2">ADVERTISEMENT</text>
       </g>
     </g>
@@ -253,9 +253,9 @@ artboard_4_body = f'''
       <text x="361" y="40" text-anchor="end" font-family="Space Mono, monospace" font-size="10" font-weight="700" fill="#fff7ed" opacity="0.6" letter-spacing="1">GRAPHIC DESIGNS</text>
 
       <!-- 4 Draggable Airmail Postcards -->
-      <g id="Postcards Desk Stack">
+      <g id="postcards-desk-stack" data-name="Postcards Desk Stack">
         <!-- Postcard 1: Eazyarts Ganesh -->
-        <g id="Postcard 01 - Eazyarts Ganesh" transform="translate(196.5, 187.44) rotate(-1.6) translate(-160, -90)">
+        <g id="postcard-01---eazyarts-ganesh" data-name="Postcard 01 - Eazyarts Ganesh" transform="translate(196.5, 187.44) rotate(-1.6) translate(-160, -90)">
           <rect x="-2" y="6" width="324" height="184" rx="8" fill="#000c20" opacity="0.25" />
           <rect width="320" height="180" rx="6" fill="#fff7ed" />
           <g clip-path="url(#pc-card-clip)">
@@ -265,7 +265,7 @@ artboard_4_body = f'''
           </g>
         </g>
         <!-- Postcard 2: Fetto Garments -->
-        <g id="Postcard 02 - Fetto Garments" transform="translate(196.5, 346.76) rotate(2.4) translate(-160, -90)">
+        <g id="postcard-02---fetto-garments" data-name="Postcard 02 - Fetto Garments" transform="translate(196.5, 346.76) rotate(2.4) translate(-160, -90)">
           <rect x="-2" y="6" width="324" height="184" rx="8" fill="#000c20" opacity="0.25" />
           <rect width="320" height="180" rx="6" fill="#fff7ed" />
           <g clip-path="url(#pc-card-clip)">
@@ -275,7 +275,7 @@ artboard_4_body = f'''
           </g>
         </g>
         <!-- Postcard 3: Fouz Travels -->
-        <g id="Postcard 03 - Fouz Travels" transform="translate(196.5, 505.24) rotate(-3.2) translate(-160, -90)">
+        <g id="postcard-03---fouz-travels" data-name="Postcard 03 - Fouz Travels" transform="translate(196.5, 505.24) rotate(-3.2) translate(-160, -90)">
           <rect x="-2" y="6" width="324" height="184" rx="8" fill="#000c20" opacity="0.25" />
           <rect width="320" height="180" rx="6" fill="#fff7ed" />
           <g clip-path="url(#pc-card-clip)">
@@ -285,7 +285,7 @@ artboard_4_body = f'''
           </g>
         </g>
         <!-- Postcard 4: Fruitly -->
-        <g id="Postcard 04 - Fruitly" transform="translate(196.5, 664.56) rotate(1.6) translate(-160, -90)">
+        <g id="postcard-04---fruitly" data-name="Postcard 04 - Fruitly" transform="translate(196.5, 664.56) rotate(1.6) translate(-160, -90)">
           <rect x="-2" y="6" width="324" height="184" rx="8" fill="#000c20" opacity="0.25" />
           <rect width="320" height="180" rx="6" fill="#fff7ed" />
           <g clip-path="url(#pc-card-clip)">
@@ -313,54 +313,54 @@ artboard_5_body = f'''
       <rect width="393" height="852" fill="#040914" opacity="0.65" />
 
       <!-- Flipped Postcard Container -->
-      <g id="Flipped Postcard Container" transform="translate(11.5, 322.44)">
+      <g id="flipped-postcard-container" data-name="Flipped Postcard Container" transform="translate(11.5, 322.44)">
         <rect x="-4" y="10" width="377" height="216" rx="12" fill="#00081a" opacity="0.45" />
         <rect width="369" height="208" rx="6" fill="#fff7ed" stroke="#e6d9cb" stroke-width="1.5" />
 
         <!-- Close Button -->
-        <g id="Close Button 5" transform="translate(327, 10)">
+        <g id="close-button-5" data-name="Close Button 5" transform="translate(327, 10)">
           <circle cx="16" cy="16" r="16" fill="#fff7ed" stroke="#285991" stroke-opacity="0.2" stroke-width="1" />
           <path d="M11 11 L21 21 M21 11 L11 21" stroke="#285991" stroke-width="2" stroke-linecap="round" />
         </g>
 
         <!-- Preserved Aspect Ratio Polaroids (Natural Proportions, No Crop/Distort) -->
-        <g id="Polaroid 01" transform="translate(15.67, 17.47)">
+        <g id="polaroid-01" data-name="Polaroid 01" transform="translate(15.67, 17.47)">
           <rect x="-1" y="2" width="104.75" height="80.27" rx="5" fill="#06101d" opacity="0.16" />
           <rect width="102.75" height="78.27" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
           <g clip-path="url(#polaroid-img-clip)" transform="translate(4, 4)">
-            <image href="{ganesh_slide1_b64}" x="0" y="0" width="94.75" height="64.27" preserveAspectRatio="xMidYMid meet" />
+            <image href="{ganesh_slide1_b64}" xlink:href="{ganesh_slide1_b64}" x="0" y="0" width="94.75" height="64.27" preserveAspectRatio="xMidYMid meet" />
           </g>
         </g>
 
-        <g id="Polaroid 02" transform="translate(133.13, 17.47)">
+        <g id="polaroid-02" data-name="Polaroid 02" transform="translate(133.13, 17.47)">
           <rect x="-1" y="2" width="104.75" height="80.27" rx="5" fill="#06101d" opacity="0.16" />
           <rect width="102.75" height="78.27" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
           <g clip-path="url(#polaroid-img-clip)" transform="translate(4, 4)">
-            <image href="{ganesh_slide2_b64}" x="0" y="0" width="94.75" height="64.27" preserveAspectRatio="xMidYMid meet" />
+            <image href="{ganesh_slide2_b64}" xlink:href="{ganesh_slide2_b64}" x="0" y="0" width="94.75" height="64.27" preserveAspectRatio="xMidYMid meet" />
           </g>
         </g>
 
-        <g id="Polaroid 03" transform="translate(250.56, 17.47)">
+        <g id="polaroid-03" data-name="Polaroid 03" transform="translate(250.56, 17.47)">
           <rect x="-1" y="2" width="104.75" height="80.27" rx="5" fill="#06101d" opacity="0.16" />
           <rect width="102.75" height="78.27" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
           <g clip-path="url(#polaroid-img-clip)" transform="translate(4, 4)">
-            <image href="{ganesh_slide3_b64}" x="0" y="0" width="94.75" height="64.27" preserveAspectRatio="xMidYMid meet" />
+            <image href="{ganesh_slide3_b64}" xlink:href="{ganesh_slide3_b64}" x="0" y="0" width="94.75" height="64.27" preserveAspectRatio="xMidYMid meet" />
           </g>
         </g>
 
-        <g id="Polaroid 04" transform="translate(54.95, 112.24)">
+        <g id="polaroid-04" data-name="Polaroid 04" transform="translate(54.95, 112.24)">
           <rect x="-1" y="2" width="104.75" height="80.27" rx="5" fill="#06101d" opacity="0.16" />
           <rect width="102.75" height="78.27" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
           <g clip-path="url(#polaroid-img-clip)" transform="translate(4, 4)">
-            <image href="{ganesh_slide4_b64}" x="0" y="0" width="94.75" height="64.27" preserveAspectRatio="xMidYMid meet" />
+            <image href="{ganesh_slide4_b64}" xlink:href="{ganesh_slide4_b64}" x="0" y="0" width="94.75" height="64.27" preserveAspectRatio="xMidYMid meet" />
           </g>
         </g>
 
-        <g id="Polaroid 05" transform="translate(211.28, 112.24)">
+        <g id="polaroid-05" data-name="Polaroid 05" transform="translate(211.28, 112.24)">
           <rect x="-1" y="2" width="104.75" height="80.27" rx="5" fill="#06101d" opacity="0.16" />
           <rect width="102.75" height="78.27" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
           <g clip-path="url(#polaroid-img-clip)" transform="translate(4, 4)">
-            <image href="{ganesh_slide5_b64}" x="0" y="0" width="94.75" height="64.27" preserveAspectRatio="xMidYMid meet" />
+            <image href="{ganesh_slide5_b64}" xlink:href="{ganesh_slide5_b64}" x="0" y="0" width="94.75" height="64.27" preserveAspectRatio="xMidYMid meet" />
           </g>
         </g>
       </g>
@@ -376,13 +376,13 @@ artboard_5_body = f'''
 artboard_6_body = f'''
     <rect width="393" height="852" fill="#040914" />
     <g clip-path="url(#viewport-clip)">
-      <g id="Inspect Modal Card" transform="translate(12, 183.45)">
+      <g id="inspect-modal-card" data-name="Inspect Modal Card" transform="translate(12, 183.45)">
         <rect x="-4" y="8" width="377" height="493.09" rx="12" fill="#00081a" opacity="0.45" />
         <rect width="369" height="485.09" rx="8" fill="#ffffff" />
         <g clip-path="url(#lightbox-img-clip)" transform="translate(10, 10)">
-          <image href="{ganesh_slide1_b64}" x="0" y="0" width="349" height="436.09" preserveAspectRatio="xMidYMid meet" />
+          <image href="{ganesh_slide1_b64}" xlink:href="{ganesh_slide1_b64}" x="0" y="0" width="349" height="436.09" preserveAspectRatio="xMidYMid meet" />
         </g>
-        <g id="Modal Close Button 6" transform="translate(325, 18)">
+        <g id="modal-close-button-6" data-name="Modal Close Button 6" transform="translate(325, 18)">
           <circle cx="16" cy="16" r="16" fill="#0e1928" opacity="0.65" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1" />
           <path d="M11 11 L21 21 M21 11 L11 21" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
         </g>
@@ -409,23 +409,23 @@ artboard_7_body = f'''
       <text x="361" y="40" text-anchor="end" font-family="Space Mono, monospace" font-size="10" font-weight="700" fill="#fff7ed" opacity="0.6" letter-spacing="1">VIDEOGRAPHY</text>
 
       <!-- Flipped Postcard Container -->
-      <g id="Flipped Video Postcard" transform="translate(11.5, 322.44)">
+      <g id="flipped-video-postcard" data-name="Flipped Video Postcard" transform="translate(11.5, 322.44)">
         <rect x="-4" y="10" width="377" height="216" rx="12" fill="#00081a" opacity="0.45" />
         <rect width="369" height="208" rx="6" fill="#fff7ed" stroke="#e6d9cb" stroke-width="1.5" />
-        <g id="Close Button 7" transform="translate(327, 10)">
+        <g id="close-button-7" data-name="Close Button 7" transform="translate(327, 10)">
           <circle cx="16" cy="16" r="16" fill="#fff7ed" stroke="#285991" stroke-opacity="0.2" stroke-width="1" />
           <path d="M11 11 L21 21 M21 11 L11 21" stroke="#285991" stroke-width="2" stroke-linecap="round" />
         </g>
       </g>
 
       <!-- Dual Vertical Video Reels (Preserved 9:16 Aspect Ratio) -->
-      <g id="In-Card Video Reel 01" transform="translate(35.95, 293.06)">
+      <g id="in-card-video-reel-01" data-name="In-Card Video Reel 01" transform="translate(35.95, 293.06)">
         <rect x="-2" y="4" width="150.13" height="263.77" rx="8" fill="#06101d" opacity="0.2" />
         <rect width="146.13" height="259.77" rx="6" fill="#000000" />
         <g clip-path="url(#video-reel-clip)">
-          <image href="{realme_thumb_b64}" x="0" y="0" width="146.13" height="259.77" preserveAspectRatio="xMidYMid meet" />
+          <image href="{realme_thumb_b64}" xlink:href="{realme_thumb_b64}" x="0" y="0" width="146.13" height="259.77" preserveAspectRatio="xMidYMid meet" />
         </g>
-        <g id="Video Controls HUD 1" transform="translate(0, 211.77)">
+        <g id="video-controls-hud-1" data-name="Video Controls HUD 1" transform="translate(0, 211.77)">
           <rect width="146.13" height="48" rx="6" fill="#0e1928" opacity="0.75" />
           <g transform="translate(24, 18)" fill="#ffffff">
             <rect x="0" y="0" width="2.4" height="12" rx="0.5" />
@@ -443,13 +443,13 @@ artboard_7_body = f'''
         </g>
       </g>
 
-      <g id="In-Card Video Reel 02" transform="translate(209.91, 293.06)">
+      <g id="in-card-video-reel-02" data-name="In-Card Video Reel 02" transform="translate(209.91, 293.06)">
         <rect x="-2" y="4" width="150.13" height="263.77" rx="8" fill="#06101d" opacity="0.2" />
         <rect width="146.13" height="259.77" rx="6" fill="#000000" />
         <g clip-path="url(#video-reel-clip)">
-          <image href="{speaker_thumb_b64}" x="0" y="0" width="146.13" height="259.77" preserveAspectRatio="xMidYMid meet" />
+          <image href="{speaker_thumb_b64}" xlink:href="{speaker_thumb_b64}" x="0" y="0" width="146.13" height="259.77" preserveAspectRatio="xMidYMid meet" />
         </g>
-        <g id="Video Controls HUD 2" transform="translate(0, 211.77)">
+        <g id="video-controls-hud-2" data-name="Video Controls HUD 2" transform="translate(0, 211.77)">
           <rect width="146.13" height="48" rx="6" fill="#0e1928" opacity="0.75" />
           <g transform="translate(24, 18)" fill="#ffffff">
             <rect x="0" y="0" width="2.4" height="12" rx="0.5" />
@@ -549,12 +549,12 @@ artboard_9_body = f'''
     <g clip-path="url(#viewport-clip)">
       <!-- Blurred dimmed background preview of hero -->
       <g opacity="0.15">
-        <image href="{hero_00_b64}" x="-560.83" y="0" width="1514.67" height="852" preserveAspectRatio="xMidYMid slice" />
+        <image href="{hero_00_b64}" xlink:href="{hero_00_b64}" x="-560.83" y="0" width="1514.67" height="852" preserveAspectRatio="xMidYMid slice" />
       </g>
       <rect width="393" height="852" fill="#0e1928" opacity="0.94" />
 
       <!-- Top Header: Close 'X' Button on Right -->
-      <g id="Menu Close Button" transform="translate(339, 18)" cursor="pointer">
+      <g id="menu-close-button" data-name="Menu Close Button" transform="translate(339, 18)" cursor="pointer">
         <circle cx="18" cy="18" r="18" fill="rgba(255, 247, 237, 0.12)" />
         <path d="M12 12 L24 24 M24 12 L12 24" stroke="#fff7ed" stroke-width="2" stroke-linecap="round" />
       </g>
@@ -610,7 +610,7 @@ artboard_9_body = f'''
 # -------------------------------------------------------------
 def save_screen_svg(filename, body_content, screen_title):
     standalone_svg = f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg width="393" height="852" viewBox="0 0 393 852" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="393" height="852" viewBox="0 0 393 852" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
     {master_clip_defs}
   </defs>
@@ -637,7 +637,7 @@ save_screen_svg("09_Mobile_Hamburger_Menu_Open.svg", artboard_9_body, "09 - Hamb
 # MASTER PANORAMIC FIGMA CANVAS SVG (3 Rows, 3 Screens each: 1500 x 3050 px)
 # -------------------------------------------------------------
 master_canvas_svg = f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg width="1500" height="3050" viewBox="0 0 1500 3050" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1500" height="3050" viewBox="0 0 1500 3050" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
     {master_clip_defs}
   </defs>
@@ -646,13 +646,13 @@ master_canvas_svg = f'''<?xml version="1.0" encoding="UTF-8"?>
   <rect width="1500" height="3050" fill="#0b1320" />
 
   <!-- Canvas Board Header -->
-  <g id="Master Canvas Header" transform="translate(60, 42)">
+  <g id="master-canvas-header" data-name="Master Canvas Header" transform="translate(60, 42)">
     <text x="0" y="0" font-family="Space Mono, monospace" font-size="14" font-weight="700" fill="#94a3b8" letter-spacing="2">BASIL JOSE &#8226; MOBILE PORTFOLIO FIGMA DESIGN SYSTEM</text>
     <text x="1380" y="0" text-anchor="end" font-family="DM Sans, sans-serif" font-size="13" fill="#64748b">100% Native Figma Compatible &#8226; iPhone 15 Viewport (393 &#215; 852 px)</text>
   </g>
 
   <!-- ROW 1 (y=80): Primary User Journey -->
-  <g id="Row 1 - Primary Journey" transform="translate(0, 0)">
+  <g id="row-1---primary-journey" data-name="Row 1 - Primary Journey" transform="translate(0, 0)">
     <g transform="translate(60, 80)">
       {artboard_1_body}
     </g>
@@ -665,7 +665,7 @@ master_canvas_svg = f'''<?xml version="1.0" encoding="UTF-8"?>
   </g>
 
   <!-- ROW 2 (y=1050): Postcard Showcases & Bento Inspection -->
-  <g id="Row 2 - Postcards &amp; Inspection" transform="translate(0, 0)">
+  <g id="row-2---postcards-and-inspection" data-name="Row 2 - Postcards &amp; Inspection" transform="translate(0, 0)">
     <g transform="translate(60, 1050)">
       {artboard_4_body}
     </g>
@@ -678,7 +678,7 @@ master_canvas_svg = f'''<?xml version="1.0" encoding="UTF-8"?>
   </g>
 
   <!-- ROW 3 (y=2020): Video Showcase, Contact & Menu Navigation -->
-  <g id="Row 3 - Video &amp; Navigation" transform="translate(0, 0)">
+  <g id="row-3---video-and-navigation" data-name="Row 3 - Video &amp; Navigation" transform="translate(0, 0)">
     <g transform="translate(60, 2020)">
       {artboard_7_body}
     </g>

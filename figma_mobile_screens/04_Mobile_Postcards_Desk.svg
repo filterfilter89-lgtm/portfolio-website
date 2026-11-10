@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="393" height="852" viewBox="0 0 393 852" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="393" height="852" viewBox="0 0 393 852" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
     
     <clipPath id="viewport-clip"><rect width="393" height="852" /></clipPath>
@@ -21,7 +21,7 @@
     <g clip-path="url(#viewport-clip)">
       <!-- Top Header Navigation: Arrow ONLY + Title -->
       
-    <g id="Back Arrow" transform="translate(18, 18)" cursor="pointer">
+    <g id="back-arrow" data-name="Back Arrow" transform="translate(18, 18)" cursor="pointer">
       <circle cx="18" cy="18" r="18" fill="rgba(255,247,237,0.12)" />
       <path d="M22 18 L14 18 M18 14 L14 18 L18 22" stroke="#fff7ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
     </g>
@@ -29,9 +29,9 @@
       <text x="361" y="40" text-anchor="end" font-family="Space Mono, monospace" font-size="10" font-weight="700" fill="#fff7ed" opacity="0.6" letter-spacing="1">GRAPHIC DESIGNS</text>
 
       <!-- 4 Draggable Airmail Postcards -->
-      <g id="Postcards Desk Stack">
+      <g id="postcards-desk-stack" data-name="Postcards Desk Stack">
         <!-- Postcard 1: Eazyarts Ganesh -->
-        <g id="Postcard 01 - Eazyarts Ganesh" transform="translate(196.5, 187.44) rotate(-1.6) translate(-160, -90)">
+        <g id="postcard-01---eazyarts-ganesh" data-name="Postcard 01 - Eazyarts Ganesh" transform="translate(196.5, 187.44) rotate(-1.6) translate(-160, -90)">
           <rect x="-2" y="6" width="324" height="184" rx="8" fill="#000c20" opacity="0.25" />
           <rect width="320" height="180" rx="6" fill="#fff7ed" />
           <g clip-path="url(#pc-card-clip)">
@@ -98,7 +98,7 @@
           </g>
         </g>
         <!-- Postcard 2: Fetto Garments -->
-        <g id="Postcard 02 - Fetto Garments" transform="translate(196.5, 346.76) rotate(2.4) translate(-160, -90)">
+        <g id="postcard-02---fetto-garments" data-name="Postcard 02 - Fetto Garments" transform="translate(196.5, 346.76) rotate(2.4) translate(-160, -90)">
           <rect x="-2" y="6" width="324" height="184" rx="8" fill="#000c20" opacity="0.25" />
           <rect width="320" height="180" rx="6" fill="#fff7ed" />
           <g clip-path="url(#pc-card-clip)">
@@ -165,7 +165,7 @@
           </g>
         </g>
         <!-- Postcard 3: Fouz Travels -->
-        <g id="Postcard 03 - Fouz Travels" transform="translate(196.5, 505.24) rotate(-3.2) translate(-160, -90)">
+        <g id="postcard-03---fouz-travels" data-name="Postcard 03 - Fouz Travels" transform="translate(196.5, 505.24) rotate(-3.2) translate(-160, -90)">
           <rect x="-2" y="6" width="324" height="184" rx="8" fill="#000c20" opacity="0.25" />
           <rect width="320" height="180" rx="6" fill="#fff7ed" />
           <g clip-path="url(#pc-card-clip)">
@@ -232,7 +232,7 @@
           </g>
         </g>
         <!-- Postcard 4: Fruitly -->
-        <g id="Postcard 04 - Fruitly" transform="translate(196.5, 664.56) rotate(1.6) translate(-160, -90)">
+        <g id="postcard-04---fruitly" data-name="Postcard 04 - Fruitly" transform="translate(196.5, 664.56) rotate(1.6) translate(-160, -90)">
           <rect x="-2" y="6" width="324" height="184" rx="8" fill="#000c20" opacity="0.25" />
           <rect width="320" height="180" rx="6" fill="#fff7ed" />
           <g clip-path="url(#pc-card-clip)">
