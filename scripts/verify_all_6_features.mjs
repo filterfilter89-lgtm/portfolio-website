@@ -105,3 +105,4 @@ const BASE_URL = 'http://localhost:5173';
   await browser.close();
   console.log('--- ALL 6-FEATURE AUTOMATED VERIFICATIONS SUCCEEDED ---');
 })();
+
