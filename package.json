@@ -12,7 +12,8 @@
     "test": "playwright test",
     "update-projects": "python scripts/sync_projects.py",
     "sync": "node scripts/sync_to_github.mjs",
-    "deploy": "vercel --prod"
+    "deploy": "node scripts/deploy.mjs",
+    "verify:live": "node scripts/verify_live_domain.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
