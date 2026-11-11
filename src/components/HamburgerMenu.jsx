@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 /**
- * Mobile Hamburger Menu Component
- * - Fixed in the top-right corner of the mobile interface
- * - Perfectly positioned and aligned with existing navigation elements
- * - Maintains 100% visual consistency with typography (Space Mono, DM Sans), colors (--blue, --cream), and design language
+ * Morphing Hamburger Navigation Component
+ * - Resting State: 44px x 44px circular button pinned to the top-right.
+ * - Active State: Smoothly expands and morphs into a horizontal rectangle with curved corners.
+ *   The corner radius (22px) matches the original circle's curvature seamlessly.
+ * - Displays ONLY four text items: REEL, WORK, CONTACT, RESUME.
+ * - Zero subtitles, descriptions, labels, or additional text.
  */
-export default function HamburgerMenu({ currentView = 'reel', onNavigate }) {
+export default function HamburgerMenu({ currentView = 'reel', isDark = false, onNavigate }) {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
 
   // Close on ESC key
   useEffect(() => {
@@ -20,7 +23,23 @@ export default function HamburgerMenu({ currentView = 'reel', onNavigate }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
-  // Prevent background scrolling when menu is open
+  // Close when clicking outside
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // Prevent background scrolling when menu is open on mobile
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -43,103 +62,81 @@ export default function HamburgerMenu({ currentView = 'reel', onNavigate }) {
     }
   };
 
-  // Determine button color based on current view theme
-  const isDarkDesk = currentView === 'showcase';
+  const isDarkDesk = isDark || currentView === 'showcase';
 
   return (
     <>
-      {/* Top-Right Hamburger Toggle Button */}
-      <button
-        type="button"
-        className={`mobile-hamburger-btn ${isDarkDesk ? 'is-dark-desk' : ''} ${isOpen ? 'is-active' : ''}`}
-        onClick={toggleMenu}
-        aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
-        aria-expanded={isOpen}
-      >
-        <span className="hamburger-icon-wrap" aria-hidden="true">
-          <span className="hamburger-bar hamburger-bar--1" />
-          <span className="hamburger-bar hamburger-bar--2" />
-          <span className="hamburger-bar hamburger-bar--3" />
-        </span>
-      </button>
-
-      {/* Backdrop overlay */}
+      {/* Semi-transparent backdrop when menu is open */}
       <div
-        className={`mobile-menu-backdrop ${isOpen ? 'is-open' : ''}`}
+        className={`nav-morph-backdrop ${isOpen ? 'is-open' : ''}`}
         onClick={() => setIsOpen(false)}
         aria-hidden="true"
       />
 
-      {/* Connected Compact Navigation Popover Box */}
-      <nav
-        className={`mobile-menu-drawer ${isOpen ? 'is-open' : ''} ${isDarkDesk ? 'is-dark-desk' : ''}`}
+      {/* Morphing Navigation Container */}
+      {/* Circle (44px) morphs smoothly into horizontal rectangle with matching curved corners */}
+      <div
+        ref={containerRef}
+        className={`nav-morph-pill mobile-menu-drawer ${isOpen ? 'is-open' : ''} ${isDarkDesk ? 'is-dark-desk' : ''}`}
+        role="navigation"
         aria-label="Navigation Menu"
       >
-        <div className="mobile-menu-inner">
-          {/* Compact Header */}
-          <div className="mobile-menu-header">
-            <span className="mobile-menu-brand">DIRECTORY</span>
-            <span className="mobile-menu-tag">BASIL JOSE</span>
-          </div>
+        {/* Navigation links - Revealed smoothly when expanded */}
+        <nav className="nav-morph-links" aria-hidden={!isOpen}>
+          <button
+            type="button"
+            className={`nav-morph-link ${currentView === 'reel' ? 'is-current' : ''}`}
+            onClick={() => handleLinkClick('reel')}
+            tabIndex={isOpen ? 0 : -1}
+          >
+            REEL
+          </button>
 
-          {/* Navigation Links */}
-          <ul className="mobile-menu-links">
-            <li className="mobile-menu-item">
-              <button
-                type="button"
-                className={`mobile-menu-link ${currentView === 'reel' ? 'is-current' : ''}`}
-                onClick={() => handleLinkClick('reel')}
-              >
-                <span className="menu-num">01</span>
-                <span className="menu-title">REEL</span>
-              </button>
-            </li>
+          <button
+            type="button"
+            className={`nav-morph-link ${currentView === 'wheel' || currentView === 'showcase' ? 'is-current' : ''}`}
+            onClick={() => handleLinkClick('work')}
+            tabIndex={isOpen ? 0 : -1}
+          >
+            WORK
+          </button>
 
-            <li className="mobile-menu-item">
-              <button
-                type="button"
-                className={`mobile-menu-link ${currentView === 'wheel' || currentView === 'showcase' ? 'is-current' : ''}`}
-                onClick={() => handleLinkClick('work')}
-              >
-                <span className="menu-num">02</span>
-                <span className="menu-title">WORK</span>
-              </button>
-            </li>
+          <button
+            type="button"
+            className={`nav-morph-link ${currentView === 'contact' ? 'is-current' : ''}`}
+            onClick={() => handleLinkClick('contact')}
+            tabIndex={isOpen ? 0 : -1}
+          >
+            CONTACT
+          </button>
 
-            <li className="mobile-menu-item">
-              <button
-                type="button"
-                className={`mobile-menu-link ${currentView === 'contact' ? 'is-current' : ''}`}
-                onClick={() => handleLinkClick('contact')}
-              >
-                <span className="menu-num">03</span>
-                <span className="menu-title">CONTACT</span>
-              </button>
-            </li>
+          <a
+            href="/basil jose final cv.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-morph-link"
+            onClick={() => setIsOpen(false)}
+            tabIndex={isOpen ? 0 : -1}
+          >
+            RESUME
+          </a>
+        </nav>
 
-            <li className="mobile-menu-item">
-              <a
-                href="/basil jose final cv.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mobile-menu-link"
-                onClick={() => setIsOpen(false)}
-              >
-                <span className="menu-num">04</span>
-                <span className="menu-title">RESUME &#8599;</span>
-              </a>
-            </li>
-          </ul>
-
-          {/* Compact Footer */}
-          <div className="mobile-menu-footer">
-            <a href="mailto:basiljose8989@gmail.com" className="menu-footer-email">
-              basiljose8989@gmail.com
-            </a>
-          </div>
-        </div>
-      </nav>
+        {/* Hamburger / Close Icon Toggle Button */}
+        <button
+          type="button"
+          className={`nav-morph-toggle mobile-hamburger-btn ${isDarkDesk ? 'is-dark-desk' : ''} ${isOpen ? 'is-active' : ''}`}
+          onClick={toggleMenu}
+          aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={isOpen}
+        >
+          <span className="hamburger-icon-wrap" aria-hidden="true">
+            <span className="hamburger-bar hamburger-bar--1" />
+            <span className="hamburger-bar hamburger-bar--2" />
+            <span className="hamburger-bar hamburger-bar--3" />
+          </span>
+        </button>
+      </div>
     </>
   );
 }
-

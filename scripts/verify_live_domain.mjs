@@ -64,50 +64,79 @@ async function verifyLive() {
     await page.close();
   }
 
-  // 3. Compact Popover Hamburger Menu (Desktop & Mobile)
+  // 3. Morphing Hamburger Navigation Pill (Desktop & Mobile)
   {
-    // Desktop Popover
+    // Desktop Morph
     const pageDesk = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     await pageDesk.goto(`${LIVE_URL}/`, { waitUntil: 'networkidle' });
-    await pageDesk.waitForTimeout(800);
+    await pageDesk.waitForTimeout(1000);
 
-    const btnDesk = pageDesk.locator('.mobile-hamburger-btn');
-    await btnDesk.click();
-    await pageDesk.waitForTimeout(400);
+    const pillDesk = pageDesk.locator('.nav-morph-pill');
+    const closedDeskBox = await pillDesk.boundingBox();
+    const closedDeskRadius = await pillDesk.evaluate(el => window.getComputedStyle(el).borderRadius);
 
-    const drawerDesk = pageDesk.locator('.mobile-menu-drawer');
-    const drawerBox = await drawerDesk.boundingBox();
-    const isCompact = drawerBox.width <= 260 && drawerBox.height <= 350;
+    const toggleDesk = pageDesk.locator('.nav-morph-toggle');
+    await toggleDesk.click();
+    await pageDesk.waitForTimeout(600);
+
+    const openDeskBox = await pillDesk.boundingBox();
+    const openDeskRadius = await pillDesk.evaluate(el => window.getComputedStyle(el).borderRadius);
+    const isHorizontalDesk = openDeskBox.width >= 340 && openDeskBox.height <= 50;
+    const curvatureDeskMatches = openDeskRadius === '22px' && closedDeskRadius === '22px';
+
+    const deskLinks = await pageDesk.locator('.nav-morph-link').allInnerTexts();
+    const expected = ['REEL', 'WORK', 'CONTACT', 'RESUME'];
+    const exactLinksDesk = deskLinks.length === 4 && deskLinks.every((t, i) => t.trim() === expected[i]);
+
+    const allDeskText = await pillDesk.innerText();
+    const deskWords = allDeskText.split(/\s+/).filter(w => w.length > 0);
+    const zeroExtraText = deskWords.length === 4 && deskWords.every((w, i) => w === expected[i]);
 
     report.push({
-      test: 'LIVE Desktop Hamburger Menu Compact Popover',
-      passed: isCompact,
-      details: `Width: ${drawerBox.width}px, Height: ${drawerBox.height}px`
+      test: 'LIVE Desktop Menu Morphs into Horizontal Rectangle with Matching Curvature',
+      passed: isHorizontalDesk && curvatureDeskMatches,
+      details: `Width: ${openDeskBox.width}px, Height: ${openDeskBox.height}px, Radius: ${openDeskRadius}`
     });
 
-    await pageDesk.screenshot({ path: `${ARTIFACT_DIR}/live_verified_desktop_hamburger_popover.png` });
+    report.push({
+      test: 'LIVE Desktop Menu Displays ONLY 4 Text Items (REEL, WORK, CONTACT, RESUME)',
+      passed: exactLinksDesk && zeroExtraText,
+      details: `Words inside menu: [${deskWords.join(', ')}]`
+    });
+
+    await pageDesk.screenshot({ path: `${ARTIFACT_DIR}/live_verified_desktop_morph_menu.png` });
     await pageDesk.close();
 
-    // Mobile Popover
+    // Mobile Morph
     const pageMob = await browser.newPage({ viewport: { width: 390, height: 844 } });
     await pageMob.goto(`${LIVE_URL}/`, { waitUntil: 'networkidle' });
-    await pageMob.waitForTimeout(800);
+    await pageMob.waitForTimeout(1000);
 
-    const btnMob = pageMob.locator('.mobile-hamburger-btn');
-    await btnMob.click();
-    await pageMob.waitForTimeout(400);
+    const pillMob = pageMob.locator('.nav-morph-pill');
+    const toggleMob = pageMob.locator('.nav-morph-toggle');
+    await toggleMob.click();
+    await pageMob.waitForTimeout(600);
 
-    const drawerMob = pageMob.locator('.mobile-menu-drawer');
-    const mobBox = await drawerMob.boundingBox();
-    const mobCompact = mobBox.width <= 250 && mobBox.height <= 350;
+    const openMobBox = await pillMob.boundingBox();
+    const openMobRadius = await pillMob.evaluate(el => window.getComputedStyle(el).borderRadius);
+    const isHorizontalMob = openMobBox.width >= 300 && openMobBox.height <= 50;
+
+    const mobLinks = await pageMob.locator('.nav-morph-link').allInnerTexts();
+    const exactLinksMob = mobLinks.length === 4 && mobLinks.every((t, i) => t.trim() === expected[i]);
 
     report.push({
-      test: 'LIVE Mobile Hamburger Menu Compact Popover',
-      passed: mobCompact,
-      details: `Width: ${mobBox.width}px, Height: ${mobBox.height}px`
+      test: 'LIVE Mobile Menu Morphs into Horizontal Rectangle with Matching Curvature',
+      passed: isHorizontalMob && openMobRadius === '22px',
+      details: `Width: ${openMobBox.width}px, Height: ${openMobBox.height}px, Radius: ${openMobRadius}`
     });
 
-    await pageMob.screenshot({ path: `${ARTIFACT_DIR}/live_verified_mobile_hamburger_popover.png` });
+    report.push({
+      test: 'LIVE Mobile Menu Displays ONLY 4 Text Items',
+      passed: exactLinksMob,
+      details: `Words inside menu: [${mobLinks.join(', ')}]`
+    });
+
+    await pageMob.screenshot({ path: `${ARTIFACT_DIR}/live_verified_mobile_morph_menu.png` });
     await pageMob.close();
   }
 
@@ -229,3 +258,4 @@ verifyLive().catch((e) => {
   console.error(e);
   process.exit(1);
 });
+

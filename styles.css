@@ -2980,66 +2980,219 @@ body.page-work.is-showcase-active {
   display: none !important;
 }
 
-/* 1. Mobile Hamburger Menu in Top-Right Corner */
-.mobile-hamburger-btn {
-  display: inline-flex !important;
+/* 1. Morphing Hamburger Navigation Pill (Circle -> Horizontal Rounded Rectangle) */
+.nav-morph-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 990;
+  background: rgba(4, 9, 20, 0.28);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-morph-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Morphing Container: In closed state it is a 44px x 44px circle with 22px corner radius.
+   In open state it smoothly expands horizontally to the left into a horizontal rectangle with matching 22px curved corners. */
+.nav-morph-pill {
   position: fixed;
   top: max(24px, env(safe-area-inset-top, 24px));
   right: max(28px, env(safe-area-inset-right, 28px));
   z-index: 1000;
-  width: 44px;
   height: 44px;
-  border-radius: 50%;
+  width: 44px;
+  border-radius: 22px;
   background: rgba(255, 247, 237, 0.92);
   border: 1px solid rgba(40, 89, 145, 0.24);
   color: var(--blue, #285991);
-  padding: 0;
-  cursor: pointer;
   box-shadow: 0 4px 14px rgba(10, 25, 55, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+  box-sizing: border-box;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: manipulation;
-  align-items: center;
-  justify-content: center;
+  transition: 
+    width 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: width, transform;
 }
 
-@media (max-width: 768px) {
-  .mobile-hamburger-btn {
-    display: inline-flex !important;
-  }
-}
-
-.mobile-hamburger-btn:hover {
+/* Hover & Active animations when closed */
+.nav-morph-pill:not(.is-open):hover {
   transform: scale(1.06);
   background: #fff7ed;
   border-color: rgba(40, 89, 145, 0.45);
-  box-shadow: 0 6px 18px rgba(10, 25, 55, 0.14);
+  box-shadow: 0 6px 18px rgba(10, 25, 55, 0.15);
 }
 
-.mobile-hamburger-btn:active {
-  transform: scale(0.94);
+.nav-morph-pill:not(.is-open):active {
+  transform: scale(0.95);
 }
 
-.mobile-hamburger-btn.is-dark-desk {
+/* Expanded State: Smooth Horizontal Rectangle with 22px matching curved corners */
+.nav-morph-pill.is-open {
+  width: 380px;
+  background: rgba(255, 247, 237, 0.98);
+  border-color: rgba(40, 89, 145, 0.35);
+  box-shadow: 
+    0 12px 32px -4px rgba(10, 25, 55, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+  transform: scale(1);
+}
+
+/* Dark Theme Support (Showcase mode) */
+.nav-morph-pill.is-dark-desk,
+.page-work.is-showcase-active .nav-morph-pill {
   background: rgba(51, 97, 150, 0.75);
-  border: 1px solid rgba(255, 247, 237, 0.28);
-  color: var(--cream, #FFF7ED);
+  border-color: rgba(255, 247, 237, 0.28);
+  color: var(--cream, #fff7ed);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
-.mobile-hamburger-btn.is-dark-desk:hover {
+.nav-morph-pill.is-dark-desk:not(.is-open):hover,
+.page-work.is-showcase-active .nav-morph-pill:not(.is-open):hover {
   background: rgba(51, 97, 150, 0.95);
   border-color: rgba(255, 247, 237, 0.55);
   color: #ffffff;
 }
 
-.mobile-hamburger-btn.is-active {
-  background: #fff7ed;
-  border-color: rgba(40, 89, 145, 0.35);
+.nav-morph-pill.is-dark-desk.is-open,
+.page-work.is-showcase-active .nav-morph-pill.is-open {
+  background: rgba(26, 44, 72, 0.96);
+  border-color: rgba(255, 247, 237, 0.25);
+  box-shadow: 
+    0 12px 32px -4px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+  color: var(--cream, #fff7ed);
+}
+
+.nav-morph-pill.is-dark-desk .nav-morph-link,
+.page-work.is-showcase-active .nav-morph-pill .nav-morph-link {
+  color: rgba(255, 247, 237, 0.88);
+}
+
+.nav-morph-pill.is-dark-desk .nav-morph-link:hover,
+.nav-morph-pill.is-dark-desk .nav-morph-link:focus-visible,
+.page-work.is-showcase-active .nav-morph-pill .nav-morph-link:hover,
+.page-work.is-showcase-active .nav-morph-pill .nav-morph-link:focus-visible {
+  color: #ffffff;
+  background: rgba(255, 247, 237, 0.14);
+}
+
+.nav-morph-pill.is-dark-desk .nav-morph-link.is-current,
+.page-work.is-showcase-active .nav-morph-pill .nav-morph-link.is-current {
+  color: #ffffff;
+  background: rgba(255, 247, 237, 0.22);
+}
+
+/* Links Container: Smoothly revealed when morphed */
+.nav-morph-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex: 1;
+  height: 100%;
+  padding-left: 14px;
+  padding-right: 4px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(12px);
+  transition: 
+    opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.22s ease;
+  white-space: nowrap;
+}
+
+.nav-morph-pill.is-open .nav-morph-links {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0);
+  transition: 
+    opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1) 0.1s,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
+    visibility 0.28s ease;
+}
+
+/* Exactly Four Text Items: REEL, WORK, CONTACT, RESUME */
+.nav-morph-link {
+  font-family: var(--mono, 'Space Mono', monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--blue, #285991);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.18s ease, background-color 0.18s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.nav-morph-link:hover,
+.nav-morph-link:focus-visible {
   color: #174276;
+  background: rgba(40, 89, 145, 0.1);
+}
+
+.nav-morph-link.is-current {
+  color: #174276;
+  background: rgba(40, 89, 145, 0.14);
+}
+
+.nav-morph-pill.is-dark-desk .nav-morph-link {
+  color: rgba(255, 247, 237, 0.88);
+}
+
+.nav-morph-pill.is-dark-desk .nav-morph-link:hover,
+.nav-morph-pill.is-dark-desk .nav-morph-link:focus-visible {
+  color: #ffffff;
+  background: rgba(255, 247, 237, 0.14);
+}
+
+.nav-morph-pill.is-dark-desk .nav-morph-link.is-current {
+  color: #ffffff;
+  background: rgba(255, 247, 237, 0.22);
+}
+
+/* Toggle Button with Morphing Hamburger -> X Icon */
+.nav-morph-toggle {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: inherit;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .hamburger-icon-wrap {
@@ -3061,221 +3214,54 @@ body.page-work.is-showcase-active {
   transform-origin: center;
 }
 
-.mobile-hamburger-btn.is-active .hamburger-bar--1 {
+.nav-morph-toggle.is-active .hamburger-bar--1 {
   transform: translateY(6px) rotate(45deg);
 }
 
-.mobile-hamburger-btn.is-active .hamburger-bar--2 {
+.nav-morph-toggle.is-active .hamburger-bar--2 {
   opacity: 0;
   transform: scaleX(0);
 }
 
-.mobile-hamburger-btn.is-active .hamburger-bar--3 {
+.nav-morph-toggle.is-active .hamburger-bar--3 {
   transform: translateY(-6px) rotate(-45deg);
 }
 
-.mobile-menu-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 950;
-  background: rgba(4, 9, 20, 0.28);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+/* Mobile Responsive Adaptations */
+@media (max-width: 768px) {
+  .nav-morph-pill {
+    top: max(20px, env(safe-area-inset-top, 20px));
+    right: max(18px, env(safe-area-inset-right, 18px));
+  }
+
+  .nav-morph-pill.is-open {
+    width: calc(100vw - 36px);
+    max-width: 350px;
+  }
+
+  .nav-morph-links {
+    padding-left: 10px;
+    padding-right: 2px;
+    justify-content: space-between;
+  }
+
+  .nav-morph-link {
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    padding: 5px 6px;
+  }
 }
 
-.mobile-menu-backdrop.is-open {
-  opacity: 1;
-  pointer-events: auto;
-}
+@media (max-width: 360px) {
+  .nav-morph-pill.is-open {
+    width: calc(100vw - 24px);
+  }
 
-/* Compact Connected Popover Box anchored directly to hamburger icon */
-.mobile-menu-drawer {
-  position: fixed;
-  top: calc(max(24px, env(safe-area-inset-top, 24px)) + 52px);
-  right: max(24px, env(safe-area-inset-right, 24px));
-  bottom: auto;
-  width: min(240px, calc(100vw - 36px));
-  background: rgba(255, 247, 237, 0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  z-index: 980;
-  border-radius: 14px;
-  border: 1px solid rgba(40, 89, 145, 0.2);
-  box-shadow: 
-    0 16px 36px -4px rgba(10, 25, 55, 0.24),
-    0 4px 12px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-  transform-origin: top right;
-  transform: scale(0.92) translateY(-6px);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
-  overflow: hidden;
-}
-
-.mobile-menu-drawer.is-open {
-  transform: scale(1) translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.mobile-menu-drawer.is-dark-desk {
-  background: rgba(26, 44, 72, 0.96);
-  border-color: rgba(255, 247, 237, 0.22);
-  box-shadow: 
-    0 16px 36px -4px rgba(0, 0, 0, 0.5),
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  color: var(--cream, #fff7ed);
-}
-
-.mobile-menu-inner {
-  padding: 12px 10px;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-.mobile-menu-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 8px 10px 8px;
-  border-bottom: 1px solid rgba(40, 89, 145, 0.12);
-  margin-bottom: 8px;
-}
-
-.mobile-menu-drawer.is-dark-desk .mobile-menu-header {
-  border-bottom-color: rgba(255, 247, 237, 0.14);
-}
-
-.mobile-menu-brand {
-  font-family: var(--mono, 'Space Mono', monospace);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: #174276;
-}
-
-.mobile-menu-drawer.is-dark-desk .mobile-menu-brand {
-  color: #fff7ed;
-}
-
-.mobile-menu-tag {
-  font-family: var(--mono, 'Space Mono', monospace);
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: rgba(40, 89, 145, 0.6);
-}
-
-.mobile-menu-drawer.is-dark-desk .mobile-menu-tag {
-  color: rgba(255, 247, 237, 0.65);
-}
-
-.mobile-menu-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.mobile-menu-link {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 8px 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
-  color: inherit;
-  box-sizing: border-box;
-}
-
-.mobile-menu-link:hover,
-.mobile-menu-link:focus-visible {
-  background: rgba(40, 89, 145, 0.08);
-  border-color: rgba(40, 89, 145, 0.18);
-  transform: translateX(2px);
-}
-
-.mobile-menu-drawer.is-dark-desk .mobile-menu-link:hover,
-.mobile-menu-drawer.is-dark-desk .mobile-menu-link:focus-visible {
-  background: rgba(255, 247, 237, 0.12);
-  border-color: rgba(255, 247, 237, 0.22);
-}
-
-.mobile-menu-link.is-current {
-  background: rgba(40, 89, 145, 0.12);
-  border-color: rgba(40, 89, 145, 0.28);
-}
-
-.mobile-menu-drawer.is-dark-desk .mobile-menu-link.is-current {
-  background: rgba(255, 247, 237, 0.16);
-  border-color: rgba(255, 247, 237, 0.32);
-}
-
-.mobile-menu-link .menu-num {
-  font-family: var(--mono, 'Space Mono', monospace);
-  font-size: 10px;
-  font-weight: 700;
-  color: rgba(40, 89, 145, 0.55);
-}
-
-.mobile-menu-drawer.is-dark-desk .mobile-menu-link .menu-num {
-  color: rgba(255, 247, 237, 0.55);
-}
-
-.mobile-menu-link .menu-title {
-  font-family: 'DM Sans', -apple-system, sans-serif;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #174276;
-  letter-spacing: 0.2px;
-}
-
-.mobile-menu-drawer.is-dark-desk .mobile-menu-link .menu-title {
-  color: #fff7ed;
-}
-
-.mobile-menu-footer {
-  padding-top: 8px;
-  border-top: 1px solid rgba(40, 89, 145, 0.12);
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mobile-menu-drawer.is-dark-desk .mobile-menu-footer {
-  border-top-color: rgba(255, 247, 237, 0.14);
-}
-
-.menu-footer-email {
-  font-family: var(--mono, 'Space Mono', monospace);
-  font-size: 10.5px;
-  font-weight: 700;
-  color: #285991;
-  text-decoration: none;
-  display: block;
-  letter-spacing: 0.3px;
-  padding: 4px 6px;
-  border-radius: 4px;
-  transition: color 0.18s ease;
-}
-
-.mobile-menu-drawer.is-dark-desk .menu-footer-email {
-  color: rgba(255, 247, 237, 0.85);
+  .nav-morph-link {
+    font-size: 9.5px;
+    letter-spacing: 0.5px;
+    padding: 4px 4px;
+  }
 }
 
 /* 3. Mobile Landing Page Name Placement (Bottom, Two lines: BASIL \n JOSE) */

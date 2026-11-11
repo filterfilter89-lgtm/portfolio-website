@@ -413,7 +413,7 @@ export default function App({ initialView }) {
       <BackgroundTransition color={bgColor} />
 
       {/* Top-Right Hamburger Menu (Mobile Interface) */}
-      <HamburgerMenu currentView={view} onNavigate={handleMobileNavigate} />
+      <HamburgerMenu currentView={view} isDark={view === 'showcase' || isCategoryActive || Boolean(selectedCategoryId)} onNavigate={handleMobileNavigate} />
 
       {/* Keep VisualReel persistently mounted in DOM */}
       <div
