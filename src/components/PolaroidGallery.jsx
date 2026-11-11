@@ -14,100 +14,98 @@ import InCardVideoPlayer from './InCardVideoPlayer';
 function getProjectScatterSlot(index, totalCount, isMobile = false) {
   if (isMobile) {
     if (totalCount === 1) {
-      return { left: '50%', top: '50%', rot: -1.0, maxW: '68%', maxH: '76%', z: 10 };
+      return { left: '50%', top: '50%', rot: -1.0, maxW: '82%', maxH: '82%', z: 10 };
     }
     if (totalCount === 2) {
+      // In mobile vertical orientation, stack 2 items vertically with generous sizing
       const slots2 = [
-        { left: '28%', top: '50%', rot: -2.2, maxW: '36%', maxH: '74%', z: 11 },
-        { left: '72%', top: '50%', rot: 2.0, maxW: '36%', maxH: '74%', z: 12 }
+        { left: '49%', top: '28%', rot: -1.8, maxW: '80%', maxH: '44%', z: 11 },
+        { left: '51%', top: '72%', rot: 2.0, maxW: '80%', maxH: '44%', z: 12 }
       ];
       return slots2[index % slots2.length];
     }
     if (totalCount === 3) {
       const slots3 = [
-        { left: '20%', top: '50%', rot: -2.5, maxW: '24%', maxH: '74%', z: 11 },
-        { left: '50%', top: '49%', rot: 1.2, maxW: '24%', maxH: '74%', z: 13 },
-        { left: '80%', top: '50%', rot: 2.2, maxW: '24%', maxH: '74%', z: 12 }
+        { left: '50%', top: '22%', rot: -1.8, maxW: '78%', maxH: '34%', z: 11 },
+        { left: '30%', top: '65%', rot: 2.0, maxW: '46%', maxH: '42%', z: 12 },
+        { left: '70%', top: '67%', rot: -1.6, maxW: '46%', maxH: '42%', z: 13 }
       ];
       return slots3[index % slots3.length];
     }
     if (totalCount === 4) {
       const slots4 = [
-        { left: '28%', top: '30%', rot: -2.0, maxW: '34%', maxH: '36%', z: 11 },
-        { left: '72%', top: '30%', rot: 1.8, maxW: '34%', maxH: '36%', z: 12 },
-        { left: '28%', top: '70%', rot: 1.6, maxW: '34%', maxH: '36%', z: 13 },
-        { left: '72%', top: '70%', rot: -1.8, maxW: '34%', maxH: '36%', z: 14 }
+        { left: '30%', top: '28%', rot: -2.0, maxW: '44%', maxH: '38%', z: 11 },
+        { left: '70%', top: '28%', rot: 1.8, maxW: '44%', maxH: '38%', z: 12 },
+        { left: '30%', top: '72%', rot: 1.6, maxW: '44%', maxH: '38%', z: 13 },
+        { left: '70%', top: '72%', rot: -1.8, maxW: '44%', maxH: '38%', z: 14 }
       ];
       return slots4[index % slots4.length];
     }
     if (totalCount === 5) {
-      // 3 items top row, 2 items bottom row staggered cleanly
+      // 2 columns in mobile vertical orientation
       const slots5 = [
-        { left: '19%', top: '29%', rot: -2.0, maxW: '22%', maxH: '36%', z: 11 },
-        { left: '50%', top: '27%', rot: 1.5, maxW: '22%', maxH: '36%', z: 13 },
-        { left: '81%', top: '29%', rot: -1.8, maxW: '22%', maxH: '36%', z: 12 },
-        { left: '34.5%', top: '71%', rot: 1.8, maxW: '22%', maxH: '36%', z: 14 },
-        { left: '65.5%', top: '71%', rot: -1.6, maxW: '22%', maxH: '36%', z: 15 }
+        { left: '30%', top: '20%', rot: -2.0, maxW: '44%', maxH: '28%', z: 11 },
+        { left: '70%', top: '22%', rot: 1.8, maxW: '44%', maxH: '28%', z: 12 },
+        { left: '30%', top: '50%', rot: 1.5, maxW: '44%', maxH: '28%', z: 13 },
+        { left: '70%', top: '52%', rot: -1.6, maxW: '44%', maxH: '28%', z: 14 },
+        { left: '50%', top: '80%', rot: 1.4, maxW: '44%', maxH: '28%', z: 15 }
       ];
       return slots5[index % slots5.length];
     }
 
-    // 6+ items (e.g. 8 for Fruitly)
-    const half = Math.ceil(totalCount / 2);
-    const isTop = index < half;
-    const colIdx = isTop ? index : (index - half);
-    const rowCount = isTop ? half : (totalCount - half);
-    const step = 70 / Math.max(1, rowCount - 1);
-    const leftVal = 15 + colIdx * step;
-    const topVal = isTop ? 29 : 71;
+    // 6+ items (e.g. 8 for Fruitly) in mobile vertical orientation
+    const col = index % 2;
+    const row = Math.floor(index / 2);
+    const rowCount = Math.ceil(totalCount / 2);
+    const step = 68 / Math.max(1, rowCount - 1);
+    const topVal = 16 + row * step;
+    const leftVal = col === 0 ? 30 : 70;
     const rot = (index % 2 === 0 ? -1 : 1) * (1.4 + (index % 3) * 0.5);
-    const maxW = `${Math.min(22, Math.floor(66 / rowCount))}%`;
     return {
-      left: `${leftVal.toFixed(1)}%`,
-      top: `${topVal}%`,
+      left: `${leftVal}%`,
+      top: `${topVal.toFixed(1)}%`,
       rot,
-      maxW,
-      maxH: '36%',
+      maxW: '44%',
+      maxH: `${Math.min(24, Math.floor(74 / rowCount))}%`,
       z: 10 + index
     };
   }
 
-  // Desktop Viewport
+  // Desktop Viewport: calibrated with generous margins to strictly eliminate edge collision
   if (totalCount === 1) {
-    return { left: '50%', top: '50%', rot: -1.0, maxW: '48%', maxH: '78%', z: 10 };
+    return { left: '50%', top: '50%', rot: -1.0, maxW: '48%', maxH: '76%', z: 10 };
   }
   if (totalCount === 2) {
     const slots2 = [
-      { left: '30%', top: '50%', rot: -2.2, maxW: '32%', maxH: '74%', z: 11 },
-      { left: '70%', top: '50%', rot: 2.0, maxW: '32%', maxH: '74%', z: 12 }
+      { left: '32%', top: '50%', rot: -2.0, maxW: '32%', maxH: '72%', z: 11 },
+      { left: '68%', top: '50%', rot: 2.0, maxW: '32%', maxH: '72%', z: 12 }
     ];
     return slots2[index % slots2.length];
   }
   if (totalCount === 3) {
     const slots3 = [
-      { left: '21%', top: '50%', rot: -2.5, maxW: '24%', maxH: '74%', z: 11 },
-      { left: '50%', top: '48%', rot: 1.2, maxW: '24%', maxH: '74%', z: 13 },
-      { left: '79%', top: '50%', rot: 2.5, maxW: '24%', maxH: '74%', z: 12 }
+      { left: '22%', top: '50%', rot: -2.2, maxW: '24%', maxH: '72%', z: 11 },
+      { left: '50%', top: '48%', rot: 1.2, maxW: '24%', maxH: '72%', z: 13 },
+      { left: '78%', top: '50%', rot: 2.2, maxW: '24%', maxH: '72%', z: 12 }
     ];
     return slots3[index % slots3.length];
   }
   if (totalCount === 4) {
     const slots4 = [
-      { left: '15.5%', top: '50%', rot: -2.4, maxW: '18.5%', maxH: '74%', z: 11 },
-      { left: '38.5%', top: '48%', rot: 1.8, maxW: '18.5%', maxH: '74%', z: 13 },
-      { left: '61.5%', top: '52%', rot: -1.6, maxW: '18.5%', maxH: '74%', z: 12 },
-      { left: '84.5%', top: '49%', rot: 2.2, maxW: '18.5%', maxH: '74%', z: 14 }
+      { left: '17%', top: '50%', rot: -2.2, maxW: '18%', maxH: '72%', z: 11 },
+      { left: '39%', top: '48%', rot: 1.8, maxW: '18%', maxH: '72%', z: 13 },
+      { left: '61%', top: '52%', rot: -1.6, maxW: '18%', maxH: '72%', z: 12 },
+      { left: '83%', top: '49%', rot: 2.0, maxW: '18%', maxH: '72%', z: 14 }
     ];
     return slots4[index % slots4.length];
   }
   if (totalCount === 5) {
-    // 3 items top row, 2 items bottom row staggered
     const slots5 = [
-      { left: '20%', top: '29%', rot: -2.2, maxW: '23%', maxH: '37%', z: 11 },
-      { left: '50%', top: '27%', rot: 1.5, maxW: '23%', maxH: '37%', z: 13 },
-      { left: '80%', top: '29%', rot: -2.0, maxW: '23%', maxH: '37%', z: 12 },
-      { left: '35%', top: '71%', rot: 2.0, maxW: '23%', maxH: '37%', z: 14 },
-      { left: '65%', top: '71%', rot: -1.8, maxW: '23%', maxH: '37%', z: 15 }
+      { left: '22%', top: '30%', rot: -2.0, maxW: '22%', maxH: '36%', z: 11 },
+      { left: '50%', top: '28%', rot: 1.5, maxW: '22%', maxH: '36%', z: 13 },
+      { left: '78%', top: '30%', rot: -2.0, maxW: '22%', maxH: '36%', z: 12 },
+      { left: '36%', top: '70%', rot: 2.0, maxW: '22%', maxH: '36%', z: 14 },
+      { left: '64%', top: '70%', rot: -1.8, maxW: '22%', maxH: '36%', z: 15 }
     ];
     return slots5[index % slots5.length];
   }
@@ -117,17 +115,17 @@ function getProjectScatterSlot(index, totalCount, isMobile = false) {
   const isTop = index < half;
   const colIdx = isTop ? index : (index - half);
   const rowCount = isTop ? half : (totalCount - half);
-  const step = 72 / Math.max(1, rowCount - 1);
-  const leftVal = 14 + colIdx * step;
-  const topVal = isTop ? 29 : 71;
+  const step = 66 / Math.max(1, rowCount - 1);
+  const leftVal = 17 + colIdx * step;
+  const topVal = isTop ? 30 : 70;
   const rot = (index % 2 === 0 ? -1 : 1) * (1.5 + (index % 3) * 0.6);
-  const maxW = `${Math.min(22, Math.floor(70 / rowCount))}%`;
+  const maxW = `${Math.min(20, Math.floor(66 / rowCount))}%`;
   return {
     left: `${leftVal.toFixed(1)}%`,
     top: `${topVal}%`,
     rot,
     maxW,
-    maxH: '36%',
+    maxH: '35%',
     z: 10 + index
   };
 }
@@ -245,9 +243,9 @@ export default memo(function PolaroidGallery({
                         boxSizing: 'border-box'
                       }}
                     >
-                      <div className="scattered-photo-well">
+                      <div className="scattered-photo-well" style={{ '--media-ar': frameAR }}>
                         {isVideo ? (
-                          <div className="exact-aspect-video-wrapper">
+                          <div className="exact-aspect-video-wrapper" style={{ aspectRatio: frameAR }}>
                             <InCardVideoPlayer
                               project={project}
                               media={item}
@@ -260,6 +258,7 @@ export default memo(function PolaroidGallery({
                             src={imgSrc}
                             alt={item.title || ''}
                             className="scattered-img"
+                            style={{ aspectRatio: frameAR }}
                             loading="lazy"
                             draggable="false"
                           />

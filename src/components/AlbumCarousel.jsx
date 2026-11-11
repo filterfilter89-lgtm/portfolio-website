@@ -41,33 +41,29 @@ function getScatterSlot(index, totalCount, isMobile) {
     }
     if (totalCount === 4) {
       const slots4 = [
-        { left: '26vw', top: '31vh', rot: -2.0, z: 12 },
-        { left: '74vw', top: '31vh', rot: 1.8, z: 13 },
-        { left: '26vw', top: '66vh', rot: 1.6, z: 14 },
-        { left: '74vw', top: '66vh', rot: -1.8, z: 15 }
+        { left: '47vw', top: '23vh', rot: -2.5, z: 12 },
+        { left: '53vw', top: '39vh', rot: 2.2, z: 13 },
+        { left: '46vw', top: '56vh', rot: -1.8, z: 14 },
+        { left: '54vw', top: '72vh', rot: 2.0, z: 15 }
       ];
       return slots4[index % slots4.length];
     }
     if (totalCount === 5) {
       const slots5 = [
-        { left: '26vw', top: '23vh', rot: -2.0, z: 12 },
-        { left: '74vw', top: '32vh', rot: 1.8, z: 14 },
-        { left: '26vw', top: '48vh', rot: 1.6, z: 13 },
-        { left: '74vw', top: '57vh', rot: -2.0, z: 15 },
-        { left: '26vw', top: '73vh', rot: -1.8, z: 16 }
+        { left: '48vw', top: '20vh', rot: -2.6, z: 12 },
+        { left: '52vw', top: '34vh', rot: 2.0, z: 13 },
+        { left: '47vw', top: '48vh', rot: -1.8, z: 14 },
+        { left: '53vw', top: '63vh', rot: 2.4, z: 15 },
+        { left: '49vw', top: '77vh', rot: -2.0, z: 16 }
       ];
       return slots5[index % slots5.length];
     }
 
-    // 6+ cards: 2 balanced columns
-    const half = Math.ceil(totalCount / 2);
-    const isLeft = index < half;
-    const colIdx = isLeft ? index : (index - half);
-    const colCount = isLeft ? half : (totalCount - half);
-    const step = 60 / Math.max(1, colCount - 1);
-    const topVal = (isLeft ? (19 + colIdx * step) : (25 + colIdx * step)).toFixed(1);
-    const leftVal = isLeft ? '26vw' : '74vw';
-    const rot = (index % 2 === 0 ? -1 : 1) * (1.4 + (index % 3) * 0.5);
+    // 6+ cards: Organic vertical cascade with prominent visual presence
+    const step = 62 / Math.max(1, totalCount - 1);
+    const topVal = (18 + index * step).toFixed(1);
+    const leftVal = index % 2 === 0 ? '47vw' : '53vw';
+    const rot = (index % 2 === 0 ? -1 : 1) * (1.6 + (index % 3) * 0.6);
     return {
       left: leftVal,
       top: `${topVal}vh`,
@@ -193,15 +189,9 @@ const DraggablePostcard = memo(function DraggablePostcard({
   const targetX = parseUnit(scatterSlot.left, vw);
   const targetY = parseUnit(scatterSlot.top, vh);
 
-  // Card dimensions on desk: calibrated by Heatmap method for 0% overlap & generous margins
+  // Prominent resting postcard dimensions restored per user requirement
   const restingW = isMobile
-    ? (totalCount <= 2
-        ? Math.min(270, Math.round(vw * 0.72))
-        : (totalCount === 3
-            ? Math.min(230, Math.round(vw * 0.62))
-            : (totalCount === 4
-                ? Math.min(150, Math.round(vw * 0.38))
-                : Math.min(145, Math.round(vw * 0.37)))))
+    ? Math.min(295, Math.round(vw * 0.78))
     : (totalCount >= 7
         ? Math.round(cardW * 0.74)
         : (totalCount === 5
@@ -209,13 +199,20 @@ const DraggablePostcard = memo(function DraggablePostcard({
             : Math.round(cardW * 0.86)));
   const restingH = Math.round(restingW * 0.5625);
 
-  // Card dimensions when expanded to 86% viewport
-  let enlargedW = isMobile ? Math.round(vw * 0.94) : Math.min(1380, Math.round(vw * 0.86));
-  let enlargedH = Math.round(enlargedW * 0.5625);
-  const maxH = Math.min(840, Math.round(vh * 0.84));
-  if (enlargedH > maxH) {
-    enlargedH = maxH;
-    enlargedW = Math.round(enlargedH / 0.5625);
+  // Expanded dimensions: On mobile, transitions into a tall VERTICAL (portrait) orientation; on desktop, widescreen 16:9
+  let enlargedW = isMobile
+    ? Math.min(360, Math.round(vw * 0.90))
+    : Math.min(1380, Math.round(vw * 0.86));
+  let enlargedH = isMobile
+    ? Math.min(620, Math.round(vh * 0.78))
+    : Math.round(enlargedW * 0.5625);
+
+  if (!isMobile) {
+    const maxH = Math.min(840, Math.round(vh * 0.84));
+    if (enlargedH > maxH) {
+      enlargedH = maxH;
+      enlargedW = Math.round(enlargedH / 0.5625);
+    }
   }
 
   // Emergence origin strictly from the top opening of the center album (Zero Overlap with album cover)
@@ -602,6 +599,20 @@ export default function AlbumCarousel({
       window.history.pushState(null, '', '#work/' + selectedCategory.id);
     }
   }, [selectedCategory, onProjectChange]);
+
+  // Sync with initialProjectId changes (e.g. browser back button from project -> category)
+  useEffect(() => {
+    if (!initialProjectId && activeFullscreenProject) {
+      handleCloseProject();
+    } else if (initialProjectId && (!activeFullscreenProject || activeFullscreenProject.id !== initialProjectId)) {
+      if (selectedCategory) {
+        const found = selectedCategory.projects.find((p) => p.id === initialProjectId);
+        if (found) {
+          handleOpenProject(found);
+        }
+      }
+    }
+  }, [initialProjectId]);
 
   // Resize listener with passive flag and mobile address bar jitter debounce
   useEffect(() => {
@@ -1122,8 +1133,8 @@ export default function AlbumCarousel({
         <button
           type="button"
           className="clean-back-btn is-showcase"
-          onClick={handleReturnToCarousel}
-          aria-label="Return to Album Carousel"
+          onClick={activeFullscreenProject ? handleCloseProject : handleReturnToCarousel}
+          aria-label={activeFullscreenProject ? "Close project details" : "Return to Album Carousel"}
           title="Back (ESC)"
         >
           <svg className="back-arrow-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

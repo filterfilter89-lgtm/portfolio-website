@@ -70,16 +70,16 @@ export default function HamburgerMenu({ currentView = 'reel', onNavigate }) {
         aria-hidden="true"
       />
 
-      {/* Slide-out Navigation Drawer */}
+      {/* Connected Compact Navigation Popover Box */}
       <nav
-        className={`mobile-menu-drawer ${isOpen ? 'is-open' : ''}`}
-        aria-label="Mobile Navigation"
+        className={`mobile-menu-drawer ${isOpen ? 'is-open' : ''} ${isDarkDesk ? 'is-dark-desk' : ''}`}
+        aria-label="Navigation Menu"
       >
         <div className="mobile-menu-inner">
-          {/* Drawer Header */}
+          {/* Compact Header */}
           <div className="mobile-menu-header">
-            <span className="mobile-menu-brand">BASIL JOSE</span>
-            <span className="mobile-menu-tag">DIRECTORY</span>
+            <span className="mobile-menu-brand">DIRECTORY</span>
+            <span className="mobile-menu-tag">BASIL JOSE</span>
           </div>
 
           {/* Navigation Links */}
@@ -92,7 +92,6 @@ export default function HamburgerMenu({ currentView = 'reel', onNavigate }) {
               >
                 <span className="menu-num">01</span>
                 <span className="menu-title">REEL</span>
-                <span className="menu-sub">Visual Introduction</span>
               </button>
             </li>
 
@@ -104,7 +103,6 @@ export default function HamburgerMenu({ currentView = 'reel', onNavigate }) {
               >
                 <span className="menu-num">02</span>
                 <span className="menu-title">WORK</span>
-                <span className="menu-sub">Albums &amp; Postcards</span>
               </button>
             </li>
 
@@ -116,7 +114,6 @@ export default function HamburgerMenu({ currentView = 'reel', onNavigate }) {
               >
                 <span className="menu-num">03</span>
                 <span className="menu-title">CONTACT</span>
-                <span className="menu-sub">Inquiries &amp; Projects</span>
               </button>
             </li>
 
@@ -129,24 +126,16 @@ export default function HamburgerMenu({ currentView = 'reel', onNavigate }) {
                 onClick={() => setIsOpen(false)}
               >
                 <span className="menu-num">04</span>
-                <span className="menu-title">RESUME / CV</span>
-                <span className="menu-sub">Download PDF &#8599;</span>
+                <span className="menu-title">RESUME &#8599;</span>
               </a>
             </li>
           </ul>
 
-          {/* Drawer Footer */}
+          {/* Compact Footer */}
           <div className="mobile-menu-footer">
-            <div className="mobile-menu-contact-info">
-              <span className="menu-footer-label">GET IN TOUCH</span>
-              <a href="mailto:basiljose8989@gmail.com" className="menu-footer-email">
-                basiljose8989@gmail.com
-              </a>
-              <span className="menu-footer-geo">Kochi, Kerala &#8226; Open to Global Remote</span>
-            </div>
-            <div className="mobile-menu-copyright">
-              <span>&#169; 2026 Basil Jose</span>
-            </div>
+            <a href="mailto:basiljose8989@gmail.com" className="menu-footer-email">
+              basiljose8989@gmail.com
+            </a>
           </div>
         </div>
       </nav>

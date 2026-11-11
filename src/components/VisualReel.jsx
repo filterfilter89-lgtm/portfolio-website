@@ -382,12 +382,6 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
               </div>
             </div>
 
-            {/* Mobile bottom arrangement: BASIL \n JOSE in two separate lines */}
-            <div className="hero-flapstick-mobile-bottom" id="hero-title-mobile-bottom">
-              <div className="hero-flapstick-mobile-line">BASIL</div>
-              <div className="hero-flapstick-mobile-line">JOSE</div>
-            </div>
-
             {/* Small minimal instruction indicating users can scroll */}
             <div className="hero-scroll-instruction" ref={scrollIndicatorRef}>
               <span className="scroll-instruction-text">SCROLL &#8595;</span>

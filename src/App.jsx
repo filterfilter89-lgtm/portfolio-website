@@ -5,6 +5,7 @@ import BackgroundTransition from './components/BackgroundTransition';
 import DitherTransition from './components/DitherTransition';
 import HamburgerMenu from './components/HamburgerMenu';
 import ContactView from './components/ContactView';
+import LineWaves from './components/LineWaves';
 import { getCategoryById, getProjectById } from './data/categories';
 import '../styles.css';
 
@@ -14,6 +15,7 @@ export default function App({ initialView }) {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash;
       if (hash === '#contact' || window.location.pathname.includes('contact.html')) return 'contact';
+      if (hash === '#waves' || hash === '#linewaves' || window.location.pathname.includes('waves.html')) return 'waves';
       if (hash.startsWith('#work/')) return 'wheel';
       if (hash === '#work') return 'wheel';
     }
@@ -120,6 +122,12 @@ export default function App({ initialView }) {
         setIsCategoryActive(false);
         setBgColor('#fff7ed');
         setView('contact');
+      } else if (hash === '#waves' || hash === '#linewaves') {
+        setSelectedCategoryId(null);
+        setSelectedProjectId(null);
+        setIsCategoryActive(false);
+        setBgColor('#090d16');
+        setView('waves');
       } else if (hash.startsWith('#work/')) {
         const parts = hash.replace(/^#work\/?/, '').split('/');
         const catId = parts[0] || 'advertisement';
@@ -440,6 +448,76 @@ export default function App({ initialView }) {
       {/* Dedicated Contact Page View */}
       {view === 'contact' && (
         <ContactView onBack={handleBackFromContact} />
+      )}
+
+      {/* Interactive LineWaves View (#waves) */}
+      {view === 'waves' && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 90,
+            backgroundColor: '#090d16',
+            width: '100vw',
+            height: '100vh',
+            overflow: 'hidden'
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              zIndex: 10,
+              display: 'flex',
+              gap: '12px',
+              alignItems: 'center'
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setView('reel');
+                window.location.hash = '#reel';
+              }}
+              style={{
+                background: 'rgba(255, 255, 255, 0.12)',
+                color: '#ffffff',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: '6px',
+                padding: '8px 16px',
+                fontFamily: "'Space Mono', monospace",
+                fontSize: '13px',
+                cursor: 'pointer',
+                backdropFilter: 'blur(8px)'
+              }}
+            >
+              &#8592; Back to Portfolio
+            </button>
+            <span
+              style={{
+                color: 'rgba(255, 255, 255, 0.75)',
+                fontFamily: "'Space Mono', monospace",
+                fontSize: '12px'
+              }}
+            >
+              React Bits &bull; LineWaves
+            </span>
+          </div>
+
+          <LineWaves
+            color1="#ffffff"
+            color2="#336196"
+            color3="#fff7ed"
+            speed={0.3}
+            lineCount={72}
+            lineWidth={1.3}
+            highlight={1}
+            warpIntensity={1}
+            rotation={-33}
+            enableMouseInteraction={true}
+          />
+        </div>
       )}
 
       {/* Signature 16px Round-Pixel Radial Dither Canvas (Dynamic Stacking: 10 when behind album, 1000 when between pages) */}
