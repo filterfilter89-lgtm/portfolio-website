@@ -442,6 +442,49 @@ const DraggablePostcard = memo(function DraggablePostcard({
           }}
         >
           {isExpanded && (
+            <div
+              className="enlarged-postcard-header-block"
+              style={{
+                position: 'absolute',
+                top: isMobile ? '12px' : '18px',
+                left: isMobile ? '16px' : '24px',
+                zIndex: 25,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px',
+                pointerEvents: 'none',
+                maxWidth: 'calc(100% - 90px)'
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'Space Mono', monospace",
+                  fontSize: isMobile ? '11px' : '13px',
+                  fontWeight: 700,
+                  letterSpacing: '1.5px',
+                  color: '#174276',
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {project.title}
+              </span>
+              <span
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: isMobile ? '9.5px' : '11px',
+                  color: 'rgba(40, 89, 145, 0.7)',
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase'
+                }}
+              >
+                {project.role || category?.title || 'PORTFOLIO'}
+              </span>
+            </div>
+          )}
+          {isExpanded && (
             <button
               type="button"
               className="enlarged-postcard-close-btn"
@@ -466,6 +509,17 @@ const DraggablePostcard = memo(function DraggablePostcard({
     </motion.div>
   );
 });
+
+// Preload all 9 category stamp thumbnails for 0ms delay
+if (typeof window !== 'undefined') {
+  CATEGORIES.forEach((cat) => {
+    const thumb = cat.coverImage || cat.projects?.[0]?.thumbnail;
+    if (thumb) {
+      const img = new Image();
+      img.src = thumb;
+    }
+  });
+}
 
 export default function AlbumCarousel({
   activeCategoryId,
@@ -1058,7 +1112,10 @@ export default function AlbumCarousel({
     function handleKeyDown(e) {
       if (e.key === 'Escape') {
         if (activeFullscreenProject) {
+          e.preventDefault();
+          e.stopPropagation();
           handleCloseProject();
+          return;
         } else if (selectedCategory) {
           handleReturnToCarousel();
         } else if (onBack) {
@@ -1262,7 +1319,12 @@ export default function AlbumCarousel({
 
       {/* Step 3 & 5: Postcards pop out of the album mouth and scatter across desk */}
       {selectedCategory && showPostcards && (
-        <div className={"scattered-envelopes-wrapper" + (hasAlbumDescended ? " album-descended" : "") + (activeFullscreenProject ? " has-expanded-card" : "")}>
+        <div className={"scattered-envelopes-wrapper" + (hasAlbumDescended ? " album-descended" : "") + (activeFullscreenProject ? " has-expanded-card" : "")}
+          onClick={(e) => {
+            if (activeFullscreenProject && (e.target === e.currentTarget || e.target.classList.contains("scattered-envelopes-wrapper"))) {
+              handleCloseProject();
+            }
+          }}>
 
           {selectedCategory.projects.map((proj, idx) => {
             const scatter = getScatterSlot(idx, selectedCategory.projects.length, isMobile);
@@ -1292,16 +1354,14 @@ export default function AlbumCarousel({
           {selectedCategory.projects.length === 0 && (
             <div className="empty-category-desk-badge">
               <div className="empty-category-stamp">
-                <span className="empty-category-tag">COLLECTION EMPTY</span>
-                <h3 className="empty-category-title">{selectedCategory.title}</h3>
-                <p className="empty-category-text">
-                  Upload your project files or folders into:
-                </p>
-                <code className="empty-category-code">
-                  projects/{selectedCategory.id}/
-                </code>
-                <p className="empty-category-hint">
-                  Then type <strong>updated</strong> in chat to display them here.
+                <span className="empty-category-tag" style={{ letterSpacing: '2.5px', fontFamily: "'Space Mono', monospace" }}>
+                  ARCHIVE IN CURATION
+                </span>
+                <h3 className="empty-category-title" style={{ fontFamily: 'var(--serif, "Flapstick", serif)' }}>
+                  {selectedCategory.title}
+                </h3>
+                <p className="empty-category-text" style={{ fontFamily: "'Space Mono', monospace", fontSize: '11px', letterSpacing: '1px', opacity: 0.85, marginTop: '8px' }}>
+                  NEW REELS DISPATCHING SOON
                 </p>
               </div>
             </div>

@@ -6,6 +6,7 @@ import DitherTransition from './components/DitherTransition';
 import HamburgerMenu from './components/HamburgerMenu';
 import ContactView from './components/ContactView';
 import LineWaves from './components/LineWaves';
+import SoundToggle from './components/SoundToggle';
 import { getCategoryById, getProjectById } from './data/categories';
 import '../styles.css';
 
@@ -84,6 +85,16 @@ export default function App({ initialView }) {
       document.documentElement.style.overflow = 'auto';
       document.body.style.overflow = 'auto';
       document.title = 'Contact | Basil Jose';
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    if (view === 'waves') {
+      document.body.classList.remove('page-reel', 'is-showcase-active');
+      document.body.classList.add('page-work');
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.title = 'Basil Jose \u2022 Interactive Audio-Visual Waves';
       return;
     }
 
@@ -120,8 +131,12 @@ export default function App({ initialView }) {
         setSelectedCategoryId(null);
         setSelectedProjectId(null);
         setIsCategoryActive(false);
+        setIsDithering(false);
         setBgColor('#fff7ed');
         setView('contact');
+        if (typeof window !== 'undefined') {
+          window.scrollTo(0, 0);
+        }
       } else if (hash === '#waves' || hash === '#linewaves') {
         setSelectedCategoryId(null);
         setSelectedProjectId(null);
@@ -377,9 +392,13 @@ export default function App({ initialView }) {
       window.history.pushState(null, '', '#work');
     } else if (target === 'contact') {
       previousViewRef.current = view;
+      setIsDithering(false);
       setView('contact');
       setBgColor('#fff7ed');
       window.history.pushState(null, '', '#contact');
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0);
+      }
     }
   }, [view]);
 
@@ -419,6 +438,7 @@ export default function App({ initialView }) {
       <div
         className="reel-stage-container"
         style={{
+          display: view === 'contact' ? 'none' : 'block',
           visibility: view === 'reel' || ditherTargetRef.current === 'reel' || ditherTargetRef.current === 'reel_reverse' ? 'visible' : 'hidden',
           pointerEvents: view === 'reel' ? 'auto' : 'none',
           zIndex: view === 'reel' ? 20 : (ditherTargetRef.current === 'reel' ? 5 : 0)
@@ -501,7 +521,7 @@ export default function App({ initialView }) {
                 fontSize: '12px'
               }}
             >
-              React Bits &bull; LineWaves
+              Basil Jose &bull; Interactive Audio-Visual Waves
             </span>
           </div>
 
@@ -533,6 +553,8 @@ export default function App({ initialView }) {
         zIndex={ditherZIndex}
         onComplete={handleDitherComplete}
       />
+    {/* Bottom-Left Sound Toggle Button */}
+      <SoundToggle currentView={view} isDark={view === 'showcase' || isCategoryActive || Boolean(selectedCategoryId)} />
     </>
   );
 }

@@ -2358,36 +2358,106 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
   color: color-mix(in srgb, var(--blue, #336196) 50%, transparent);
 }
 
-/* Sound Toggle Button */
+/* Sound Toggle Button (Bottom-Left 44px circular matching hamburger pill aesthetics) */
 .sound-toggle-btn {
   position: fixed;
-  top: 28px;
-  right: 36px;
-  z-index: 200;
+  bottom: max(24px, env(safe-area-inset-bottom, 24px));
+  left: max(28px, env(safe-area-inset-left, 28px));
+  z-index: 1000;
+  height: 44px;
+  width: 44px;
+  border-radius: 22px;
+  background: rgba(255, 247, 237, 0.92);
+  border: 1px solid rgba(40, 89, 145, 0.24);
+  color: var(--blue, #285991);
+  box-shadow: 0 4px 14px rgba(10, 25, 55, 0.1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--blue, #336196) 25%, transparent);
-  border-radius: 999px;
-  padding: 6px 14px;
-  color: var(--blue, #336196);
-  font-family: var(--mono, 'Space Mono', monospace);
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+  justify-content: center;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  padding: 0;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
+
 .sound-toggle-btn:hover {
-  background: color-mix(in srgb, var(--blue, #336196) 8%, transparent);
-  border-color: var(--blue, #336196);
-  transform: translateY(-1px);
+  transform: scale(1.08);
+  background: #fff7ed;
+  border-color: rgba(40, 89, 145, 0.45);
+  box-shadow: 0 6px 18px rgba(10, 25, 55, 0.15);
 }
-.sound-toggle-label {
-  font-weight: 700;
+
+.sound-toggle-btn:active {
+  transform: scale(0.94);
+}
+
+.sound-toggle-btn.is-dark-desk,
+.page-work.is-showcase-active .sound-toggle-btn {
+  background: rgba(51, 97, 150, 0.75);
+  border-color: rgba(255, 247, 237, 0.28);
+  color: var(--cream, #fff7ed);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 768px) {
+  .sound-toggle-btn {
+    bottom: max(20px, env(safe-area-inset-bottom, 20px));
+    left: max(18px, env(safe-area-inset-left, 18px));
+  }
+}
+
+/* Contact View Visibility & High Z-Index */
+.contact-view,
+.contact-page-wrapper {
+  position: relative;
+  z-index: 100 !important;
+  opacity: 1 !important;
+}
+
+body.page-contact {
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100vh;
+}
+
+body.page-contact #root {
+  min-height: 100vh;
+  overflow-y: auto !important;
+  height: auto !important;
+}
+
+/* Play Button Pulse Keyframes & Glow (Frame 48) */
+@keyframes playPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 247, 237, 0.55);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 0 0 16px rgba(255, 247, 237, 0);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 247, 237, 0);
+  }
+}
+
+.canvas-play-hitbox.is-pulse,
+.scroll-text--end[aria-hidden="false"] #reel-play-btn {
+  animation: playPulse 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* Video Player Controls: Touch Screen & Mobile Visibility */
+@media (hover: none), (max-width: 768px) {
+  .in-card-video-controls {
+    opacity: 1 !important;
+  }
+}
+
+.in-card-video-controls {
+  z-index: 20 !important;
+  pointer-events: auto !important;
 }
 
 /* Empty Category Desk Notice */

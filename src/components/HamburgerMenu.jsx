@@ -111,7 +111,7 @@ export default function HamburgerMenu({ currentView = 'reel', isDark = false, on
           </button>
 
           <a
-            href="/basil jose final cv.pdf"
+            href="/basil-jose-cv.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="nav-morph-link"

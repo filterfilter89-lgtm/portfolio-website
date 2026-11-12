@@ -11,5 +11,7 @@ scratch/
 .vercel
 /projects/
 *.pdf
+!public/*.pdf
 .env.local
 .env*.local
+.env*

@@ -397,7 +397,7 @@ export default function VisualReel({ onPlay, isReturning = false, isActive = tru
             <button
               type="button"
               ref={playBtnRef}
-              className="canvas-play-hitbox"
+              className={`canvas-play-hitbox ${playVisible ? "is-pulse" : ""}`}
               id="reel-play-btn"
               onClick={handleTriggerPlay}
               aria-label="Open vinyl album portfolio"

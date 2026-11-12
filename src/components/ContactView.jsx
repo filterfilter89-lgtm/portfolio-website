@@ -76,7 +76,7 @@ export default function ContactView({ onBack }) {
   };
 
   return (
-    <div className="contact-page-wrapper">
+    <div className="contact-page-wrapper contact-view">
       {/* Back Button: Strictly back arrow only (No text labels) */}
       <button
         type="button"
@@ -156,7 +156,7 @@ export default function ContactView({ onBack }) {
                 <div className="contact-meta-group">
                   <span className="meta-label">RESUME / CV</span>
                   <a
-                    href="/basil jose final cv.pdf"
+                    href="/basil-jose-cv.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="meta-link"

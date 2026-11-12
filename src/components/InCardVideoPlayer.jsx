@@ -6,6 +6,13 @@ import React, { useRef, useState, useEffect, memo } from 'react';
  * Preserves the exact original aspect ratio of the video (9:16 vertical reels, 16:9, etc.)
  * with zero cropping, distortion, or squashing.
  */
+function formatTime(seconds) {
+  if (isNaN(seconds) || seconds <= 0) return '0:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
 export default memo(function InCardVideoPlayer({
   project = {},
   media = null,
@@ -16,6 +23,8 @@ export default memo(function InCardVideoPlayer({
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [hasError, setHasError] = useState(false);
 
   // Exact natural aspect ratio
@@ -47,6 +56,8 @@ export default memo(function InCardVideoPlayer({
     if (!videoRef.current) return;
     const cur = videoRef.current.currentTime;
     const tot = videoRef.current.duration || 1;
+    setCurrentTime(cur);
+    setDuration(tot);
     setProgress((cur / tot) * 100);
   };
 
@@ -131,7 +142,13 @@ export default memo(function InCardVideoPlayer({
         )}
 
         {/* Floating Custom Video Controls */}
-        <div className="in-card-video-controls" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="in-card-video-controls"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          style={{ zIndex: 20, pointerEvents: 'auto' }}
+        >
           <button
             type="button"
             className="in-card-ctrl-btn"
@@ -152,12 +169,27 @@ export default memo(function InCardVideoPlayer({
 
           <div
             className="in-card-timeline"
+            onPointerDown={(e) => e.stopPropagation()}
             onClick={handleSeek}
             role="progressbar"
             aria-valuenow={Math.round(progress)}
           >
             <div className="in-card-timeline-fill" style={{ width: `${progress}%` }} />
           </div>
+
+          <span
+            className="in-card-time-display"
+            style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: '10px',
+              color: '#ffffff',
+              letterSpacing: '0.5px',
+              whiteSpace: 'nowrap',
+              opacity: 0.9
+            }}
+          >
+            {formatTime(currentTime)} / {formatTime(duration)}
+          </span>
 
           <button
             type="button"

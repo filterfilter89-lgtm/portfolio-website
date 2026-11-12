@@ -269,6 +269,10 @@ export default function DitherTransition({
             gl.clear(gl.COLOR_BUFFER_BIT);
             gl.uniform1f(uTLoc, isReverse ? 0.0 : 1.0);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
+            if (canvas) {
+              canvas.style.pointerEvents = 'none';
+              canvas.style.zIndex = '-1';
+            }
             if (onComplete) onComplete();
           }
         }
@@ -349,6 +353,10 @@ export default function DitherTransition({
             if (!isReverse) {
               ctx.fillStyle = color;
               ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            if (canvas) {
+              canvas.style.pointerEvents = 'none';
+              canvas.style.zIndex = '-1';
             }
             if (onComplete) onComplete();
           }

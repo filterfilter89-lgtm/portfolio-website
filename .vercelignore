@@ -5,6 +5,8 @@ dist/
 /frames/
 *.zip
 *.pdf
+!public/*.pdf
+!public/**/*.pdf
 test-results/
 playwright-report/
 scripts/

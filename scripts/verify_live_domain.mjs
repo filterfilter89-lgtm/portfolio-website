@@ -240,6 +240,91 @@ async function verifyLive() {
     await page.close();
   }
 
+
+  // 6. Contact View Verification (#contact)
+  {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await page.goto(`${LIVE_URL}/#contact`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(1000);
+
+    const contactCard = page.locator('.contact-card');
+    const isVisible = await contactCard.isVisible();
+    const box = isVisible ? await contactCard.boundingBox() : { y: -1, height: -1 };
+    const headline = isVisible ? (await page.textContent('.contact-headline')).trim() : '';
+    const emailLink = isVisible ? await page.locator('a[href^="mailto:basiljose8989@gmail.com"]').first().isVisible() : false;
+
+    report.push({
+      test: 'LIVE Contact View Visibility & Layout',
+      passed: isVisible && box.y >= 0 && headline.includes('Get in Touch') && emailLink,
+      details: `Visible: ${isVisible}, Y: ${box.y}px, Headline: "${headline}", Email Link: ${emailLink}`
+    });
+
+    await page.screenshot({ path: `${ARTIFACT_DIR}/live_verified_contact_view.png` });
+    await page.close();
+  }
+
+  // 7. Resume PDF & Waves HTML HTTP 200 Verification
+  {
+    const context = await browser.newContext();
+    const resumeRes = await context.request.get(`${LIVE_URL}/basil-jose-cv.pdf`);
+    const wavesRes = await context.request.get(`${LIVE_URL}/waves.html`);
+
+    report.push({
+      test: 'LIVE /basil-jose-cv.pdf HTTP 200 Status',
+      passed: resumeRes.status() === 200,
+      details: `Status: ${resumeRes.status()}, Size: ${(await resumeRes.body()).length} bytes`
+    });
+
+    report.push({
+      test: 'LIVE /waves.html HTTP 200 Status & Rebranded Title',
+      passed: wavesRes.status() === 200 && (await wavesRes.text()).includes('Basil Jose • Interactive Audio-Visual Waves'),
+      details: `Status: ${wavesRes.status()}`
+    });
+
+    await context.close();
+  }
+
+  // 8. Bottom-Left Sound Toggle Button
+  {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await page.goto(`${LIVE_URL}/`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(1000);
+
+    const soundBtn = page.locator('.sound-toggle-btn');
+    const isVisible = await soundBtn.isVisible();
+    const box = isVisible ? await soundBtn.boundingBox() : { x: -1, y: -1, width: 0, height: 0 };
+    const isBottomLeft = box.x <= 40 && box.y >= 800;
+
+    report.push({
+      test: 'LIVE 44px Circular Sound Toggle (Bottom-Left)',
+      passed: isVisible && isBottomLeft && box.width === 44 && box.height === 44,
+      details: `Visible: ${isVisible}, X: ${box.x}px, Y: ${box.y}px, Dimensions: ${box.width}x${box.height}px`
+    });
+
+    await page.close();
+  }
+
+  // 9. Empty Category Restrained Curation Stamp (#work/advertisement)
+  {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await page.goto(`${LIVE_URL}/#work/advertisement`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(1500);
+
+    const emptyStamp = page.locator('.empty-category-stamp');
+    const isVisible = await emptyStamp.isVisible();
+    const text = isVisible ? (await emptyStamp.innerText()).trim() : '';
+    const hasCuration = text.includes('ARCHIVE IN CURATION') && text.includes('NEW REELS DISPATCHING SOON');
+    const hasNoRawPrompt = !text.includes('Upload your project files');
+
+    report.push({
+      test: 'LIVE Empty Category Restrained Stamp (Zero Raw Developer Prompts)',
+      passed: isVisible && hasCuration && hasNoRawPrompt,
+      details: `Visible: ${isVisible}, Has Curation: ${hasCuration}, Zero Raw: ${hasNoRawPrompt}`
+    });
+
+    await page.close();
+  }
+
   console.log('\n================ LIVE DOMAIN TEST SUMMARY ================');
   let allPassed = true;
   for (const r of report) {

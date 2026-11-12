@@ -87,6 +87,9 @@ const PostcardSVG = memo(function PostcardSVG({
                 width="314.15"
                 height="433.81"
                 href={thumbnail}
+                xlinkHref={thumbnail}
+                loading="eager"
+                decoding="async"
                 preserveAspectRatio="xMidYMid slice"
               />
             </g>

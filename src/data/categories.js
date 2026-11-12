@@ -375,17 +375,17 @@ export const CATEGORIES = [
       },
       {
         "id": "final-3",
-        "title": "Final 3",
+        "title": "Kinetic Commercial Reel",
         "client": "Basil Jose",
         "role": "VIDEOGRAPHY",
-        "description": "Final 3 collection.",
+        "description": "Kinetic commercial videography collection.",
         "thumbnail": "/projects/videography/final-3/FINAL 3-thumb.webp",
         "videoSrc": "/projects/videography/final-3/FINAL 3.mp4",
         "dateStamp": "2026",
         "media": [
           {
-            "title": "Final 3",
-            "caption": "Final 3",
+            "title": "Kinetic Commercial Reel",
+            "caption": "Kinetic Commercial Reel",
             "type": "video",
             "src": "/projects/videography/final-3/FINAL 3.mp4",
             "poster": "/projects/videography/final-3/FINAL 3-thumb.webp",
