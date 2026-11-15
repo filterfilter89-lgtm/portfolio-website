@@ -612,65 +612,87 @@ function AlbumCarousel({
 
   const [activeFullscreenProject, setActiveFullscreenProject] = useState(null);
 
-  // Sync selectedCategory if URL updates externally
+  // Sync selectedCategory whenever activeCategoryId changes (including null when pressing Browser Back to #work)
   useEffect(() => {
-    if (activeCategoryId) {
-      const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
-      if (cat) {
-        setSelectedCategory(cat);
-        const idx = ALBUMS.findIndex((a) => a.id === activeCategoryId);
-        if (idx >= 0) {
-          setSelectedSlot(idx);
-          targetScrollRef.current = idx * cardStep;
-          currentScrollRef.current = idx * cardStep;
-          setScrollProgress(idx * cardStep);
+    if (!activeCategoryId) {
+      setSelectedCategory(null);
+      setSelectedSlot(null);
+      setShowPostcards(false);
+      setHasAlbumDescended(false);
+      setIsAlbumDipped(false);
+      setIsCardsScattered(false);
+      setIsRetractingPostcards(false);
+      setActiveFullscreenProject(null);
+      setFlippingProjectId(null);
+      return;
+    }
+    const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
+    if (cat) {
+      setSelectedCategory(cat);
+      const idx = ALBUMS.findIndex((a) => a.id === activeCategoryId);
+      if (idx >= 0) {
+        setSelectedSlot(idx);
+        targetScrollRef.current = idx * cardStep;
+        currentScrollRef.current = idx * cardStep;
+        setScrollProgress(idx * cardStep);
+      }
+      setShowPostcards(true);
+      setHasAlbumDescended(true);
+      setIsCardsScattered(true);
+      setIsAlbumDipped(false);
+      setIsRetractingPostcards(false);
+    }
+  }, [activeCategoryId, cardStep]);
+
+  // Sync activeFullscreenProject whenever initialProjectId prop changes (including null on Browser Back)
+  useEffect(() => {
+    if (!initialProjectId) {
+      setActiveFullscreenProject(null);
+      setFlippingProjectId(null);
+    } else {
+      const targetCat = selectedCategory || (activeCategoryId ? CATEGORIES.find((c) => c.id === activeCategoryId) : null);
+      if (targetCat) {
+        const found = targetCat.projects.find((p) => p.id === initialProjectId);
+        if (found && activeFullscreenProject?.id !== initialProjectId) {
+          setActiveFullscreenProject(found);
         }
-        setShowPostcards(true);
-        setHasAlbumDescended(true);
-        setIsCardsScattered(true);
       }
     }
-    // Strictly do not auto-open projects on category load
-    setActiveFullscreenProject(null);
-    setFlippingProjectId(null);
-    if (onProjectChange) {
-      onProjectChange(null);
-    }
-  }, [activeCategoryId]);
+  }, [initialProjectId, activeCategoryId, selectedCategory, activeFullscreenProject]);
 
   // Postcard Click -> Open 70% Viewport 3D Flip Modal
   const handleOpenProject = useCallback((project) => {
     playCardFlip();
     setActiveFullscreenProject(project);
     if (onProjectChange) onProjectChange(project.id);
-    if (selectedCategory) {
-      window.history.pushState(null, '', '#work/' + selectedCategory.id + '/' + project.id);
+    const catId = selectedCategory?.id || activeCategoryId;
+    if (catId && typeof window !== 'undefined') {
+      const targetHash = '#work/' + catId + '/' + project.id;
+      if (window.location.hash !== targetHash) {
+        window.history.pushState(null, '', targetHash);
+      }
     }
-  }, [selectedCategory, onProjectChange]);
+  }, [selectedCategory, activeCategoryId, onProjectChange]);
 
   const handleCloseProject = useCallback(() => {
     playCardFlip();
     setActiveFullscreenProject(null);
     setFlippingProjectId(null);
     if (onProjectChange) onProjectChange(null);
-    if (selectedCategory) {
-      window.history.pushState(null, '', '#work/' + selectedCategory.id);
-    }
-  }, [selectedCategory, onProjectChange]);
-
-  // Sync with initialProjectId changes (e.g. browser back button from project -> category)
-  useEffect(() => {
-    if (!initialProjectId && activeFullscreenProject) {
-      handleCloseProject();
-    } else if (initialProjectId && (!activeFullscreenProject || activeFullscreenProject.id !== initialProjectId)) {
-      if (selectedCategory) {
-        const found = selectedCategory.projects.find((p) => p.id === initialProjectId);
-        if (found) {
-          handleOpenProject(found);
+    const catId = selectedCategory?.id || activeCategoryId;
+    if (catId && typeof window !== 'undefined') {
+      const targetHash = '#work/' + catId;
+      if (window.location.hash !== targetHash) {
+        if (window.location.hash.startsWith(targetHash + '/')) {
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.history.pushState(null, '', targetHash);
+          }
         }
       }
     }
-  }, [initialProjectId]);
+  }, [selectedCategory, activeCategoryId, onProjectChange]);
 
   // Resize listener with passive flag and mobile address bar jitter debounce
   useEffect(() => {
@@ -1100,7 +1122,15 @@ function AlbumCarousel({
       setSelectedCategory(null);
       setSelectedSlot(null);
       setHasAlbumDescended(false);
-      window.history.pushState(null, '', '#work');
+      if (typeof window !== 'undefined' && window.location.hash !== '#work') {
+        if (window.location.hash.startsWith('#work/')) {
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.history.pushState(null, '', '#work');
+          }
+        }
+      }
     }, 1000);
   }, [selectedCategory, isRetractingPostcards, onDitherTrigger, onCategoryChange, vw, vh]);
 
