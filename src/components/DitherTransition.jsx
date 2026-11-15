@@ -132,7 +132,7 @@ export default function DitherTransition({
   color = '#336196',
   sourceShape = 'uniform',
   boxHalfSize = 0,
-  duration = 750,
+  duration = 420,
   zIndex = 1000,
   onComplete
 }) {
@@ -144,7 +144,7 @@ export default function DitherTransition({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = 1;
     const width = window.innerWidth;
     const height = window.innerHeight;
     canvas.width = Math.round(width * dpr);
@@ -368,6 +368,9 @@ export default function DitherTransition({
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      if (canvas) {
+        canvas.style.pointerEvents = 'none';
+      }
     };
   }, [isActive, origin, cellSize, direction, color, sourceShape, boxHalfSize, duration, onComplete]);
 

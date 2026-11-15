@@ -413,7 +413,9 @@ const DraggablePostcard = memo(function DraggablePostcard({
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
             transform: 'rotateY(0deg)',
-            zIndex: 2,
+            zIndex: isExpanded ? 1 : 2,
+            visibility: isExpanded ? 'hidden' : 'visible',
+            pointerEvents: isExpanded ? 'none' : 'auto',
             borderRadius: isExpanded ? '6px' : '4px',
             overflow: 'hidden'
           }}
@@ -433,8 +435,10 @@ const DraggablePostcard = memo(function DraggablePostcard({
             height: '100%',
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
-            transform: 'rotateY(180deg)',
-            zIndex: 3,
+            transform: isExpanded ? 'rotateY(180deg) translateZ(1px)' : 'rotateY(180deg)',
+            zIndex: isExpanded ? 5 : 1,
+            visibility: isExpanded ? 'visible' : 'hidden',
+            opacity: 1,
             background: '#fff7ed',
             borderRadius: isExpanded ? '6px' : '4px',
             overflow: 'hidden',
@@ -521,7 +525,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export default function AlbumCarousel({
+function AlbumCarousel({
   activeCategoryId,
   initialProjectId = null,
   onBack,
@@ -1371,3 +1375,5 @@ export default function AlbumCarousel({
     </div>
   );
 }
+
+export default memo(AlbumCarousel);

@@ -74,6 +74,9 @@ export default memo(function InCardVideoPlayer({
     setHasError(false);
     if (videoRef.current) {
       if (isExpanded) {
+        try {
+          videoRef.current.load();
+        } catch (e) {}
         videoRef.current.currentTime = 0;
         videoRef.current.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
       } else {
@@ -82,6 +85,14 @@ export default memo(function InCardVideoPlayer({
       }
     }
   }, [videoSrc, isExpanded]);
+
+  useEffect(() => {
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+    };
+  }, []);
 
   return (
     <div
@@ -112,8 +123,10 @@ export default memo(function InCardVideoPlayer({
             ref={videoRef}
             src={videoSrc}
             poster={posterSrc}
-            autoPlay
+            preload={isExpanded ? 'auto' : 'metadata'}
+            autoPlay={isExpanded}
             playsInline
+            webkit-playsinline="true"
             loop
             muted={isMuted}
             onTimeUpdate={handleTimeUpdate}
@@ -125,8 +138,9 @@ export default memo(function InCardVideoPlayer({
               maxHeight: '100%',
               width: '100%',
               height: '100%',
-              objectFit: 'contain',
-              display: 'block'
+              objectFit: 'cover',
+              display: 'block',
+              borderRadius: 'inherit'
             }}
           />
         ) : (

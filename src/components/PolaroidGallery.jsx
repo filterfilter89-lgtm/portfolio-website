@@ -231,7 +231,7 @@ export default memo(function PolaroidGallery({
                 }}
                 aria-label={`Photo ${idx + 1}`}
               >
-                {/* Physical Polaroid Frame matching exact media aspect ratio with realistic bottom chin */}
+                {/* Media Container with curved corners and blue stroke matching exact aspect ratio */}
                 {(() => {
                   const isPortrait = isVideo || (naturalAR && naturalAR < 1);
                   const frameAR = naturalAR ? `${naturalAR}` : (isVideo ? '9 / 16' : '16 / 9');
@@ -259,12 +259,12 @@ export default memo(function PolaroidGallery({
                             alt={item.title || ''}
                             className="scattered-img"
                             style={{ aspectRatio: frameAR }}
-                            loading="lazy"
+                            loading="eager"
+                            decoding="async"
                             draggable="false"
                           />
                         )}
                       </div>
-                      <div className="scattered-chin" />
                     </div>
                   );
                 })()}

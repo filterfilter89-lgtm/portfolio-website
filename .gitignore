@@ -13,5 +13,9 @@ scratch/
 *.pdf
 !public/*.pdf
 .env.local
-.env*.local
 .env*
+.backup*
+.backup_*.local
+.env*
+.backup*
+.backup_*

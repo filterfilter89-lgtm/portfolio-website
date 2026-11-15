@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import VisualReel from './components/VisualReel';
 import AlbumCarousel from './components/AlbumCarousel';
 import BackgroundTransition from './components/BackgroundTransition';
 import DitherTransition from './components/DitherTransition';
 import HamburgerMenu from './components/HamburgerMenu';
-import ContactView from './components/ContactView';
-import LineWaves from './components/LineWaves';
-import SoundToggle from './components/SoundToggle';
+
+const ContactView = lazy(() => import('./components/ContactView'));
+const LineWaves = lazy(() => import('./components/LineWaves'));
 import { getCategoryById, getProjectById } from './data/categories';
 import '../styles.css';
 
@@ -49,6 +49,20 @@ export default function App({ initialView }) {
 
   // Track the scroll position when entering wheel to restore it exactly when returning
   const savedScrollYRef = useRef(0);
+
+  // Synchronously unlock DOM body overflow and restore scroll position to reel bottom
+  const unlockAndScrollToReel = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    document.body.classList.remove('page-work', 'is-showcase-active');
+    document.body.classList.add('page-reel');
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const targetScroll = savedScrollYRef.current > 0 ? savedScrollYRef.current : maxScroll;
+    if (targetScroll > 0) {
+      window.scrollTo({ top: targetScroll, behavior: 'instant' });
+    }
+  }, []);
 
   // Round-pixel dither transition state & orchestration
   const [isDithering, setIsDithering] = useState(false);
@@ -95,6 +109,7 @@ export default function App({ initialView }) {
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
       document.title = 'Basil Jose \u2022 Interactive Audio-Visual Waves';
+      window.scrollTo(0, 0);
       return;
     }
 
@@ -174,8 +189,10 @@ export default function App({ initialView }) {
         if (view === 'wheel' && handleGoBackRef.current) {
           handleGoBackRef.current();
         } else if (view !== 'reel') {
+          unlockAndScrollToReel();
           setView('reel');
           setIsReturning(true);
+          setTimeout(() => setIsReturning(false), 800);
         }
       }
     }
@@ -262,6 +279,7 @@ export default function App({ initialView }) {
       // True reverse: beige dither dots contracted into play button
       if (target === 'reel_reverse' || target === 'reel') {
         setBgColor('#fff7ed');
+        unlockAndScrollToReel();
         setView('reel');
         setIsWheelExiting(false);
         setIsReturning(true);
@@ -336,6 +354,7 @@ export default function App({ initialView }) {
     }
   }, []);
 
+  const handleBackToReel = handleGoBack;
   handleGoBackRef.current = handleGoBack;
 
   // Behind-the-album dither trigger (z-index: 10 strictly behind centered album at 25)
@@ -377,7 +396,10 @@ export default function App({ initialView }) {
       if (view === 'wheel' && handleGoBackRef.current) {
         handleGoBackRef.current();
       } else {
+        unlockAndScrollToReel();
         setView('reel');
+        setIsReturning(true);
+        setTimeout(() => setIsReturning(false), 800);
         setBgColor('#fff7ed');
         if (window.location.hash !== '#reel' && window.location.hash !== '') {
           window.history.pushState(null, '', '#reel');
@@ -409,11 +431,14 @@ export default function App({ initialView }) {
       setBgColor('#fff7ed');
       window.history.pushState(null, '', '#work');
     } else {
+      unlockAndScrollToReel();
+      setIsReturning(true);
       setView('reel');
+      setTimeout(() => setIsReturning(false), 800);
       setBgColor('#fff7ed');
       window.history.pushState(null, '', '#reel');
     }
-  }, []);
+  }, [unlockAndScrollToReel]);
 
   // Category changed: keep bgColor as #fff7ed while dithering behind the album!
   const handleCategoryChange = useCallback((catId) => {
@@ -467,7 +492,9 @@ export default function App({ initialView }) {
 
       {/* Dedicated Contact Page View */}
       {view === 'contact' && (
-        <ContactView onBack={handleBackFromContact} />
+        <Suspense fallback={null}>
+          <ContactView onBack={handleBackFromContact} />
+        </Suspense>
       )}
 
       {/* Interactive LineWaves View (#waves) */}
@@ -525,7 +552,8 @@ export default function App({ initialView }) {
             </span>
           </div>
 
-          <LineWaves
+          <Suspense fallback={null}>
+            <LineWaves
             color1="#ffffff"
             color2="#336196"
             color3="#fff7ed"
@@ -537,6 +565,7 @@ export default function App({ initialView }) {
             rotation={-33}
             enableMouseInteraction={true}
           />
+          </Suspense>
         </div>
       )}
 
@@ -553,8 +582,6 @@ export default function App({ initialView }) {
         zIndex={ditherZIndex}
         onComplete={handleDitherComplete}
       />
-    {/* Bottom-Left Sound Toggle Button */}
-      <SoundToggle currentView={view} isDark={view === 'showcase' || isCategoryActive || Boolean(selectedCategoryId)} />
-    </>
+        </>
   );
 }
