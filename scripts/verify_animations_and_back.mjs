@@ -8,9 +8,9 @@ async function run() {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 
-  // 1. Load #reel
-  console.log('[Step 1] Loading #reel on http://localhost:5173/#reel...');
-  await page.goto('http://localhost:5173/#reel', { waitUntil: 'networkidle' });
+  const targetUrl = process.argv[2] || 'http://localhost:5173/#reel';
+  console.log(`[Step 1] Loading #reel on ${targetUrl}...`);
+  await page.goto(targetUrl, { waitUntil: 'networkidle' });
   await page.waitForTimeout(1000);
 
   // 2. Scroll to bottom
