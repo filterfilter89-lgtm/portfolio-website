@@ -536,6 +536,9 @@ function AlbumCarousel({
   isExiting: isExitingProp = false
 }) {
   const containerRef = useRef(null);
+  const handleCloseProjectRef = useRef(null);
+  const handleReturnToCarouselRef = useRef(null);
+  const lastHandledProjectIdRef = useRef(initialProjectId);
   const [viewportSize, setViewportSize] = useState(() => ({
     width: typeof window !== 'undefined' ? window.innerWidth : 1440,
     height: typeof window !== 'undefined' ? window.innerHeight : 900
@@ -612,87 +615,107 @@ function AlbumCarousel({
 
   const [activeFullscreenProject, setActiveFullscreenProject] = useState(null);
 
-  // Sync selectedCategory whenever activeCategoryId changes (including null when pressing Browser Back to #work)
+  // Sync selectedCategory if URL updates externally
   useEffect(() => {
-    if (!activeCategoryId) {
-      setSelectedCategory(null);
-      setSelectedSlot(null);
-      setShowPostcards(false);
-      setHasAlbumDescended(false);
-      setIsAlbumDipped(false);
-      setIsCardsScattered(false);
-      setIsRetractingPostcards(false);
-      setActiveFullscreenProject(null);
-      setFlippingProjectId(null);
-      return;
-    }
-    const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
-    if (cat) {
-      setSelectedCategory(cat);
-      const idx = ALBUMS.findIndex((a) => a.id === activeCategoryId);
-      if (idx >= 0) {
-        setSelectedSlot(idx);
-        targetScrollRef.current = idx * cardStep;
-        currentScrollRef.current = idx * cardStep;
-        setScrollProgress(idx * cardStep);
-      }
-      setShowPostcards(true);
-      setHasAlbumDescended(true);
-      setIsCardsScattered(true);
-      setIsAlbumDipped(false);
-      setIsRetractingPostcards(false);
-    }
-  }, [activeCategoryId, cardStep]);
-
-  // Sync activeFullscreenProject whenever initialProjectId prop changes (including null on Browser Back)
-  useEffect(() => {
-    if (!initialProjectId) {
-      setActiveFullscreenProject(null);
-      setFlippingProjectId(null);
-    } else {
-      const targetCat = selectedCategory || (activeCategoryId ? CATEGORIES.find((c) => c.id === activeCategoryId) : null);
-      if (targetCat) {
-        const found = targetCat.projects.find((p) => p.id === initialProjectId);
-        if (found && activeFullscreenProject?.id !== initialProjectId) {
-          setActiveFullscreenProject(found);
+    if (activeCategoryId) {
+      const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
+      if (cat) {
+        setSelectedCategory(cat);
+        const idx = ALBUMS.findIndex((a) => a.id === activeCategoryId);
+        if (idx >= 0) {
+          setSelectedSlot(idx);
+          targetScrollRef.current = idx * cardStep;
+          currentScrollRef.current = idx * cardStep;
+          setScrollProgress(idx * cardStep);
         }
+        setShowPostcards(true);
+        setHasAlbumDescended(true);
+        setIsCardsScattered(true);
       }
     }
-  }, [initialProjectId, activeCategoryId, selectedCategory, activeFullscreenProject]);
+    // Strictly do not auto-open projects on category load
+    setActiveFullscreenProject(null);
+    setFlippingProjectId(null);
+    if (onProjectChange) {
+      onProjectChange(null);
+    }
+  }, [activeCategoryId]);
 
   // Postcard Click -> Open 70% Viewport 3D Flip Modal
   const handleOpenProject = useCallback((project) => {
     playCardFlip();
     setActiveFullscreenProject(project);
+    lastHandledProjectIdRef.current = project.id;
     if (onProjectChange) onProjectChange(project.id);
-    const catId = selectedCategory?.id || activeCategoryId;
-    if (catId && typeof window !== 'undefined') {
-      const targetHash = '#work/' + catId + '/' + project.id;
+    if (selectedCategory && typeof window !== 'undefined') {
+      const targetHash = '#work/' + selectedCategory.id + '/' + project.id;
       if (window.location.hash !== targetHash) {
         window.history.pushState(null, '', targetHash);
       }
     }
-  }, [selectedCategory, activeCategoryId, onProjectChange]);
+  }, [selectedCategory, onProjectChange]);
 
   const handleCloseProject = useCallback(() => {
     playCardFlip();
     setActiveFullscreenProject(null);
     setFlippingProjectId(null);
+    lastHandledProjectIdRef.current = null;
     if (onProjectChange) onProjectChange(null);
-    const catId = selectedCategory?.id || activeCategoryId;
-    if (catId && typeof window !== 'undefined') {
-      const targetHash = '#work/' + catId;
+    if (selectedCategory && typeof window !== 'undefined') {
+      const targetHash = '#work/' + selectedCategory.id;
       if (window.location.hash !== targetHash) {
-        if (window.location.hash.startsWith(targetHash + '/')) {
-          if (window.history.length > 1) {
-            window.history.back();
-          } else {
-            window.history.pushState(null, '', targetHash);
-          }
+        window.history.pushState(null, '', targetHash);
+      }
+    }
+  }, [selectedCategory, onProjectChange]);
+  handleCloseProjectRef.current = handleCloseProject;
+
+  // Only sync on external URL changes (direct deep link or manual URL change), never during user clicks
+  useEffect(() => {
+    if (!initialProjectId) {
+      if (activeFullscreenProject && lastHandledProjectIdRef.current !== null) {
+        handleCloseProject();
+      }
+    } else if (initialProjectId !== lastHandledProjectIdRef.current) {
+      lastHandledProjectIdRef.current = initialProjectId;
+      if (selectedCategory) {
+        const found = selectedCategory.projects.find((p) => p.id === initialProjectId);
+        if (found) {
+          handleOpenProject(found);
         }
       }
     }
-  }, [selectedCategory, activeCategoryId, onProjectChange]);
+  }, [initialProjectId, selectedCategory, activeFullscreenProject, handleCloseProject, handleOpenProject]);
+
+  // Synchronous refs for popstate listener to smoothly close flipped cards on Browser Back
+  const activeFullscreenProjectRef = useRef(activeFullscreenProject);
+  activeFullscreenProjectRef.current = activeFullscreenProject;
+
+  const selectedCategoryRef = useRef(selectedCategory);
+  selectedCategoryRef.current = selectedCategory;
+
+  const isRetractingPostcardsRef = useRef(isRetractingPostcards);
+  isRetractingPostcardsRef.current = isRetractingPostcards;
+
+  useEffect(() => {
+    function handlePopState() {
+      // 1. If a postcard is currently flipped open, smoothly close it using existing animated handler!
+      if (activeFullscreenProjectRef.current && handleCloseProjectRef.current) {
+        handleCloseProjectRef.current();
+        return;
+      }
+
+      // 2. If category desk is open and user popped back to #work (album wheel)
+      const hash = window.location.hash || '';
+      if (hash === '#work' && selectedCategoryRef.current && !isRetractingPostcardsRef.current && handleReturnToCarouselRef.current) {
+        handleReturnToCarouselRef.current();
+        return;
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Resize listener with passive flag and mobile address bar jitter debounce
   useEffect(() => {
@@ -1123,16 +1146,11 @@ function AlbumCarousel({
       setSelectedSlot(null);
       setHasAlbumDescended(false);
       if (typeof window !== 'undefined' && window.location.hash !== '#work') {
-        if (window.location.hash.startsWith('#work/')) {
-          if (window.history.length > 1) {
-            window.history.back();
-          } else {
-            window.history.pushState(null, '', '#work');
-          }
-        }
+        window.history.pushState(null, '', '#work');
       }
     }, 1000);
   }, [selectedCategory, isRetractingPostcards, onDitherTrigger, onCategoryChange, vw, vh]);
+  handleReturnToCarouselRef.current = handleReturnToCarousel;
 
   // Return to Visual Reel
   const handleReturnToReel = useCallback(() => {
