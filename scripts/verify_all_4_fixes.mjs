@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const LOCAL_URL = 'http://localhost:5173';
+const LOCAL_URL = process.argv[2] || 'http://localhost:5173';
 
 async function run() {
   console.log('=== STARTING TEST SUITE FOR ALL 4 FIXES ===\n');
