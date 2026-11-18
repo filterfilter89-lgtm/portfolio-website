@@ -14,7 +14,7 @@
       "destination": "/work.html"
     },
     {
-      "source": "/((?!api/|assets/|frames/|icons/|projects/|.*\\..*).*)",
+      "source": "/((?!api/|assets/|frames/|icons/|projects/|sounds/|.*\\..*).*)",
       "destination": "/index.html"
     }
   ],
@@ -38,6 +38,24 @@
       ]
     },
     {
+      "source": "/sounds/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/icons/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
       "source": "/assets/(.*)",
       "headers": [
         {
@@ -48,4 +66,3 @@
     }
   ]
 }
-

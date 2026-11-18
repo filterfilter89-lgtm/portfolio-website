@@ -38,6 +38,7 @@ export default function App({ initialView }) {
   });
 
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [reelProgress, setReelProgress] = useState(0);
 
   const [isWheelEntering, setIsWheelEntering] = useState(false);
   const [isReturning, setIsReturning] = useState(() => {
@@ -46,6 +47,14 @@ export default function App({ initialView }) {
     }
     return false;
   });
+
+  // Automatically reset isReturning once scroll settles
+  useEffect(() => {
+    if (isReturning) {
+      const timer = setTimeout(() => setIsReturning(false), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [isReturning]);
 
   // Track the scroll position when entering wheel to restore it exactly when returning
   const savedScrollYRef = useRef(0);
@@ -127,8 +136,8 @@ export default function App({ initialView }) {
   // Sync body class & title with current view
   useEffect(() => {
     if (view === 'contact') {
-      document.body.classList.remove('page-reel', 'is-showcase-active');
-      document.body.classList.add('page-work', 'page-contact');
+      document.body.classList.remove('page-reel', 'page-work', 'is-showcase-active');
+      document.body.classList.add('page-contact');
       document.documentElement.style.overflow = 'auto';
       document.body.style.overflow = 'auto';
       document.title = 'Contact | Basil Jose';
@@ -485,6 +494,8 @@ export default function App({ initialView }) {
       previousViewRef.current = view;
       setIsDithering(false);
       setView('contact');
+      setIsCategoryActive(false);
+      setSelectedCategoryId(null);
       setBgColor('#fff7ed');
       window.history.pushState(null, '', '#contact');
       if (typeof window !== 'undefined') {
@@ -497,6 +508,8 @@ export default function App({ initialView }) {
     const prev = previousViewRef.current;
     if (prev === 'wheel' || prev === 'showcase') {
       setView('wheel');
+      setIsCategoryActive(false);
+      setSelectedCategoryId(null);
       setBgColor('#fff7ed');
       window.history.pushState(null, '', '#work');
     } else {
@@ -521,18 +534,32 @@ export default function App({ initialView }) {
     }
   }, []);
 
+  const isDarkNav = (() => {
+    if (view === 'reel') {
+      return reelProgress > 0.55;
+    }
+    if (view === 'showcase' || (view === 'wheel' && Boolean(selectedCategoryId))) {
+      return true;
+    }
+    return false;
+  })();
+
   return (
     <>
       {/* Background layer: alone changes color from #fff7ed to #336196 behind all elements */}
       <BackgroundTransition color={bgColor} />
 
       {/* Top-Right Hamburger Menu (Mobile Interface) */}
-      <HamburgerMenu currentView={view} isDark={view === 'showcase' || isCategoryActive || Boolean(selectedCategoryId)} onNavigate={handleMobileNavigate} />
+      <HamburgerMenu currentView={view} isDark={isDarkNav} onNavigate={handleMobileNavigate} />
 
-      {/* Keep VisualReel persistently mounted in DOM */}
+      {/* Keep VisualReel persistently mounted in DOM without pushing down subsequent views */}
       <div
         className="reel-stage-container"
         style={{
+          position: view === 'reel' ? 'relative' : 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
           display: 'block',
           visibility: view === 'reel' || ditherTargetRef.current === 'reel' || ditherTargetRef.current === 'reel_reverse' ? 'visible' : 'hidden',
           pointerEvents: view === 'reel' ? 'auto' : 'none',
@@ -543,6 +570,7 @@ export default function App({ initialView }) {
           onPlay={handlePlay}
           isReturning={isReturning}
           isActive={view === 'reel'}
+          onProgress={setReelProgress}
         />
       </div>
 
@@ -563,7 +591,9 @@ export default function App({ initialView }) {
       {/* Dedicated Contact Page View */}
       {view === 'contact' && (
         <Suspense fallback={null}>
-          <ContactView onBack={handleBackFromContact} />
+          <div style={{ position: 'relative', zIndex: 50, opacity: 1, visibility: 'visible', pointerEvents: 'auto', width: '100%' }}>
+            <ContactView onBack={handleBackFromContact} />
+          </div>
         </Suspense>
       )}
 

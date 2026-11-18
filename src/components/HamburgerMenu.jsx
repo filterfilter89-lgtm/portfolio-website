@@ -62,7 +62,7 @@ export default function HamburgerMenu({ currentView = 'reel', isDark = false, on
     }
   };
 
-  const isDarkDesk = isDark || currentView === 'showcase';
+  const isDarkDesk = Boolean(isDark);
 
   return (
     <>

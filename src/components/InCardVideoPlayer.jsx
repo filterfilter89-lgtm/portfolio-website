@@ -17,7 +17,8 @@ export default memo(function InCardVideoPlayer({
   project = {},
   media = null,
   isExpanded = true,
-  aspectRatio = null
+  aspectRatio = null,
+  onAspectRatioDetected
 }) {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -97,25 +98,31 @@ export default memo(function InCardVideoPlayer({
   return (
     <div
       className="in-card-video-container"
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
       style={{
-        ...arStyle,
-        maxWidth: '100%',
-        maxHeight: '100%',
-        width: 'auto',
-        height: 'auto',
-        margin: 'auto'
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        borderRadius: 'inherit',
+        overflow: 'hidden',
+        boxSizing: 'border-box'
       }}
     >
       {/* Video Screen Framed Cleanly Inside Postcard (No text headers or footers) */}
       <div
         className="in-card-video-stage"
         onClick={togglePlay}
+        onPointerDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
         style={{
-          ...arStyle,
-          maxWidth: '100%',
-          maxHeight: '100%',
           width: '100%',
-          height: '100%'
+          height: '100%',
+          position: 'relative',
+          borderRadius: 'inherit',
+          overflow: 'hidden',
+          cursor: 'pointer'
         }}
       >
         {!hasError && videoSrc ? (
@@ -130,12 +137,17 @@ export default memo(function InCardVideoPlayer({
             loop
             muted={isMuted}
             onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={(e) => {
+              const { videoWidth, videoHeight, duration: vidDuration } = e.currentTarget;
+              if (vidDuration) setDuration(vidDuration);
+              if (videoWidth && videoHeight) {
+                const r = videoWidth / videoHeight;
+                if (onAspectRatioDetected) onAspectRatioDetected(r);
+              }
+            }}
             onError={() => setHasError(true)}
             className="in-card-video-element"
             style={{
-              ...arStyle,
-              maxWidth: '100%',
-              maxHeight: '100%',
               width: '100%',
               height: '100%',
               objectFit: 'cover',
@@ -144,8 +156,8 @@ export default memo(function InCardVideoPlayer({
             }}
           />
         ) : (
-          <div className="in-card-video-fallback" style={arStyle}>
-            <img src={posterSrc} alt={project.title} className="in-card-fallback-img" style={arStyle} />
+          <div className="in-card-video-fallback" style={{ width: '100%', height: '100%' }}>
+            <img src={posterSrc} alt={project.title} className="in-card-fallback-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             <div className="in-card-fallback-badge">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="5 3 19 12 5 21 5 3" />

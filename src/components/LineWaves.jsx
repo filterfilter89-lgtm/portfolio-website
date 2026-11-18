@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo } from 'react';
 import './LineWaves.css';
 
 const PIXEL_BUDGET = 2.4e6;
@@ -523,4 +523,4 @@ const LineWaves = ({
   );
 };
 
-export default LineWaves;
+export default memo(LineWaves);

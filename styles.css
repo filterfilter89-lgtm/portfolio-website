@@ -2108,71 +2108,132 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
 
 /* Pure Lightbox Modal (No Text) */
 .polaroid-inspect-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  background: rgba(4, 9, 20, 0.78);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 3500 !important;
+  background: rgba(5, 12, 24, 0.82) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px !important;
+  box-sizing: border-box !important;
   overscroll-behavior: contain;
   touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
 }
 
 .polaroid-inspect-card.pure-inspect {
-  position: relative;
-  background: #ffffff;
-  padding: 12px 12px 28px 12px;
-  border-radius: 6px;
-  max-width: min(84vw, 880px);
-  max-height: 84vh;
-  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.65);
-  display: flex;
-  flex-direction: column;
+  position: relative !important;
+  background: var(--cream, #fff7ed) !important;
+  border: 2.5px solid var(--blue, #285991) !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  max-width: min(90vw, 1100px) !important;
+  max-height: 88vh !important;
+  padding: 0 !important;
+  box-shadow: 0 32px 80px rgba(0, 10, 30, 0.6) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .polaroid-inspect-close {
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.06);
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #1e3352;
-  cursor: pointer;
-  z-index: 10;
-  transition: background 0.2s ease, transform 0.2s ease;
+  position: absolute !important;
+  top: 12px !important;
+  right: 14px !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  background: rgba(40, 89, 145, 0.12) !important;
+  border: 1px solid rgba(40, 89, 145, 0.28) !important;
+  color: var(--blue, #285991) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  z-index: 30 !important;
+  backdrop-filter: blur(6px) !important;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
+
 .polaroid-inspect-close:hover {
-  background: rgba(0, 0, 0, 0.12);
-  transform: scale(1.08);
+  background: var(--blue, #285991) !important;
+  color: #fff7ed !important;
+  transform: rotate(90deg) scale(1.08) !important;
+}
+
+.polaroid-inspect-nav-btn {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 247, 237, 0.92) !important;
+  border: 1.5px solid var(--blue, #285991) !important;
+  color: var(--blue, #285991) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  z-index: 30 !important;
+  box-shadow: 0 4px 16px rgba(0, 10, 30, 0.25) !important;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease, color 0.2s ease !important;
+}
+
+.polaroid-inspect-nav-btn.is-prev {
+  left: 14px !important;
+}
+
+.polaroid-inspect-nav-btn.is-next {
+  right: 14px !important;
+}
+
+.polaroid-inspect-nav-btn:hover {
+  background: var(--blue, #285991) !important;
+  color: #fff7ed !important;
+  transform: translateY(-50%) scale(1.08) !important;
 }
 
 .polaroid-inspect-img-wrap {
-  width: 100%;
-  max-height: 72vh;
-  overflow: hidden;
-  border-radius: 3px;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 85vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  overflow: hidden !important;
+  border-radius: 11px !important;
 }
 
 .polaroid-inspect-img {
-  max-width: 100%;
-  max-height: 72vh;
-  object-fit: contain;
-  display: block;
+  max-width: 100% !important;
+  max-height: 85vh !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+  border-radius: 11px !important;
+}
+
+.polaroid-inspect-counter {
+  position: absolute !important;
+  bottom: 12px !important;
+  right: 16px !important;
+  font-family: 'Space Mono', monospace !important;
+  font-size: 11px !important;
+  letter-spacing: 1px !important;
+  color: var(--blue, #285991) !important;
+  background: rgba(255, 247, 237, 0.9) !important;
+  padding: 4px 10px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(40, 89, 145, 0.25) !important;
+  pointer-events: none !important;
+  z-index: 25 !important;
 }
 
 /* ============================================================
@@ -2418,19 +2479,23 @@ h2 { font: 70px/1 var(--serif); letter-spacing: -1.8px; margin: 0; }
 /* Contact View Visibility & High Z-Index */
 .contact-view,
 .contact-page-wrapper {
-  position: relative;
-  z-index: 100 !important;
+  position: relative !important;
+  z-index: 50 !important;
   opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  width: 100% !important;
+  min-height: 100vh !important;
 }
 
 body.page-contact {
   overflow-y: auto !important;
   height: auto !important;
-  min-height: 100vh;
+  min-height: 100vh !important;
 }
 
 body.page-contact #root {
-  min-height: 100vh;
+  min-height: 100vh !important;
   overflow-y: auto !important;
   height: auto !important;
 }
@@ -2622,19 +2687,42 @@ body.page-work.is-showcase-active {
 
 
 /* Uncluttered focus when a postcard is expanded */
+.scattered-envelopes-wrapper.has-expanded-card {
+  z-index: 200 !important;
+  pointer-events: auto !important;
+}
+
 .scattered-envelopes-wrapper.has-expanded-card .draggable-postcard-item:not(.is-expanded) {
   opacity: 0.12 !important;
   filter: blur(4px) !important;
   pointer-events: none !important;
+  cursor: default !important;
   transition: opacity 0.35s ease, filter 0.35s ease !important;
 }
 
-.draggable-postcard-item.is-expanded {
-  z-index: 250 !important;
+.draggable-postcard-item,
+.draggable-postcard-item.is-expanded,
+.postcard-3d-flipper {
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
 }
 
-.scattered-envelopes-wrapper.has-expanded-card {
-  z-index: 200 !important;
+.draggable-postcard-item.is-expanded {
+  z-index: 300 !important;
+  pointer-events: auto !important;
+}
+
+.draggable-postcard-item.is-expanded .postcard-side-front {
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.draggable-postcard-item.is-expanded .postcard-side-back {
+  pointer-events: auto !important;
+  z-index: 10 !important;
+  visibility: visible !important;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
 }
 
 /* ============================================================
@@ -2733,7 +2821,21 @@ body.page-work.is-showcase-active {
   object-fit: contain;
   display: block;
   border-radius: 2px;
-  pointer-events: none;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.draggable-postcard-item.is-expanded .postcard-side-back {
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.scattered-photo-well,
+.scattered-polaroid-frame,
+.scattered-polaroid-item {
+  pointer-events: auto !important;
+  cursor: pointer !important;
 }
 
 .scattered-chin {
@@ -3082,7 +3184,7 @@ body.page-work.is-showcase-active {
   position: fixed;
   top: max(24px, env(safe-area-inset-top, 24px));
   right: max(28px, env(safe-area-inset-right, 28px));
-  z-index: 1000;
+  z-index: 2000;
   height: 44px;
   width: 44px;
   border-radius: 22px;
@@ -3905,7 +4007,7 @@ body.page-work.is-showcase-active {
 .nav-morph-backdrop {
   position: fixed !important;
   inset: 0 !important;
-  z-index: 990 !important;
+  z-index: 1990 !important;
   background: transparent !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -3945,6 +4047,7 @@ body.page-work.is-showcase-active {
 
 /* Dynamic color transitions for hamburger menu */
 .nav-morph-pill {
+  z-index: 2000 !important;
   color: var(--blue, #285991);
   transition: 
     width 0.38s cubic-bezier(0.22, 1, 0.36, 1),
@@ -3962,15 +4065,25 @@ body.page-work.is-showcase-active {
   transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, background-color 0.3s ease !important;
 }
 
-/* Blue desk: Hamburger icon turns Cream */
-.nav-morph-pill.is-dark-desk,
-.page-work.is-showcase-active .nav-morph-pill {
+/* Dark tone (Reel Frame 48 or Showcase Desk): Hamburger icon turns Cream */
+.nav-morph-pill.is-dark-desk {
   color: var(--cream, #fff7ed) !important;
 }
 
-.nav-morph-pill.is-dark-desk:not(.is-open):hover,
-.page-work.is-showcase-active .nav-morph-pill:not(.is-open):hover {
+.nav-morph-pill.is-dark-desk:not(.is-open):hover {
   color: #ffffff !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Light tone (Reel Frame 0-26, Work Overview Wheel, Contact): Hamburger icon is Website Blue */
+.nav-morph-pill:not(.is-dark-desk) {
+  color: var(--blue, #285991) !important;
+}
+
+.nav-morph-pill:not(.is-dark-desk):not(.is-open):hover {
+  color: var(--blue-dark, #174276) !important;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -3986,8 +4099,7 @@ body.page-work.is-showcase-active {
   color: var(--blue, #285991) !important;
 }
 
-.nav-morph-pill.is-dark-desk.is-open,
-.page-work.is-showcase-active .nav-morph-pill.is-open {
+.nav-morph-pill.is-dark-desk.is-open {
   background: rgba(26, 44, 72, 0.96) !important;
   border: 1px solid rgba(255, 247, 237, 0.25) !important;
   box-shadow: 
@@ -4099,4 +4211,44 @@ body.page-work.is-showcase-active {
     align-items: center !important;
     justify-content: center !important;
   }
+}
+
+/* 5. True Native Aspect-Ratio Proportional Media Layout & Tight Blue Stroke Framing */
+.card-back-body {
+  position: absolute !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.proportional-gallery-row {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  min-height: 0 !important;
+}
+
+.proportional-media-wrapper {
+  border: 2.5px solid var(--blue) !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: transparent !important;
+  position: relative !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.proportional-media-wrapper:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(40, 89, 145, 0.25) !important;
+}
+
+.proportional-media-img {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  object-fit: cover !important;
+  border-radius: inherit !important;
 }

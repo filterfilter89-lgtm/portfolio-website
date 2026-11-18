@@ -233,7 +233,10 @@ const DraggablePostcard = memo(function DraggablePostcard({
   const moveCenterY = Math.round(vh / 2 - targetY);
 
   const handlePointerDown = (e) => {
-    if (isExpanded) return;
+    if (isExpanded) {
+      e.stopPropagation();
+      return;
+    }
     dragStartPos.current = { x: e.clientX, y: e.clientY };
     hasMovedRef.current = false;
   };
@@ -252,10 +255,9 @@ const DraggablePostcard = memo(function DraggablePostcard({
 
   const handleClick = (e) => {
     e.stopPropagation();
+    if (isExpanded) return;
     if (isDragging || hasMovedRef.current || isRetracting) return;
-    if (!isExpanded) {
-      onOpenProject(project);
-    }
+    onOpenProject(project);
   };
 
   let animateTarget = {
@@ -428,13 +430,15 @@ const DraggablePostcard = memo(function DraggablePostcard({
         {/* Back Face: Revealed on 180 deg Flip */}
         <div
           className="postcard-side postcard-side-back"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
           style={{
             position: 'absolute',
             inset: 0,
             width: '100%',
             height: '100%',
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
+            backfaceVisibility: isExpanded ? 'visible' : 'hidden',
+            WebkitBackfaceVisibility: isExpanded ? 'visible' : 'hidden',
             transform: isExpanded ? 'rotateY(180deg) translateZ(1px)' : 'rotateY(180deg)',
             zIndex: isExpanded ? 5 : 1,
             visibility: isExpanded ? 'visible' : 'hidden',
@@ -660,11 +664,16 @@ function AlbumCarousel({
     setActiveFullscreenProject(null);
     setFlippingProjectId(null);
     lastHandledProjectIdRef.current = null;
+    activeFullscreenProjectRef.current = null;
     if (onProjectChange) onProjectChange(null);
     if (selectedCategory && typeof window !== 'undefined') {
       const targetHash = '#work/' + selectedCategory.id;
       if (window.location.hash !== targetHash) {
-        window.history.pushState(null, '', targetHash);
+        if (window.location.hash.startsWith(targetHash + '/')) {
+          window.history.back();
+        } else {
+          window.history.replaceState(null, '', targetHash);
+        }
       }
     }
   }, [selectedCategory, onProjectChange]);
