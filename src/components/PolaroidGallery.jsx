@@ -2,6 +2,143 @@ import React, { useState, useRef, useEffect, useLayoutEffect, memo } from 'react
 import { createPortal } from 'react-dom';
 import InCardVideoPlayer from './InCardVideoPlayer';
 
+/**
+ * Approved Deterministic Scattered Slot Coordinates
+ * Generates organic, non-overlapping pinboard slots across the full wide beige (#FFF7ED) postcard canvas.
+ */
+export function getScatteredSlot(index, count, avgRatio = 1) {
+  // 1 item (Josh Talks, Kinetic Commercial Reel)
+  if (count === 1) {
+    const slots1 = [
+      { x: 50, y: 50, maxW: 82, maxH: 88, rot: -1.4 }
+    ];
+    return slots1[index % slots1.length];
+  }
+
+  // 2 items (Dot Store, Fouz Travels — Diagonal Counterbalance)
+  if (count === 2) {
+    const slots2 = [
+      { x: 32, y: 46, maxW: 38, maxH: 82, rot: -2.6 },
+      { x: 68, y: 54, maxW: 38, maxH: 82, rot: 2.5 }
+    ];
+    return slots2[index % slots2.length];
+  }
+
+  // 3 items (Triangular Wave)
+  if (count === 3) {
+    const slots3 = [
+      { x: 20, y: 45, maxW: 27, maxH: 76, rot: -2.8 },
+      { x: 50, y: 55, maxW: 27, maxH: 78, rot: 1.8 },
+      { x: 80, y: 46, maxW: 27, maxH: 76, rot: -2.4 }
+    ];
+    return slots3[index % slots3.length];
+  }
+
+  // 4 items (Fetto Garments — Full-Width 4-Card Staggered Wave for portraits, or 2x2 staggered scatter for landscapes)
+  if (count === 4) {
+    if (avgRatio < 1.1) {
+      // portraits / 9:16
+      const slots4P = [
+        { x: 15, y: 47, maxW: 21, maxH: 76, rot: -2.8 },
+        { x: 38.5, y: 53, maxW: 21, maxH: 76, rot: 2.2 },
+        { x: 61.5, y: 46, maxW: 21, maxH: 76, rot: -2.0 },
+        { x: 85, y: 54, maxW: 21, maxH: 76, rot: 2.8 }
+      ];
+      return slots4P[index % slots4P.length];
+    } else {
+      // landscapes
+      const slots4L = [
+        { x: 27, y: 29, maxW: 41, maxH: 41, rot: -2.2 },
+        { x: 73, y: 31, maxW: 41, maxH: 41, rot: 2.0 },
+        { x: 28, y: 71, maxW: 41, maxH: 41, rot: 1.8 },
+        { x: 72, y: 69, maxW: 41, maxH: 41, rot: -2.2 }
+      ];
+      return slots4L[index % slots4L.length];
+    }
+  }
+
+  // 5 items (Eazyarts Ganesh, Eazyarts 9:16 reels — Full-Width 5-Card Panoramic Wave)
+  if (count === 5) {
+    if (avgRatio < 1.1) {
+      // portraits / 9:16
+      const slots5P = [
+        { x: 12, y: 52, maxW: 17, maxH: 74, rot: -2.8 },
+        { x: 31, y: 44, maxW: 17, maxH: 72, rot: 2.2 },
+        { x: 50, y: 53, maxW: 17, maxH: 74, rot: -1.4 },
+        { x: 69, y: 44, maxW: 17, maxH: 72, rot: 2.2 },
+        { x: 88, y: 52, maxW: 17, maxH: 74, rot: -2.6 }
+      ];
+      return slots5P[index % slots5P.length];
+    } else {
+      // landscapes: Top 3 + Bottom 2
+      const slots5L = [
+        { x: 19, y: 28, maxW: 27, maxH: 40, rot: -2.2 },
+        { x: 50, y: 31, maxW: 27, maxH: 40, rot: 1.6 },
+        { x: 81, y: 28, maxW: 27, maxH: 40, rot: 2.2 },
+        { x: 34, y: 72, maxW: 27, maxH: 40, rot: 1.8 },
+        { x: 66, y: 70, maxW: 27, maxH: 40, rot: -2.0 }
+      ];
+      return slots5L[index % slots5L.length];
+    }
+  }
+
+  // 6 items (e.g. Jazil in Photography: 3 on top, 3 on bottom)
+  if (count === 6) {
+    const slots6 = [
+      { x: 19, y: 26, maxW: 26, maxH: 38, rot: -2.4 },
+      { x: 50, y: 26, maxW: 26, maxH: 38, rot: 1.8 },
+      { x: 81, y: 26, maxW: 26, maxH: 38, rot: -1.8 },
+      { x: 19, y: 74, maxW: 26, maxH: 38, rot: 2.0 },
+      { x: 50, y: 74, maxW: 26, maxH: 38, rot: -2.0 },
+      { x: 81, y: 74, maxW: 26, maxH: 38, rot: 1.8 }
+    ];
+    return slots6[index % slots6.length];
+  }
+
+  // 7 items: Top 4 + Bottom 3
+  if (count === 7) {
+    const slots7 = [
+      { x: 14, y: 28, maxW: 21.5, maxH: 40, rot: -2.4 },
+      { x: 38, y: 32, maxW: 21.5, maxH: 40, rot: 1.8 },
+      { x: 62, y: 27, maxW: 21.5, maxH: 40, rot: -1.8 },
+      { x: 86, y: 31, maxW: 21.5, maxH: 40, rot: 2.2 },
+      { x: 26, y: 71, maxW: 23, maxH: 40, rot: 2.0 },
+      { x: 50, y: 69, maxW: 23, maxH: 40, rot: -1.8 },
+      { x: 74, y: 72, maxW: 23, maxH: 40, rot: 1.8 }
+    ];
+    return slots7[index % slots7.length];
+  }
+
+  // 8 items (Fruitly — Two-Tier Organic Staggered Pinboard)
+  if (count === 8) {
+    const slots8 = [
+      // Top row (first 4 items)
+      { x: 14, y: 28, maxW: 21.5, maxH: 40, rot: -2.4 },
+      { x: 38, y: 32, maxW: 21.5, maxH: 40, rot: 1.8 },
+      { x: 62, y: 27, maxW: 21.5, maxH: 40, rot: -1.8 },
+      { x: 86, y: 31, maxW: 21.5, maxH: 40, rot: 2.2 },
+      // Bottom row (remaining items; balanced x for 0 overlap)
+      { x: 15, y: 72, maxW: 21.5, maxH: 40, rot: 2.0 },
+      { x: 38.5, y: 69, maxW: 21.5, maxH: 40, rot: -2.0 },
+      { x: 61.5, y: 73, maxW: 21.5, maxH: 40, rot: 1.8 },
+      { x: 85, y: 70, maxW: 21.5, maxH: 40, rot: -2.2 }
+    ];
+    return slots8[index % slots8.length];
+  }
+
+  // Fallback for any N > 8: Dynamic 2-tier distribution
+  const half = Math.ceil(count / 2);
+  const isTop = index < half;
+  const colIdx = isTop ? index : (index - half);
+  const rowCount = isTop ? half : (count - half);
+  const step = 72 / Math.max(1, rowCount - 1);
+  const x = 14 + colIdx * step;
+  const y = isTop ? (index % 2 === 0 ? 28 : 32) : (index % 2 === 0 ? 72 : 69);
+  const rot = (index % 2 === 0 ? -1 : 1) * (1.8 + (index % 3) * 0.4);
+  const maxW = Math.min(21.5, (80 / rowCount) * 0.95);
+  return { x, y, maxW, maxH: 40, rot };
+}
+
 export default memo(function PolaroidGallery({
   items = [],
   project = {},
@@ -10,11 +147,10 @@ export default memo(function PolaroidGallery({
 }) {
   const isMobile = isMobileProp !== undefined
     ? isMobileProp
-    : (typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+    : (typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
 
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const stageRef = useRef(null);
-  const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
 
   // If no items provided or empty, create default photo set from thumbnail / video
   const photoList = items && items.length > 0 ? items : [
@@ -65,7 +201,18 @@ export default memo(function PolaroidGallery({
     });
   }, [photoList]);
 
-  // Measure stage dimensions responsively to guarantee 100% containment and zero overflow
+  // Initial stage size estimation to eliminate initial render flash
+  const [stageSize, setStageSize] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const isMob = window.innerWidth <= 768;
+      const estW = isMob ? window.innerWidth * 0.9 : Math.min(1380, window.innerWidth * 0.86);
+      const estH = isMob ? window.innerHeight * 0.78 : Math.min(840, window.innerHeight * 0.84) - 44;
+      return { width: Math.round(estW), height: Math.round(estH) };
+    }
+    return { width: 1000, height: 550 };
+  });
+
+  // Measure stage dimensions responsively with ResizeObserver
   useLayoutEffect(() => {
     if (!stageRef.current) return;
     const measure = () => {
@@ -117,163 +264,161 @@ export default memo(function PolaroidGallery({
     return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
   }, [lightboxIndex, count]);
 
-  // Partition items into balanced rows (1 row for 1–3 items; 2 balanced rows for 4–8 items)
-  const rows = [];
-  if (count <= 3) {
-    rows.push(photoList.map((item, idx) => ({ item, index: idx })));
-  } else {
-    const mid = Math.ceil(count / 2);
-    rows.push(photoList.slice(0, mid).map((item, idx) => ({ item, index: idx })));
-    rows.push(photoList.slice(mid).map((item, idx) => ({ item, index: mid + idx })));
-  }
+  // Compute average aspect ratio across all items
+  const totalRatio = photoList.reduce((acc, item, idx) => {
+    const r = ratios[idx] || item.aspectRatio || (item.width && item.height ? item.width / item.height : 1);
+    return acc + r;
+  }, 0);
+  const avgRatio = count > 0 ? totalRatio / count : 1;
 
-  const numRows = rows.length;
-  const rowGap = isMobile ? 8 : 10;
-  const itemGap = isMobile ? 8 : 10;
+  const canvasW = stageSize.width || 1000;
+  const canvasH = stageSize.height || 550;
 
   return (
     <div
       ref={stageRef}
-      className="card-back-body polaroid-gallery-container pure-bento-postcard"
-      style={{
-        position: 'absolute',
-        top: isMobile ? '38px' : '44px',
-        bottom: 0,
-        left: 0,
-        right: 0,
+      className="card-back-body polaroid-gallery pure-bento-postcard"
+      style={!isMobile ? {
+        position: 'relative',
         width: '100%',
-        height: isMobile ? 'calc(100% - 38px)' : 'calc(100% - 44px)',
-        padding: isMobile ? '8px 10px 10px 10px' : '10px 16px 14px 16px',
-        boxSizing: 'border-box',
+        height: 'calc(100% - 44px)',
+        marginTop: '44px',
         overflow: 'hidden',
+        boxSizing: 'border-box',
+        pointerEvents: 'auto'
+      } : {
+        position: 'relative',
+        width: '100%',
+        height: 'calc(100% - 38px)',
+        marginTop: '38px',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
         alignItems: 'center',
-        gap: `${rowGap}px`,
+        gap: '16px',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        padding: '12px 12px 28px',
+        boxSizing: 'border-box',
         pointerEvents: 'auto'
       }}
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
     >
-      {rows.map((rowItems, rIdx) => {
-        // Compute row aspect ratio sum: S = sum(r_i)
-        const S = rowItems.reduce((acc, { index }) => acc + (ratios[index] || 1), 0);
-        const gapTotal = Math.max(0, (rowItems.length - 1) * itemGap);
+      {photoList.map((item, index) => {
+        const isVideo = item.type === 'video' || (item.src && (item.src.endsWith('.mp4') || item.src.endsWith('.mov')));
+        const r = ratios[index] || item.aspectRatio || (item.width && item.height ? item.width / item.height : (isVideo ? 9 / 16 : 1));
+        const slot = getScatteredSlot(index, count, avgRatio);
 
-        // Compute optimal row height H = min(rowMaxH, (availableWidth - gapTotal) / S)
-        let targetRowH = null;
-        if (stageSize.width > 0 && stageSize.height > 0) {
-          const availableH = stageSize.height - (numRows - 1) * rowGap;
-          const rowMaxH = availableH / numRows;
-          const availableW = Math.max(40, stageSize.width - gapTotal);
-          const widthConstrainedH = availableW / Math.max(0.1, S);
-          targetRowH = Math.max(20, Math.min(rowMaxH, widthConstrainedH));
-        }
+        // Exact Aspect-Ratio Bounding Math (Zero Cropping, Zero White Border, Zero Overlap)
+        const slotW = (canvasW * slot.maxW) / 100;
+        const slotH = (canvasH * slot.maxH) / 100;
+        const fittedH = Math.min(slotH, slotW / r);
+        const fittedW = fittedH * r;
+
+        const imgSrc = item.src || project.thumbnail || '/frames/web00.webp?v=20261104';
 
         return (
           <div
-            key={rIdx}
-            className="proportional-gallery-row"
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: `${itemGap}px`,
-              width: '100%',
-              height: targetRowH ? `${Math.floor(targetRowH)}px` : (numRows === 1 ? '100%' : '50%'),
-              maxHeight: '100%',
-              minHeight: 0,
-              flexShrink: 1,
+            key={index}
+            className="scattered-pinboard-item proportional-media-wrapper"
+            style={!isMobile ? {
+              position: 'absolute',
+              left: `${slot.x}%`,
+              top: `${slot.y}%`,
+              width: `${Math.round(fittedW)}px`,
+              height: `${Math.round(fittedH)}px`,
+              maxWidth: `${Math.round(fittedW)}px`,
+              maxHeight: `${Math.round(fittedH)}px`,
+              transform: `translate(-50%, -50%) rotate(${slot.rot}deg)`,
+              border: '2.5px solid var(--blue)',
+              borderRadius: '14px',
+              overflow: 'hidden',
+              padding: 0,
+              background: 'transparent',
+              boxShadow: '0 8px 20px rgba(10, 25, 55, 0.12)',
+              transition: 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease',
               boxSizing: 'border-box',
+              zIndex: 10 + index,
+              cursor: !isVideo ? 'pointer' : 'default',
+              pointerEvents: 'auto'
+            } : {
+              position: 'relative',
+              left: 'auto',
+              top: 'auto',
+              width: '88%',
+              height: 'auto',
+              aspectRatio: `${r}`,
+              transform: `rotate(${index % 2 === 0 ? -1.5 : 1.5}deg)`,
+              border: '2.5px solid var(--blue)',
+              borderRadius: '14px',
+              overflow: 'hidden',
+              padding: 0,
+              background: 'transparent',
+              boxShadow: '0 6px 16px rgba(10, 25, 55, 0.12)',
+              boxSizing: 'border-box',
+              flexShrink: 0,
+              cursor: !isVideo ? 'pointer' : 'default',
               pointerEvents: 'auto'
             }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isVideo) {
+                setLightboxIndex(index);
+              }
+            }}
+            role={!isVideo ? 'button' : undefined}
+            tabIndex={!isVideo ? 0 : undefined}
+            aria-label={`Media ${index + 1}`}
+            onKeyDown={(e) => {
+              if (!isVideo && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                e.stopPropagation();
+                setLightboxIndex(index);
+              }
+            }}
           >
-            {rowItems.map(({ item, index }) => {
-              const isVideo = item.type === 'video' || (item.src && (item.src.endsWith('.mp4') || item.src.endsWith('.mov')));
-              const ratio = ratios[index] || 1;
-              const imgSrc = item.src || project.thumbnail || '/frames/web00.webp?v=20261104';
-
-              return (
-                <div
-                  key={index}
-                  className="proportional-media-wrapper scattered-polaroid-frame"
-                  style={{
-                    height: '100%',
-                    aspectRatio: `${ratio}`,
-                    maxHeight: '100%',
-                    maxWidth: '100%',
-                    width: 'auto',
-                    border: '2.5px solid var(--blue)',
-                    borderRadius: '14px',
-                    overflow: 'hidden',
-                    boxSizing: 'border-box',
-                    background: 'transparent',
-                    flexShrink: 0,
-                    minWidth: 0,
-                    minHeight: 0,
-                    cursor: !isVideo ? 'pointer' : 'default',
-                    position: 'relative',
-                    pointerEvents: 'auto'
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!isVideo) {
-                      setLightboxIndex(index);
-                    }
-                  }}
-                  role={!isVideo ? 'button' : undefined}
-                  tabIndex={!isVideo ? 0 : undefined}
-                  aria-label={`Media ${index + 1}`}
-                  onKeyDown={(e) => {
-                    if (!isVideo && (e.key === 'Enter' || e.key === ' ')) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setLightboxIndex(index);
-                    }
-                  }}
-                >
-                  {isVideo ? (
-                    <InCardVideoPlayer
-                      project={project}
-                      media={item}
-                      isExpanded={isExpanded}
-                      aspectRatio={ratio}
-                      onAspectRatioDetected={(detected) => {
-                        if (detected && detected > 0) {
-                          setRatios((prev) => (prev[index] !== detected ? { ...prev, [index]: detected } : prev));
-                        }
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src={imgSrc}
-                      alt={item.title || ''}
-                      className="proportional-media-img scattered-img"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        display: 'block',
-                        objectFit: 'cover',
-                        borderRadius: 'inherit',
-                        pointerEvents: 'auto',
-                        cursor: 'pointer'
-                      }}
-                      loading="eager"
-                      decoding="async"
-                      draggable="false"
-                      onLoad={(e) => {
-                        const { naturalWidth, naturalHeight } = e.currentTarget;
-                        if (naturalWidth && naturalHeight) {
-                          const detected = naturalWidth / naturalHeight;
-                          setRatios((prev) => (prev[index] !== detected ? { ...prev, [index]: detected } : prev));
-                        }
-                      }}
-                    />
-                  )}
-                </div>
-              );
-            })}
+            {isVideo ? (
+              <InCardVideoPlayer
+                project={project}
+                media={item}
+                isExpanded={isExpanded}
+                aspectRatio={r}
+                onAspectRatioDetected={(detected) => {
+                  if (detected && detected > 0) {
+                    setRatios((prev) => (prev[index] !== detected ? { ...prev, [index]: detected } : prev));
+                  }
+                }}
+              />
+            ) : (
+              <img
+                src={imgSrc}
+                alt={item.title || project.title || ''}
+                className="proportional-media-img scattered-img"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'block',
+                  objectFit: 'cover',
+                  borderRadius: 'inherit',
+                  pointerEvents: 'auto',
+                  cursor: 'pointer'
+                }}
+                loading="eager"
+                decoding="async"
+                draggable="false"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIndex(index);
+                }}
+                onLoad={(e) => {
+                  const { naturalWidth, naturalHeight } = e.currentTarget;
+                  if (naturalWidth && naturalHeight) {
+                    const detected = naturalWidth / naturalHeight;
+                    setRatios((prev) => (prev[index] !== detected ? { ...prev, [index]: detected } : prev));
+                  }
+                }}
+              />
+            )}
           </div>
         );
       })}

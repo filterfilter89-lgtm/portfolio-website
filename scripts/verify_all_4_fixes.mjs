@@ -134,7 +134,7 @@ async function run() {
   console.log('  Card is 3D flipped open:', isCardExpandedBefore ? 'PASS' : 'FAIL');
 
   // Find image inside flipped postcard
-  const flippedImg = await page.waitForSelector('.draggable-postcard-item.is-expanded .scattered-polaroid-frame img', { timeout: 5000 });
+  const flippedImg = await page.waitForSelector('.draggable-postcard-item.is-expanded .proportional-media-wrapper img, .draggable-postcard-item.is-expanded .scattered-pinboard-item img, .draggable-postcard-item.is-expanded .scattered-polaroid-frame img', { timeout: 5000 });
   console.log('  Clicking image inside flipped postcard...');
   await flippedImg.click();
   await page.waitForTimeout(800);
