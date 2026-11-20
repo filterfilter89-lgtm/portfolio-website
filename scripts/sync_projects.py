@@ -3,6 +3,7 @@ import json
 import re
 import shutil
 import subprocess
+from PIL import Image
 
 portfolio_dir = r"C:\Users\basil\Documents\WEBSITE PORTFOLIO"
 projects_src = os.path.join(portfolio_dir, "projects")
@@ -63,11 +64,40 @@ def format_title(slug):
     words = re.split(r'[_\-\s]+', slug)
     return ' '.join(w.capitalize() for w in words if w)
 
+def get_image_dimensions(image_path):
+    try:
+        with Image.open(image_path) as im:
+            return im.size  # (width, height)
+    except Exception as e:
+        print(f"Image dimension error for {image_path}: {e}")
+        return 1200, 800
+
+def get_video_dimensions(video_path):
+    try:
+        import cv2
+        cap = cv2.VideoCapture(video_path)
+        w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        cap.release()
+        if w > 0 and h > 0:
+            return w, h
+    except Exception:
+        pass
+    try:
+        cmd = [FFMPEG_BIN, "-i", video_path]
+        res = subprocess.run(cmd, capture_output=True, text=True, errors="replace")
+        m = re.search(r'Stream.*Video.*,\s+(\d{3,5})x(\d{3,5})', res.stderr)
+        if m:
+            return int(m.group(1)), int(m.group(2))
+    except Exception as e:
+        print(f"Video dimension error for {video_path}: {e}")
+    return 1080, 1920
+
 def extract_video_thumbnail(video_path, thumb_path):
     if os.path.exists(thumb_path) and os.path.getsize(thumb_path) > 0:
         return True
     try:
-        cmd = [FFMPEG_BIN, '-y', '-ss', '1', '-i', video_path, '-vframes', '1', '-q:v', '2', thumb_path]
+        cmd = [FFMPEG_BIN, '-y', '-ss', '0.5', '-i', video_path, '-vframes', '1', '-q:v', '2', thumb_path]
         res = subprocess.run(cmd, capture_output=True)
         if res.returncode == 0 and os.path.exists(thumb_path) and os.path.getsize(thumb_path) > 0:
             return True
@@ -77,7 +107,7 @@ def extract_video_thumbnail(video_path, thumb_path):
         import cv2
         cap = cv2.VideoCapture(video_path)
         fps = cap.get(cv2.CAP_PROP_FPS) or 24
-        cap.set(cv2.CAP_PROP_POS_FRAMES, int(fps * 1))
+        cap.set(cv2.CAP_PROP_POS_FRAMES, int(fps * 0.5))
         ret, frame = cap.read()
         if not ret:
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
@@ -159,7 +189,7 @@ def sync():
                     media_items = []
                     subfiles = sorted(os.listdir(entry_path))
 
-                    # Deduplicate: if both name.webp and name.png exist, prefer .webp
+                    # Deduplicate: if both name.webp and name.png exist, prefer .webp; if both .mp4 and .mov exist, prefer .mp4
                     base_names = {}
                     for sf in subfiles:
                         if sf.startswith('.') or sf.endswith('-thumb.webp') or sf.endswith('-thumb.jpg'):
@@ -177,18 +207,22 @@ def sync():
                         if ext in IMAGE_EXTS:
                             dst_file = os.path.join(pub_proj_dir, sf)
                             try:
-                                shutil.copy2(src_file, dst_file)
+                                if not os.path.exists(dst_file) or os.path.getmtime(src_file) > os.path.getmtime(dst_file):
+                                    shutil.copy2(src_file, dst_file)
                             except Exception:
                                 pass
                             web_path = f"/projects/{cat_id}/{proj_id}/{sf}"
+                            w, h = get_image_dimensions(src_file)
                             media_items.append({
                                 'title': format_title(os.path.splitext(sf)[0]),
                                 'caption': format_title(os.path.splitext(sf)[0]),
                                 'type': 'image',
-                                'src': web_path
+                                'src': web_path,
+                                'width': w,
+                                'height': h,
+                                'aspectRatio': round(w / h, 4) if h else 1.0
                             })
                         elif ext in VIDEO_EXTS:
-                            # Remux or optimize to .mp4
                             out_name = f"{name}.mp4"
                             dst_file = os.path.join(pub_proj_dir, out_name)
                             optimize_video_for_web(src_file, dst_file)
@@ -201,22 +235,38 @@ def sync():
                             web_path = f"/projects/{cat_id}/{proj_id}/{out_name}"
                             web_thumb = f"/projects/{cat_id}/{proj_id}/{thumb_name}" if os.path.exists(thumb_dst) else ""
                             
+                            vw, vh = get_video_dimensions(src_file)
                             media_items.append({
                                 'title': format_title(name),
                                 'caption': format_title(name),
                                 'type': 'video',
                                 'src': web_path,
-                                'poster': web_thumb
+                                'poster': web_thumb,
+                                'width': vw,
+                                'height': vh,
+                                'aspectRatio': round(vw / vh, 4) if vh else 0.5625
                             })
 
                     if media_items:
-                        first_img = next((m['src'] for m in media_items if m['type'] == 'image'), None)
+                        first_img = next((m for m in media_items if m['type'] == 'image'), None)
                         first_video = next((m for m in media_items if m['type'] == 'video'), None)
 
-                        # Determine primary thumbnail (real image or video poster)
-                        primary_thumb = first_img
-                        if not primary_thumb and first_video:
-                            primary_thumb = first_video.get('poster') or '/frames/web00.webp?v=20261104'
+                        # Primary thumbnail
+                        if first_img:
+                            primary_thumb = first_img['src']
+                            thumb_w = first_img['width']
+                            thumb_h = first_img['height']
+                            thumb_ar = first_img['aspectRatio']
+                        elif first_video:
+                            primary_thumb = first_video.get('poster') or first_video['src']
+                            thumb_w = first_video['width']
+                            thumb_h = first_video['height']
+                            thumb_ar = first_video['aspectRatio']
+                        else:
+                            primary_thumb = '/frames/web00.webp?v=20261104'
+                            thumb_w = 1080
+                            thumb_h = 1920
+                            thumb_ar = 0.5625
 
                         cat_projects.append({
                             'id': proj_id,
@@ -224,73 +274,15 @@ def sync():
                             'client': 'Basil Jose',
                             'role': cat_meta['title'],
                             'description': f"{proj_title} collection.",
-                            'thumbnail': primary_thumb or '/frames/web00.webp?v=20261104',
+                            'thumbnail': primary_thumb,
+                            'thumbnailWidth': thumb_w,
+                            'thumbnailHeight': thumb_h,
+                            'thumbnailAspectRatio': thumb_ar,
                             'videoSrc': first_video['src'] if first_video else '',
+                            'videoAspectRatio': first_video['aspectRatio'] if first_video else None,
                             'dateStamp': '2026',
                             'media': media_items
                         })
-
-                elif os.path.isfile(entry_path):
-                    name, ext = os.path.splitext(entry)
-                    ext = ext.lower()
-                    if ext in IMAGE_EXTS or ext in VIDEO_EXTS:
-                        proj_id = name.lower().replace(' ', '-')
-                        proj_title = format_title(name)
-                        
-                        if ext in IMAGE_EXTS:
-                            dst_file = os.path.join(pub_cat_dir, entry)
-                            try:
-                                shutil.copy2(entry_path, dst_file)
-                            except Exception:
-                                pass
-                            web_path = f"/projects/{cat_id}/{entry}"
-                            media_items = [{
-                                'title': proj_title,
-                                'caption': proj_title,
-                                'type': 'image',
-                                'src': web_path
-                            }]
-                            cat_projects.append({
-                                'id': proj_id,
-                                'title': proj_title,
-                                'client': 'Basil Jose',
-                                'role': cat_meta['title'],
-                                'description': f"{proj_title} project.",
-                                'thumbnail': web_path,
-                                'videoSrc': '',
-                                'dateStamp': '2026',
-                                'media': media_items
-                            })
-                        elif ext in VIDEO_EXTS:
-                            out_name = f"{name}.mp4"
-                            dst_file = os.path.join(pub_cat_dir, out_name)
-                            optimize_video_for_web(entry_path, dst_file)
-                            
-                            thumb_name = f"{name}-thumb.webp"
-                            thumb_dst = os.path.join(pub_cat_dir, thumb_name)
-                            extract_video_thumbnail(entry_path, thumb_dst)
-                            
-                            web_path = f"/projects/{cat_id}/{out_name}"
-                            web_thumb = f"/projects/{cat_id}/{thumb_name}" if os.path.exists(thumb_dst) else '/frames/web00.webp?v=20261104'
-                            
-                            media_items = [{
-                                'title': proj_title,
-                                'caption': proj_title,
-                                'type': 'video',
-                                'src': web_path,
-                                'poster': web_thumb
-                            }]
-                            cat_projects.append({
-                                'id': proj_id,
-                                'title': proj_title,
-                                'client': 'Basil Jose',
-                                'role': cat_meta['title'],
-                                'description': f"{proj_title} project.",
-                                'thumbnail': web_thumb,
-                                'videoSrc': web_path,
-                                'dateStamp': '2026',
-                                'media': media_items
-                            })
 
         cat_entry = dict(cat_meta)
         cat_entry['projects'] = cat_projects
@@ -299,7 +291,7 @@ def sync():
 
     categories_js_path = os.path.join(portfolio_dir, "src", "data", "categories.js")
     categories_json_str = json.dumps(updated_categories, indent=2)
-    js_code = f"""// Auto-generated by scripts/sync_projects.py
+    js_code = f"""// Auto-generated with exact aspect ratios and dimensions
 export const CATEGORIES = {categories_json_str};
 
 export function getCategoryById(id) {{
@@ -314,7 +306,7 @@ export function getProjectById(categoryId, projectId) {{
 """
     with open(categories_js_path, "w", encoding="utf-8") as f:
         f.write(js_code)
-    print("Successfully synced all projects and updated src/data/categories.js!")
+    print("\nSUCCESS: All project assets synced and src/data/categories.js generated with exact dimensions and aspect ratios!")
 
 if __name__ == '__main__':
     sync()

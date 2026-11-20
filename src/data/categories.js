@@ -14,7 +14,136 @@ export const CATEGORIES = [
     "coverIcon": "/icons/GENERATIVE AI.png",
     "artist": "Basil Jose",
     "tagline": "Custom diffusion pipelines, latent video explorations, and neural motion design.",
-    "projects": []
+    "projects": [
+      {
+        "id": "eazyarts",
+        "title": "Eazyarts",
+        "client": "Basil Jose",
+        "role": "GENERATIVE AI",
+        "description": "Eazyarts collection.",
+        "thumbnail": "/projects/generative-ai/eazyarts/Animated character-thumb.webp",
+        "thumbnailWidth": 1080,
+        "thumbnailHeight": 1920,
+        "thumbnailAspectRatio": 0.5625,
+        "videoSrc": "/projects/generative-ai/eazyarts/Animated character.mp4",
+        "videoAspectRatio": 0.5625,
+        "dateStamp": "2026",
+        "media": [
+          {
+            "title": "Animated Character",
+            "caption": "Animated Character",
+            "type": "video",
+            "src": "/projects/generative-ai/eazyarts/Animated character.mp4",
+            "poster": "/projects/generative-ai/eazyarts/Animated character-thumb.webp",
+            "width": 1080,
+            "height": 1920,
+            "aspectRatio": 0.5625
+          },
+          {
+            "title": "Festive",
+            "caption": "Festive",
+            "type": "video",
+            "src": "/projects/generative-ai/eazyarts/Festive.mp4",
+            "poster": "/projects/generative-ai/eazyarts/Festive-thumb.webp",
+            "width": 1080,
+            "height": 1920,
+            "aspectRatio": 0.5625
+          },
+          {
+            "title": "Kids Collection",
+            "caption": "Kids Collection",
+            "type": "video",
+            "src": "/projects/generative-ai/eazyarts/Kids collection.mp4",
+            "poster": "/projects/generative-ai/eazyarts/Kids collection-thumb.webp",
+            "width": 1080,
+            "height": 1920,
+            "aspectRatio": 0.5625
+          },
+          {
+            "title": "Sister's Day",
+            "caption": "Sister's Day",
+            "type": "video",
+            "src": "/projects/generative-ai/eazyarts/Sister's day.mp4",
+            "poster": "/projects/generative-ai/eazyarts/Sister's day-thumb.webp",
+            "width": 1080,
+            "height": 1920,
+            "aspectRatio": 0.5625
+          },
+          {
+            "title": "Ugc",
+            "caption": "Ugc",
+            "type": "video",
+            "src": "/projects/generative-ai/eazyarts/UGC.mp4",
+            "poster": "/projects/generative-ai/eazyarts/UGC-thumb.webp",
+            "width": 1080,
+            "height": 1920,
+            "aspectRatio": 0.5625
+          }
+        ]
+      },
+      {
+        "id": "logo-animations",
+        "title": "Logo Animations",
+        "client": "Basil Jose",
+        "role": "GENERATIVE AI",
+        "description": "Logo Animations collection.",
+        "thumbnail": "/projects/generative-ai/logo-animations/Pendexo logo animation-thumb.webp",
+        "thumbnailWidth": 2560,
+        "thumbnailHeight": 1440,
+        "thumbnailAspectRatio": 1.7778,
+        "videoSrc": "/projects/generative-ai/logo-animations/Pendexo logo animation.mp4",
+        "videoAspectRatio": 1.7778,
+        "dateStamp": "2026",
+        "media": [
+          {
+            "title": "Pendexo Logo Animation",
+            "caption": "Pendexo Logo Animation",
+            "type": "video",
+            "src": "/projects/generative-ai/logo-animations/Pendexo logo animation.mp4",
+            "poster": "/projects/generative-ai/logo-animations/Pendexo logo animation-thumb.webp",
+            "width": 2560,
+            "height": 1440,
+            "aspectRatio": 1.7778
+          },
+          {
+            "title": "Zyrah Logo Animation",
+            "caption": "Zyrah Logo Animation",
+            "type": "video",
+            "src": "/projects/generative-ai/logo-animations/Zyrah logo animation.mp4",
+            "poster": "/projects/generative-ai/logo-animations/Zyrah logo animation-thumb.webp",
+            "width": 2560,
+            "height": 1440,
+            "aspectRatio": 1.7778
+          }
+        ]
+      },
+      {
+        "id": "tove",
+        "title": "Tove",
+        "client": "Basil Jose",
+        "role": "GENERATIVE AI",
+        "description": "Tove collection.",
+        "thumbnail": "/projects/generative-ai/tove/Tesla style-thumb.webp",
+        "thumbnailWidth": 1080,
+        "thumbnailHeight": 1920,
+        "thumbnailAspectRatio": 0.5625,
+        "videoSrc": "/projects/generative-ai/tove/Tesla style.mp4",
+        "videoAspectRatio": 0.5625,
+        "dateStamp": "2026",
+        "media": [
+          {
+            "title": "Tesla Style",
+            "caption": "Tesla Style",
+            "type": "video",
+            "src": "/projects/generative-ai/tove/Tesla style.mp4",
+            "poster": "/projects/generative-ai/tove/Tesla style-thumb.webp",
+            "width": 1080,
+            "height": 1920,
+            "aspectRatio": 0.5625
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "graphic-designs",
@@ -30,7 +159,11 @@ export const CATEGORIES = [
         "role": "GRAPHIC DESIGNS",
         "description": "Eazyarts Ganesh collection.",
         "thumbnail": "/projects/graphic-designs/eazyarts-ganesh/slide 1.png",
+        "thumbnailWidth": 1122,
+        "thumbnailHeight": 1402,
+        "thumbnailAspectRatio": 0.8003,
         "videoSrc": "",
+        "videoAspectRatio": null,
         "dateStamp": "2026",
         "media": [
           {
@@ -78,10 +211,7 @@ export const CATEGORIES = [
             "height": 1402,
             "aspectRatio": 0.8003
           }
-        ],
-        "thumbnailWidth": 1122,
-        "thumbnailHeight": 1402,
-        "thumbnailAspectRatio": 0.8003
+        ]
       },
       {
         "id": "fetto-garments",
@@ -90,7 +220,11 @@ export const CATEGORIES = [
         "role": "GRAPHIC DESIGNS",
         "description": "Fetto Garments collection.",
         "thumbnail": "/projects/graphic-designs/fetto-garments/Artboard 1 copy 2.png",
+        "thumbnailWidth": 1536,
+        "thumbnailHeight": 1920,
+        "thumbnailAspectRatio": 0.8,
         "videoSrc": "",
+        "videoAspectRatio": null,
         "dateStamp": "2026",
         "media": [
           {
@@ -129,10 +263,7 @@ export const CATEGORIES = [
             "height": 1600,
             "aspectRatio": 0.5625
           }
-        ],
-        "thumbnailWidth": 1536,
-        "thumbnailHeight": 1920,
-        "thumbnailAspectRatio": 0.8
+        ]
       },
       {
         "id": "fouz-travels",
@@ -141,7 +272,11 @@ export const CATEGORIES = [
         "role": "GRAPHIC DESIGNS",
         "description": "Fouz Travels collection.",
         "thumbnail": "/projects/graphic-designs/fouz-travels/FOUZ POSTER 1.png",
+        "thumbnailWidth": 5400,
+        "thumbnailHeight": 7200,
+        "thumbnailAspectRatio": 0.75,
         "videoSrc": "",
+        "videoAspectRatio": null,
         "dateStamp": "2026",
         "media": [
           {
@@ -162,10 +297,7 @@ export const CATEGORIES = [
             "height": 7200,
             "aspectRatio": 0.75
           }
-        ],
-        "thumbnailWidth": 5400,
-        "thumbnailHeight": 7200,
-        "thumbnailAspectRatio": 0.75
+        ]
       },
       {
         "id": "fruitly",
@@ -174,7 +306,11 @@ export const CATEGORIES = [
         "role": "GRAPHIC DESIGNS",
         "description": "Fruitly collection.",
         "thumbnail": "/projects/graphic-designs/fruitly/1.png",
+        "thumbnailWidth": 1920,
+        "thumbnailHeight": 1080,
+        "thumbnailAspectRatio": 1.7778,
         "videoSrc": "",
+        "videoAspectRatio": null,
         "dateStamp": "2026",
         "media": [
           {
@@ -249,10 +385,7 @@ export const CATEGORIES = [
             "height": 1080,
             "aspectRatio": 1.7778
           }
-        ],
-        "thumbnailWidth": 1920,
-        "thumbnailHeight": 1080,
-        "thumbnailAspectRatio": 1.7778
+        ]
       }
     ]
   },
@@ -262,7 +395,78 @@ export const CATEGORIES = [
     "coverIcon": "/icons/PHOTOGRAPHY.png",
     "artist": "Basil Jose",
     "tagline": "Chiaroscuro studio captures, natural twilight portraits, and documentary frames.",
-    "projects": []
+    "projects": [
+      {
+        "id": "jazil",
+        "title": "Jazil",
+        "client": "Basil Jose",
+        "role": "PHOTOGRAPHY",
+        "description": "Jazil collection.",
+        "thumbnail": "/projects/photography/jazil/1P8A7536-2.jpg",
+        "thumbnailWidth": 1365,
+        "thumbnailHeight": 2048,
+        "thumbnailAspectRatio": 0.6665,
+        "videoSrc": "",
+        "videoAspectRatio": null,
+        "dateStamp": "2026",
+        "media": [
+          {
+            "title": "1p8a7536 2",
+            "caption": "1p8a7536 2",
+            "type": "image",
+            "src": "/projects/photography/jazil/1P8A7536-2.jpg",
+            "width": 1365,
+            "height": 2048,
+            "aspectRatio": 0.6665
+          },
+          {
+            "title": "1p8a7546 2",
+            "caption": "1p8a7546 2",
+            "type": "image",
+            "src": "/projects/photography/jazil/1P8A7546-2.jpg",
+            "width": 1365,
+            "height": 2048,
+            "aspectRatio": 0.6665
+          },
+          {
+            "title": "1p8a7554 2",
+            "caption": "1p8a7554 2",
+            "type": "image",
+            "src": "/projects/photography/jazil/1P8A7554-2.jpg",
+            "width": 2048,
+            "height": 816,
+            "aspectRatio": 2.5098
+          },
+          {
+            "title": "1p8a7580 2",
+            "caption": "1p8a7580 2",
+            "type": "image",
+            "src": "/projects/photography/jazil/1P8A7580-2.jpg",
+            "width": 1365,
+            "height": 2048,
+            "aspectRatio": 0.6665
+          },
+          {
+            "title": "1p8a7611 2",
+            "caption": "1p8a7611 2",
+            "type": "image",
+            "src": "/projects/photography/jazil/1P8A7611-2.jpg",
+            "width": 1365,
+            "height": 2048,
+            "aspectRatio": 0.6665
+          },
+          {
+            "title": "1p8a7656 2",
+            "caption": "1p8a7656 2",
+            "type": "image",
+            "src": "/projects/photography/jazil/1P8A7656-2.jpg",
+            "width": 2048,
+            "height": 736,
+            "aspectRatio": 2.7826
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "videography",
@@ -278,7 +482,11 @@ export const CATEGORIES = [
         "role": "VIDEOGRAPHY",
         "description": "Dot Store collection.",
         "thumbnail": "/projects/videography/dot-store/realme-thumb.webp",
+        "thumbnailWidth": 1080,
+        "thumbnailHeight": 1920,
+        "thumbnailAspectRatio": 0.5625,
         "videoSrc": "/projects/videography/dot-store/realme.mp4",
+        "videoAspectRatio": 0.5625,
         "dateStamp": "2026",
         "media": [
           {
@@ -301,11 +509,7 @@ export const CATEGORIES = [
             "height": 1920,
             "aspectRatio": 0.5625
           }
-        ],
-        "thumbnailWidth": 1080,
-        "thumbnailHeight": 1920,
-        "thumbnailAspectRatio": 0.5625,
-        "videoAspectRatio": 0.5625
+        ]
       },
       {
         "id": "eazyarts",
@@ -314,7 +518,11 @@ export const CATEGORIES = [
         "role": "VIDEOGRAPHY",
         "description": "Eazyarts collection.",
         "thumbnail": "/projects/videography/eazyarts/Big mistake-thumb.webp",
+        "thumbnailWidth": 1080,
+        "thumbnailHeight": 1920,
+        "thumbnailAspectRatio": 0.5625,
         "videoSrc": "/projects/videography/eazyarts/Big mistake.mp4",
+        "videoAspectRatio": 0.5625,
         "dateStamp": "2026",
         "media": [
           {
@@ -367,25 +575,25 @@ export const CATEGORIES = [
             "height": 1920,
             "aspectRatio": 0.5625
           }
-        ],
-        "thumbnailWidth": 1080,
-        "thumbnailHeight": 1920,
-        "thumbnailAspectRatio": 0.5625,
-        "videoAspectRatio": 0.5625
+        ]
       },
       {
         "id": "final-3",
-        "title": "Kinetic Commercial Reel",
+        "title": "Final 3",
         "client": "Basil Jose",
         "role": "VIDEOGRAPHY",
-        "description": "Kinetic commercial videography collection.",
+        "description": "Final 3 collection.",
         "thumbnail": "/projects/videography/final-3/FINAL 3-thumb.webp",
+        "thumbnailWidth": 1080,
+        "thumbnailHeight": 1920,
+        "thumbnailAspectRatio": 0.5625,
         "videoSrc": "/projects/videography/final-3/FINAL 3.mp4",
+        "videoAspectRatio": 0.5625,
         "dateStamp": "2026",
         "media": [
           {
-            "title": "Kinetic Commercial Reel",
-            "caption": "Kinetic Commercial Reel",
+            "title": "Final 3",
+            "caption": "Final 3",
             "type": "video",
             "src": "/projects/videography/final-3/FINAL 3.mp4",
             "poster": "/projects/videography/final-3/FINAL 3-thumb.webp",
@@ -393,11 +601,7 @@ export const CATEGORIES = [
             "height": 1920,
             "aspectRatio": 0.5625
           }
-        ],
-        "thumbnailWidth": 1080,
-        "thumbnailHeight": 1920,
-        "thumbnailAspectRatio": 0.5625,
-        "videoAspectRatio": 0.5625
+        ]
       },
       {
         "id": "josh-talks",
@@ -406,7 +610,11 @@ export const CATEGORIES = [
         "role": "VIDEOGRAPHY",
         "description": "Josh Talks collection.",
         "thumbnail": "/projects/videography/josh-talks/Elon Musk Flying Car-thumb.webp",
+        "thumbnailWidth": 1080,
+        "thumbnailHeight": 1920,
+        "thumbnailAspectRatio": 0.5625,
         "videoSrc": "/projects/videography/josh-talks/Elon Musk Flying Car.mp4",
+        "videoAspectRatio": 0.5625,
         "dateStamp": "2026",
         "media": [
           {
@@ -419,11 +627,7 @@ export const CATEGORIES = [
             "height": 1920,
             "aspectRatio": 0.5625
           }
-        ],
-        "thumbnailWidth": 1080,
-        "thumbnailHeight": 1920,
-        "thumbnailAspectRatio": 0.5625,
-        "videoAspectRatio": 0.5625
+        ]
       },
       {
         "id": "real-estate",
@@ -432,7 +636,11 @@ export const CATEGORIES = [
         "role": "VIDEOGRAPHY",
         "description": "Real Estate collection.",
         "thumbnail": "/projects/videography/real-estate/real estate sample-thumb.webp",
+        "thumbnailWidth": 2160,
+        "thumbnailHeight": 3840,
+        "thumbnailAspectRatio": 0.5625,
         "videoSrc": "/projects/videography/real-estate/real estate sample.mp4",
+        "videoAspectRatio": 0.5625,
         "dateStamp": "2026",
         "media": [
           {
@@ -441,15 +649,11 @@ export const CATEGORIES = [
             "type": "video",
             "src": "/projects/videography/real-estate/real estate sample.mp4",
             "poster": "/projects/videography/real-estate/real estate sample-thumb.webp",
-            "width": 1080,
-            "height": 1920,
+            "width": 2160,
+            "height": 3840,
             "aspectRatio": 0.5625
           }
-        ],
-        "thumbnailWidth": 2160,
-        "thumbnailHeight": 3840,
-        "thumbnailAspectRatio": 0.5625,
-        "videoAspectRatio": 0.5625
+        ]
       }
     ]
   }
