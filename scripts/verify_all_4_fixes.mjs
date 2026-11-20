@@ -12,8 +12,8 @@ async function run() {
   // TEST 3A: Dynamic Hamburger Color on #reel (Top vs Bottom)
   // -------------------------------------------------------------
   console.log('--- [TEST 3A] Testing Dynamic Hamburger Color on #reel (Top vs Bottom) ---');
-  await page.goto(`${LOCAL_URL}/`, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(1000);
+  await page.goto(`${LOCAL_URL}/`, { waitUntil: 'domcontentloaded', timeout: 15000 });
+  await page.waitForTimeout(2000);
 
   // Frame 0: Progress 0 -> Hamburger should be Blue
   const burgerColorFrame0 = await page.evaluate(() => {
@@ -177,9 +177,14 @@ async function run() {
   const hashWithCardOpen = await page.evaluate(() => window.location.hash);
   console.log('  URL Hash with card open:', hashWithCardOpen);
 
-  // Close card via explicit close button
-  const cardCloseBtn = await page.waitForSelector('.enlarged-postcard-close-btn');
-  await cardCloseBtn.click();
+  // Close card via top-left back button or Escape key
+  console.log('  Closing flipped postcard via top-left back button / Escape key...');
+  const backBtn = await page.$('.clean-back-btn.is-showcase');
+  if (backBtn) {
+    await backBtn.click();
+  } else {
+    await page.keyboard.press('Escape');
+  }
   await page.waitForTimeout(1000);
 
   const hashAfterCardClose = await page.evaluate(() => window.location.hash);

@@ -3,6 +3,59 @@ import { createPortal } from 'react-dom';
 import InCardVideoPlayer from './InCardVideoPlayer';
 
 /**
+ * Stretched Backdrop Title (Swiss Editorial Poster Style)
+ * Renders the project title in massive bold uppercase letters stretched edge-to-edge behind media
+ */
+export function StretchedBackdropTitle({ title }) {
+  const textRef = useRef(null);
+  const [vb, setVb] = useState("0 0 1000 200");
+  const label = (title || "").toUpperCase().trim();
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!textRef.current || typeof textRef.current.getBBox !== 'function') return;
+      try {
+        const bbox = textRef.current.getBBox();
+        if (bbox && bbox.width > 0 && bbox.height > 0) {
+          setVb(`${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
+        }
+      } catch (err) {
+        // Fallback silently if unsupported in environment
+      }
+    };
+    measure();
+    const timer = setTimeout(measure, 100);
+    if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(measure).catch(() => {});
+    }
+    window.addEventListener('resize', measure);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', measure);
+    };
+  }, [label]);
+
+  return (
+    <svg
+      className="postcard-stretched-bg-title"
+      viewBox={vb}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <text
+        ref={textRef}
+        x="0"
+        y="100"
+        fontWeight="900"
+        letterSpacing="-0.03em"
+      >
+        {label}
+      </text>
+    </svg>
+  );
+}
+
+/**
  * Approved Deterministic Scattered Slot Coordinates
  * Generates organic, non-overlapping pinboard slots across the full wide beige (#FFF7ED) postcard canvas.
  */
@@ -206,7 +259,7 @@ export default memo(function PolaroidGallery({
     if (typeof window !== 'undefined') {
       const isMob = window.innerWidth <= 768;
       const estW = isMob ? window.innerWidth * 0.9 : Math.min(1380, window.innerWidth * 0.86);
-      const estH = isMob ? window.innerHeight * 0.78 : Math.min(840, window.innerHeight * 0.84) - 44;
+      const estH = isMob ? window.innerHeight * 0.78 : Math.min(840, window.innerHeight * 0.84);
       return { width: Math.round(estW), height: Math.round(estH) };
     }
     return { width: 1000, height: 550 };
@@ -281,25 +334,27 @@ export default memo(function PolaroidGallery({
       style={!isMobile ? {
         position: 'relative',
         width: '100%',
-        height: 'calc(100% - 44px)',
-        marginTop: '44px',
+        height: '100%',
         overflow: 'hidden',
         boxSizing: 'border-box',
-        pointerEvents: 'auto'
+        pointerEvents: 'auto',
+        zIndex: 2,
+        background: 'transparent'
       } : {
         position: 'relative',
         width: '100%',
-        height: 'calc(100% - 38px)',
-        marginTop: '38px',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         gap: '16px',
         overflowY: 'auto',
         overflowX: 'hidden',
-        padding: '12px 12px 28px',
+        padding: '16px 12px 28px',
         boxSizing: 'border-box',
-        pointerEvents: 'auto'
+        pointerEvents: 'auto',
+        zIndex: 2,
+        background: 'transparent'
       }}
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}

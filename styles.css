@@ -4218,11 +4218,32 @@ body.page-work.is-showcase-active {
 .polaroid-gallery {
   position: relative !important;
   width: 100% !important;
-  height: calc(100% - 44px) !important;
-  margin-top: 44px !important;
+  height: 100% !important;
+  margin-top: 0 !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
   pointer-events: auto !important;
+  z-index: 2 !important;
+  background: transparent !important;
+}
+
+/* Stretched Backdrop Title (Swiss Editorial Poster Style) */
+.postcard-stretched-bg-title {
+  position: absolute !important;
+  inset: 5% 3.5% !important;
+  width: 93% !important;
+  height: 90% !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  display: block !important;
+}
+
+.postcard-stretched-bg-title text {
+  fill: rgba(40, 89, 145, 0.14) !important; /* Soft translucent studio blue #285991 */
+  font-family: "DM Sans", "Arial Black", sans-serif !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
 }
 
 .scattered-pinboard-item,
@@ -4263,17 +4284,28 @@ body.page-work.is-showcase-active {
   .polaroid-gallery {
     position: relative !important;
     width: 100% !important;
-    height: calc(100% - 38px) !important;
-    margin-top: 38px !important;
+    height: 100% !important;
+    margin-top: 0 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     gap: 16px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
-    padding: 12px 12px 28px !important;
+    padding: 16px 12px 28px !important;
     box-sizing: border-box !important;
     pointer-events: auto !important;
+    z-index: 2 !important;
+    background: transparent !important;
+  }
+
+  .postcard-stretched-bg-title {
+    position: absolute !important;
+    inset: 4% 3% !important;
+    width: 94% !important;
+    height: 92% !important;
+    z-index: 0 !important;
+    opacity: 0.9 !important;
   }
 
   .scattered-pinboard-item,

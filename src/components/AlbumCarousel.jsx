@@ -1,5 +1,5 @@
 import { playCardSlide, playCardFlip, playDeskThud, playClick } from '../utils/soundEffects';
-import PolaroidGallery from './PolaroidGallery';
+import PolaroidGallery, { StretchedBackdropTitle } from './PolaroidGallery';
 import InCardVideoPlayer from './InCardVideoPlayer';
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -449,64 +449,8 @@ const DraggablePostcard = memo(function DraggablePostcard({
             pointerEvents: isExpanded ? 'auto' : 'none'
           }}
         >
-          {isExpanded && (
-            <div
-              className="enlarged-postcard-header-block"
-              style={{
-                position: 'absolute',
-                top: isMobile ? '12px' : '18px',
-                left: isMobile ? '16px' : '24px',
-                zIndex: 25,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '2px',
-                pointerEvents: 'none',
-                maxWidth: 'calc(100% - 90px)'
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "'Space Mono', monospace",
-                  fontSize: isMobile ? '11px' : '13px',
-                  fontWeight: 700,
-                  letterSpacing: '1.5px',
-                  color: '#174276',
-                  textTransform: 'uppercase',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {project.title}
-              </span>
-              <span
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: isMobile ? '9.5px' : '11px',
-                  color: 'rgba(40, 89, 145, 0.7)',
-                  letterSpacing: '0.5px',
-                  textTransform: 'uppercase'
-                }}
-              >
-                {project.role || category?.title || 'PORTFOLIO'}
-              </span>
-            </div>
-          )}
-          {isExpanded && (
-            <button
-              type="button"
-              className="enlarged-postcard-close-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCloseProject();
-              }}
-              aria-label="Close enlarged postcard"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
+          {shouldRenderBack && (
+            <StretchedBackdropTitle title={project.title} />
           )}
 
           {shouldRenderBack && (
