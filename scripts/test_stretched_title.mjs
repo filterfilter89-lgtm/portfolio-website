@@ -17,8 +17,8 @@ async function main() {
     // -------------------------------------------------------------
     console.log('--- [1. DESKTOP] Testing Flipped Postcard (Fruitly) ---');
     let page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-    await page.goto(`${BASE_URL}/#work/graphic-designs`, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000);
+    await page.goto(`${BASE_URL}/#work/graphic-designs`, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.waitForTimeout(2500);
 
     // Click Fruitly postcard
     const fruitlyCard = await page.evaluateHandle(() => {
@@ -78,8 +78,8 @@ async function main() {
     // -------------------------------------------------------------
     console.log('\n--- [2. DESKTOP] Testing Flipped Postcard (Eazyarts Ganesh) ---');
     page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-    await page.goto(`${BASE_URL}/#work/graphic-designs`, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000);
+    await page.goto(`${BASE_URL}/#work/graphic-designs`, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.waitForTimeout(2500);
 
     const ganeshCard = await page.evaluateHandle(() => {
       const cards = Array.from(document.querySelectorAll('.draggable-postcard-item'));
@@ -113,8 +113,8 @@ async function main() {
     // -------------------------------------------------------------
     console.log('\n--- [3. DESKTOP] Testing Flipped Postcard (Dot Store) ---');
     page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-    await page.goto(`${BASE_URL}/#work/videography`, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000);
+    await page.goto(`${BASE_URL}/#work/videography`, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.waitForTimeout(2500);
 
     const dotStoreCard = await page.evaluateHandle(() => {
       const cards = Array.from(document.querySelectorAll('.draggable-postcard-item'));
@@ -145,8 +145,8 @@ async function main() {
     // -------------------------------------------------------------
     console.log('\n--- [4. MOBILE] Testing Mobile Viewport (390x844) ---');
     page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-    await page.goto(`${BASE_URL}/#work/graphic-designs`, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000);
+    await page.goto(`${BASE_URL}/#work/graphic-designs`, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.waitForTimeout(2500);
 
     const mobileFruitly = await page.evaluateHandle(() => {
       const cards = Array.from(document.querySelectorAll('.draggable-postcard-item'));
