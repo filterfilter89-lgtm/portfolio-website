@@ -429,7 +429,7 @@ const DraggablePostcard = memo(function DraggablePostcard({
 
         {/* Back Face: Revealed on 180 deg Flip */}
         <div
-          className="postcard-side postcard-side-back"
+          className="postcard-side postcard-side-back postcard-back"
           onClick={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
           style={{

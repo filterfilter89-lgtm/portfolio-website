@@ -4233,10 +4233,17 @@ body.page-work.is-showcase-active {
   inset: 5% 3.5% !important;
   width: 93% !important;
   height: 90% !important;
+  transform: scaleY(1.74) !important;
+  transform-origin: center center !important;
   z-index: 0 !important;
   pointer-events: none !important;
   user-select: none !important;
   display: block !important;
+}
+
+.postcard-back,
+.postcard-side-back {
+  overflow: hidden !important;
 }
 
 .postcard-stretched-bg-title text {
